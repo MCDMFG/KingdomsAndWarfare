@@ -25,7 +25,7 @@ function getFactionMoraleBonus(faction)
 	end
 
 	local sPath = "combattracker.morale_" .. faction;
-	local nMoraleBonus = DB.getValue(sPath, "", 0);
+	local nMoraleBonus = DB.getValue(sPath, 0);
 	return nMoraleBonus;
 end
 
