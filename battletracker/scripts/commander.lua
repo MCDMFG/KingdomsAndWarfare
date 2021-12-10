@@ -123,11 +123,12 @@ function onDrop(x, y, draginfo)
 	local sType = draginfo.getType();
 	local sClass, sRecord = draginfo.getShortcutData();
 	if sType == "battletrackerunit" then
-		local sPath = getDatabaseNode().getPath();
-		local node = draginfo.getDatabaseNode();
-		local _,sCommander = DB.getValue(node, "commander_link");
+		local nodeCommander = getDatabaseNode();
+		local sPath = nodeCommander.getPath();
+		local nodeUnit = draginfo.getDatabaseNode();
+		local _,sCommander = DB.getValue(nodeUnit, "commander_link");
 		if sCommander ~= sPath then
-			DB.setValue(node, "commander_link", "windowreference", "npc", sPath);
+			CombatManagerKw.configureUnitCommander(nodeUnit, nodeCommander);
 		end
 		return true;
 	elseif sClass == "reference_unit" then
