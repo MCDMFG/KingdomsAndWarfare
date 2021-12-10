@@ -426,15 +426,19 @@ function addUnit(sClass, nodeUnit, sName)
 	-- try to find the Commander in the CT and use their initiative and faction
 	-- else leave initiative blank and faction = foe
 	local nodeCommander = nodeDropCommander or ActorManagerKw.getCommanderCT(nodeEntry);
+	configureUnitCommander(nodeEntry, nodeCommander);
+
+	DB.setValue(nodeEntry, "initresult", "number", calculateUnitInitiative());
+	
+	return nodeEntry;
+end
+
+function configureUnitCommander(nodeUnit, nodeCommander)
 	if nodeCommander then
 		local faction = DB.getValue(nodeCommander, "friendfoe", "foe");
 		DB.setValue(nodeEntry, "friendfoe", "string", faction);
 		DB.setValue(nodeEntry, "commander_link", "windowreference", "npc", DB.getPath(nodeCommander));
 	end
-
-	DB.setValue(nodeEntry, "initresult", "number", calculateUnitInitiative());
-	
-	return nodeEntry;
 end
 
 function onTurnStart(nodeCT)
