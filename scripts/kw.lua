@@ -33,6 +33,7 @@ aRecordOverrides = {
 	},
 	["advantage"] = {
 		bExport = true,
+		sSidebarCategory = "create",
 		sRecordDisplayClass = "reference_martialadvantage",
 		aDataMap = { "martialadvantage", "reference.martialadvantagedata" },
 		aCustomFilters = {
@@ -42,6 +43,7 @@ aRecordOverrides = {
 	},
 	["trait"] = {
 		bExport = true,
+		sSidebarCategory = "campaign",
 		sRecordDisplayClass = "reference_unittrait",
 		aDataMap = { "unittrait", "reference.unittraitdata" }
 	}
@@ -100,18 +102,6 @@ aListViews = {
 	},
 };
 
-aCoreDesktopStack = {
-	["host"] = {
-		{
-			icon="button_kw_tokens",
-			icon_down="button_kw_tokens_down",
-			tooltipres="sidebar_tooltip_warfaretokens",
-			class="warfare_tokens",
-			path="warfare"
-		}
-	}
-}
-
 aDamageTokenTypes = {
 	"acid",
 	"bleed",
@@ -129,7 +119,13 @@ function onInit()
 		end
 	end
 	if Session.IsHost then
-		DesktopManager.registerStackShortcuts(aCoreDesktopStack["host"]);
+		DesktopManager.registerSidebarStackButton({
+			icon="button_kw_tokens",
+			icon_down="button_kw_tokens_down",
+			tooltipres="sidebar_tooltip_warfaretokens",
+			class="warfare_tokens",
+			path="warfare"
+		});
 	end
 
 	fOnModuleLoad = Module.onModuleLoad;
