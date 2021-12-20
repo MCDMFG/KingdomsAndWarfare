@@ -436,8 +436,8 @@ end
 function configureUnitCommander(nodeUnit, nodeCommander)
 	if nodeCommander then
 		local faction = DB.getValue(nodeCommander, "friendfoe", "foe");
-		DB.setValue(nodeEntry, "friendfoe", "string", faction);
-		DB.setValue(nodeEntry, "commander_link", "windowreference", "npc", DB.getPath(nodeCommander));
+		DB.setValue(nodeUnit, "friendfoe", "string", faction);
+		DB.setValue(nodeUnit, "commander_link", "windowreference", "npc", DB.getPath(nodeCommander));
 	end
 end
 
