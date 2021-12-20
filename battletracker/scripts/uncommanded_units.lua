@@ -31,7 +31,7 @@ function commanderLinkUpdated(nodeLink)
 		_, sRecord = nodeLink.getValue();
 	end
 
-	if (not sRecord) or (not DB.findNode(sRecord)) then
+	if ((sRecord or "") == "") or (not DB.findNode(sRecord)) then
 		addUnit(DB.getChild(nodeLink, ".."));
 	end
 end
@@ -39,7 +39,7 @@ end
 function onDrop(x, y, draginfo)
 	local sType = draginfo.getType();
 	if sType == "battletrackerunit" then
-		DB.setValue(nodeCombatant, "commander_link", "windowreference", "", "");
+		DB.setValue(draginfo.getDatabaseNode(), "commander_link", "windowreference", "", "");
 	end
 end
 
