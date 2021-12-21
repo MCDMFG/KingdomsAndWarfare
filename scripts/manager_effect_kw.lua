@@ -5,10 +5,21 @@
 
 local fOnEffectActorStartTurn;
 local fCheckConditional;
+local fIsTargetedEffect;
+local fParseEffectComp;
 local fGetEffectsByType;
 local fApplyOngoingDamageAdjustment
 
+local bGettingEffects;
+local nodeCurrentEffect;
+
 function onInit()
+	fIsTargetedEffect = EffectManager.isTargetedEffect;
+	EffectManager.isTargetedEffect = isTargetedEffect;
+	
+	fParseEffectComp = EffectManager5E.parseEffectComp;
+	EffectManager5E.parseEffectComp = parseEffectComp;
+
 	fGetEffectsByType = EffectManager5E.getEffectsByType;
 	EffectManager5E.getEffectsByType = getEffectsByType;
 
@@ -238,171 +249,42 @@ function onEffectActorEndTurn(nodeActor, nodeEffect)
 		end
 	end
 end
--- I think we have to completely overwrite this because "PDIE" in the effect text
--- is marked as a type of filter, and since attacks never have that filter, it will always fail
-function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedOnly)
-	if not rActor then
-		return {};
+
+function isTargetedEffect(nodeEffect)
+	if bGettingEffects then
+		nodeCurrentEffect = nodeEffect;
 	end
-	local results = {};
-	
-	-- Set up filters
-	local aRangeFilter = {};
-	local aOtherFilter = {};
-	if aFilter then
-		for _,v in pairs(aFilter) do
-			if type(v) ~= "string" then
-				table.insert(aOtherFilter, v);
-			elseif StringManager.contains(DataCommon.rangetypes, v) then
-				table.insert(aRangeFilter, v);
-			else
-				table.insert(aOtherFilter, v);
+	return fIsTargetedEffect(nodeEffect);
+end
+
+function parseEffectComp(s)
+	if nodeCurrentEffect then
+		s = s:gsub("%d*x? ?%-?PDIE", function(sMatch)
+			sMult, sNegative = sMatch:match("^(%d*)x? ?(%-?)");
+			local nMult = 1;
+			if sMult ~= "" then
+				nMult = tonumber(sMult);
 			end
-		end
+			if sNegative ~= "" then
+				nMult = -nMult;
+			end
+			local rActor = getSourceOfEffect(nodeCurrentEffect);
+			if not rActor then
+				rActor = ActorManager.resolveActor(DB.getChild(nodeCurrentEffect, "..."));
+			end
+			local nPowerDie = getPowerDieEffect(rActor);
+			return tostring(nPowerDie * nMult);
+		end);
 	end
-	
-	-- Iterate through effects
-	for _,v in pairs(DB.getChildren(ActorManager.getCTNode(rActor), "effects")) do
-		-- Check active
-		local nActive = DB.getValue(v, "isactive", 0);
-		if (nActive ~= 0) then
-			local sLabel = DB.getValue(v, "label", "");
-			local sApply = DB.getValue(v, "apply", "");
+	return fParseEffectComp(s);
+end
 
-			-- IF COMPONENT WE ARE LOOKING FOR SUPPORTS TARGETS, THEN CHECK AGAINST OUR TARGET
-			local bTargeted = EffectManager.isTargetedEffect(v);
-			if not bTargeted or EffectManager.isEffectTarget(v, rFilterActor) then
-				local aEffectComps = EffectManager.parseEffect(sLabel);
-
-				-- Look for type/subtype match
-				local nMatch = 0;
-				for kEffectComp,sEffectComp in ipairs(aEffectComps) do
-					local rEffectComp = EffectManager5E.parseEffectComp(sEffectComp);
-					-- Handle conditionals
-					if rEffectComp.type == "IF" then
-						if not EffectManager5E.checkConditional(rActor, v, rEffectComp.remainder) then
-							break;
-						end
-					elseif rEffectComp.type == "IFT" then
-						if not rFilterActor then
-							break;
-						end
-						if not EffectManager5E.checkConditional(rFilterActor, v, rEffectComp.remainder, rActor) then
-							break;
-						end
-						bTargeted = true;
-					
-					-- Compare other attributes
-					else
-						-- Strip energy/bonus types for subtype comparison
-						local aEffectRangeFilter = {};
-						local aEffectOtherFilter = {};
-						local j = 1;
-						while rEffectComp.remainder[j] do
-							local s = rEffectComp.remainder[j];
-							if #s > 0 and ((s:sub(1,1) == "!") or (s:sub(1,1) == "~")) then
-								s = s:sub(2);
-							end
-							if StringManager.contains(DataCommon.dmgtypes, s) or s == "all" or 
-									StringManager.contains(DataCommon.bonustypes, s) or
-									StringManager.contains(DataCommon.conditions, s) or
-									StringManager.contains(DataCommon.connectors, s) then
-								-- SKIP
-							elseif StringManager.contains(DataCommon.rangetypes, s) then
-								table.insert(aEffectRangeFilter, s);
-							-- NEW CASES
-							elseif s:lower():match("pdie") then
-								-- Add a reference to the effect node to the output
-								rEffectComp.node = v.getPath();
-							-- END NEW CASES
-							else
-								table.insert(aEffectOtherFilter, s);
-							end
-							
-							j = j + 1;
-						end
-					
-						-- Check for match
-						local comp_match = false;
-						if rEffectComp.type == sEffectType then
-
-							-- Check effect targeting
-							if bTargetedOnly and not bTargeted then
-								comp_match = false;
-							else
-								comp_match = true;
-							end
-						
-							-- Check filters
-							if #aEffectRangeFilter > 0 then
-								local bRangeMatch = false;
-								for _,v2 in pairs(aRangeFilter) do
-									if StringManager.contains(aEffectRangeFilter, v2) then
-										bRangeMatch = true;
-										break;
-									end
-								end
-								if not bRangeMatch then
-									comp_match = false;
-								end
-							end
-							if #aEffectOtherFilter > 0 then
-								local bOtherMatch = false;
-								for _,v2 in pairs(aOtherFilter) do
-									if type(v2) == "table" then
-										local bOtherTableMatch = true;
-										for k3, v3 in pairs(v2) do
-											if not StringManager.contains(aEffectOtherFilter, v3) then
-												bOtherTableMatch = false;
-												break;
-											end
-										end
-										if bOtherTableMatch then
-											bOtherMatch = true;
-											break;
-										end
-									elseif StringManager.contains(aEffectOtherFilter, v2) then
-										bOtherMatch = true;
-										break;
-									end
-								end
-								if not bOtherMatch then
-									comp_match = false;
-								end
-							end
-						end
-
-						-- Match!
-						if comp_match then
-							nMatch = kEffectComp;
-							if nActive == 1 then
-								resolvePowerDie(rActor, rEffectComp);
-								table.insert(results, rEffectComp);
-							end
-						end
-					end
-				end -- END EFFECT COMPONENT LOOP
-
-				-- Remove one shot effects
-				if nMatch > 0 then
-					if nActive == 2 then
-						DB.setValue(v, "isactive", "number", 1);
-					else
-						if sApply == "action" then
-							EffectManager.notifyExpire(v, 0);
-						elseif sApply == "roll" then
-							EffectManager.notifyExpire(v, 0, true);
-						elseif sApply == "single" then
-							EffectManager.notifyExpire(v, nMatch, true);
-						end
-					end
-				end
-			end -- END TARGET CHECK
-		end  -- END ACTIVE CHECK
-	end  -- END EFFECT LOOP
-	
-	-- RESULTS
-	return results;
+function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedOnly)
+	bGettingEffects = true;
+	local result = fGetEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedOnly);
+	bGettingEffects = false;
+	nodeCurrentEffect = nil;
+	return result;
 end
 
 function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
