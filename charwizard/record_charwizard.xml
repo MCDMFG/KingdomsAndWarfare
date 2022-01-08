@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charwizard" merge="join">
+		<script file="charwizard/scripts/charwizard.lua" />
+	</windowclass>
+	
+	<windowclass name="charwizard_stats_contents" merge="join">
+		<sheetdata>
+			<comboboxc name="cb_genmethod">
+				<script file="charwizard/scripts/charwizard_genmethod_combo.lua" />
+			</comboboxc>
+		</sheetdata>
+	</windowclass>
+</root>
