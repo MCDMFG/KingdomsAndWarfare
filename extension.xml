@@ -60,6 +60,9 @@
 		<includefile source="ct/ct_host.xml" />
 		<includefile source="ct/ct_client.xml" />
 		<includefile source="ct/template_ct.xml" />
+		
+		<!-- Character Wizard -->
+		<includefile source="charwizard/record_charwizard.xml" />
 
 		<!-- Party Sheet -->
 		<includefile source="ps/ps.xml" />

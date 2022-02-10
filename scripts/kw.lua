@@ -109,6 +109,17 @@ aDamageTokenTypes = {
 	"poison"
 }
 
+aWarfareAbilities = {
+	"attack",
+	"defense",
+	"power",
+	"toughness",
+	"morale",
+	"command",
+};
+
+aBaseAbilities = {};
+
 function onInit()
 	for kRecordType,vRecordType in pairs(aRecordOverrides) do
 		LibraryData.overrideRecordTypeInfo(kRecordType, vRecordType);
@@ -145,6 +156,8 @@ function onInit()
 	table.insert(GameSystem.targetactions, "unitsaveinit");
 	table.insert(GameSystem.targetactions, "unitsavedc");
 	table.insert(GameSystem.targetactions, "powerdie");
+
+	aBaseAbilities = UtilityManager.copyDeep(DataCommon.abilities);
 
 	table.insert(DataCommon.abilities, "attack");
 	table.insert(DataCommon.abilities, "defense");
