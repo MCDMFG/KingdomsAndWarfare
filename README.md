@@ -1,4 +1,4 @@
-# Unofficial Kingdoms And Warfare (by MCDM) extension for Fantasy Grounds
+# Kingdoms And Warfare (by MCDM) extension for Fantasy Grounds
 
 Adds Fantasy Grounds support for MCDM's Kingdoms and Warfare D&amp;D 5th edition supplement.
 
