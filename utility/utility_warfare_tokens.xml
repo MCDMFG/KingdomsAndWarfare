@@ -23,6 +23,8 @@
 			</windowtitlebar>
 			<anchor_title_utilitybox3 name="contentanchor" />
 
+			<anchor_bottom_utilitybox3 name="bottomanchor" />
+
 			<sub_warfare_markers name="markers" />
 			<scrollbar name="scroll_markers">
 				<anchored to="markers" />
