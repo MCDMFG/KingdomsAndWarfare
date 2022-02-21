@@ -22,7 +22,7 @@ function onMenuSelection(selection, subselection)
 end
 
 function extendedRest(nodeChar)
-	ChatManager.Message(Interface.getString("message_restextended"), true, ActorManager.getActor("pc", nodeChar));
+	ChatManager.Message(Interface.getString("message_restextended"), true, ActorManager.resolveActor(nodeChar));
 	PowerManagerKw.beginExtended();
 	CharManager.rest(nodeChar, true);
 	PowerManagerKw.endExtended();
