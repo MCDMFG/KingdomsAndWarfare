@@ -1,5 +1,5 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -14,7 +14,6 @@ end
 function onValueChanged()
 	local fullAbilities = DataCommon.abilities;
 	DataCommon.abilities = KingdomsAndWarfare.aBaseAbilities;
-	Debug.chat(DataCommon.abilities)
 	onValueChangedOriginal();
 	DataCommon.abilities = fullAbilities;
 end
