@@ -31,7 +31,7 @@
 			</script>
 			<anchored>
 				<left />
-				<top parent="name" anchor="bottom" offset="7" />
+				<top parent="" offset="34" />
 				<right />
 			</anchored>
 			<class>battletracker_unit</class>

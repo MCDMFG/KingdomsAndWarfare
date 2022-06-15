@@ -10,6 +10,7 @@ function onInit()
 	end
 
 	DB.addHandler(CombatManager.CT_COMBATANT_PATH, "onDelete", onDeleted);
+	DB.addHandler(DB.getPath(CombatManager.CT_COMBATANT_PATH, "tokenvis"), "onUpdate", onTokenVisChanged);
 
 	CombatManagerKw.registerCombatantAddedHandler(combatantAdded);
 	CombatManagerKw.registerUnitSelectionHandler(primaryUnitSelected, 1);
@@ -19,10 +20,13 @@ function onInit()
 	if Session.IsHost and UtilityManager.isClientFGU() then
 		User.onIdentityStateChange = onIdentityStateChange;
 	end
+
+	onTokenVisChanged();
 end
 
 function onClose()
 	DB.removeHandler(CombatManager.CT_COMBATANT_PATH, "onDelete", onDeleted);
+	DB.removeHandler(DB.getPath(CombatManager.CT_COMBATANT_PATH, "tokenvis"), "onUpdate", onTokenVisChanged);
 	
 	CombatManagerKw.unregisterCombatantAddedHandler(combatantAdded);
 	CombatManagerKw.unregisterUnitSelectionHandler(primaryUnitSelected, 1);
@@ -229,4 +233,8 @@ function secondaryUnitSelected(nodeUnit)
 	if primary_selected_unit.subwindow and primary_selected_unit.subwindow.getDatabaseNode() == nodeUnit then
 		primary_selected_unit.setValue("battletracker_emptysummary");
 	end
+end
+
+function onTokenVisChanged()
+	list.applyFilter()
 end

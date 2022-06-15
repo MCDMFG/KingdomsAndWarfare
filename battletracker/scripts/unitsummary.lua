@@ -3,8 +3,6 @@
 -- attribution and copyright information.
 --
 
-local nodeUnit;
-
 function onInit()
 	updateSummary();
 	local nodeUnit = link.getTargetDatabaseNode(); -- Build the summary of the linked node
@@ -14,9 +12,10 @@ function onInit()
 	DB.addHandler(DB.getPath(nodeUnit, "ancestry"), "onUpdate", updateSummary);
 	DB.addHandler(DB.getPath(nodeUnit, "type"), "onUpdate", updateSummary);
 
-	nodeUnit = getDatabaseNode(); -- Color is only tracked in the CT node
-	onColorChanged(DB.getChild(nodeUnit, "color"));
-	DB.addHandler(DB.getPath(nodeUnit, "color"), "onUpdate", onColorChanged);
+	-- Color and ID are only tracked in the CT node
+	local nodeCT = getDatabaseNode();
+	onColorChanged(DB.getChild(nodeCT, "color"));
+	DB.addHandler(DB.getPath(nodeCT, "color"), "onUpdate", onColorChanged);
 
 	if FriendZone then
 		linkFields();
@@ -24,11 +23,14 @@ function onInit()
 end
 
 function onClose()
+	local nodeUnit = link.getTargetDatabaseNode(); -- Build the summary of the linked node
 	DB.removeHandler(DB.getPath(nodeUnit, "tier"), "onUpdate", updateSummary);
 	DB.removeHandler(DB.getPath(nodeUnit, "experience"), "onUpdate", updateSummary);
 	DB.removeHandler(DB.getPath(nodeUnit, "armor"), "onUpdate", updateSummary);
 	DB.removeHandler(DB.getPath(nodeUnit, "ancestry"), "onUpdate", updateSummary);
 	DB.removeHandler(DB.getPath(nodeUnit, "type"), "onUpdate", updateSummary);
+
+	DB.removeHandler(DB.getPath(getDatabaseNode(), "color"), "onUpdate", onColorChanged);
 end
 
 function linkFields()
