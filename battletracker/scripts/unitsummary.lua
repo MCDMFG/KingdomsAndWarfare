@@ -3,8 +3,6 @@
 -- attribution and copyright information.
 --
 
-local nodeUnit;
-
 function onInit()
 	updateSummary();
 	local nodeUnit = link.getTargetDatabaseNode(); -- Build the summary of the linked node
@@ -15,8 +13,9 @@ function onInit()
 	DB.addHandler(DB.getPath(nodeUnit, "type"), "onUpdate", updateSummary);
 
 	-- Color and ID are only tracked in the CT node
-	onColorChanged(DB.getChild(getDatabaseNode(), "color"));
-	DB.addHandler(DB.getPath(getDatabaseNode(), "color"), "onUpdate", onColorChanged);
+	local nodeCT = getDatabaseNode();
+	onColorChanged(DB.getChild(nodeCT, "color"));
+	DB.addHandler(DB.getPath(nodeCT, "color"), "onUpdate", onColorChanged);
 
 	if FriendZone then
 		linkFields();
