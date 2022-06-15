@@ -9,8 +9,10 @@ function onInit()
 	DB.addHandler(node.getPath("friendfoe"), "onUpdate", onFactionUpdated);
 	DB.addHandler(node.getPath("active"), "onUpdate", updateDisplay);
 	DB.addHandler(node.getPath(), "onDelete", onDelete);
+	DB.addHandler(node.getPath("isidentified"), "onUpdate", onIDChanged);
 
 	updateDisplay();
+	onIDChanged();
 	
 	-- Initialize color
 	if Session.IsHost and node then
@@ -36,6 +38,7 @@ function onClose()
 	DB.removeHandler(node.getPath("friendfoe"), "onUpdate", onFactionUpdated);
 	DB.removeHandler(node.getPath("active"), "onUpdate", updateDisplay);
 	DB.removeHandler(node.getPath(), "onDelete", onDelete);
+	DB.removeHandler(node.getPath("isidentified"), "onUpdate", onIDChanged);
 end
 
 -- Listen to its own delete event so it can neatly delete all of its units. Could also have the units set their commanders to nil.
@@ -134,5 +137,18 @@ function onDrop(x, y, draginfo)
 	elseif sClass == "reference_unit" then
 		CombatManagerKw.setUnitDropCommander(getDatabaseNode());
 		return CampaignDataManager.handleDrop("combattracker", draginfo);
+	end
+end
+
+function onIDChanged()
+	local nodeRecord = getDatabaseNode();
+	local sClass = DB.getValue(nodeRecord, "link", "", "");
+	if sClass == "npc" then
+		local bID = LibraryData.getIDState("npc", nodeRecord, true);
+		name.setVisible(bID);
+		nonid_name.setVisible(not bID);
+	else
+		name.setVisible(true);
+		nonid_name.setVisible(false);
 	end
 end
