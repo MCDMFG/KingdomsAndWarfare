@@ -74,8 +74,10 @@
 					end
 
 					function onFilter(w)
-						local bVisible = DB.getValue(w.getDatabaseNode(), "tokenvis", 0) == 1;
-						return bVisible or Session.IsHost;
+						local node = w.getDatabaseNode();
+						local bVisible = DB.getValue(node, "tokenvis", 0) == 1;
+						local bIsPc = DB.getValue(node, "friendfoe", "") == "friend";
+						return bVisible or bIsPc or Session.IsHost;
 					end
 				</script>
 				<class>battletracker_commander</class>
