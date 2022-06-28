@@ -145,6 +145,7 @@ function handleHarrowing(rSource, aTargets, rRolls)
 		end
 	end
 
+	local bResult = false;
 	if aHarrowUnit then
 		-- Check if source is immune to harrow
 		CombatManagerKw.pushListMode(CombatManagerKw.LIST_MODE_UNIT);
@@ -156,14 +157,14 @@ function handleHarrowing(rSource, aTargets, rRolls)
 					if sTypeLower == "infantry" or sTypeLower == "cavalry" or sTypeLower == "aerial" then
 						ActionHarrowing.applyAttackState(rSource, aTargets, rRolls);
 						ActionHarrowing.performRoll(nil, rSource, aHarrowUnit, {})
-						return true;
+						bResult = true;
 					end
 				end
 			end
 		end
 		CombatManagerKw.popListMode();
 	end
-	return false;
+	return bResult;
 end
 
 function modTest(rSource, rTarget, rRoll)
