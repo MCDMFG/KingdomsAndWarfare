@@ -1,9 +1,8 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 local fGetNPCSourceType;
-local fHandleDrop;
 local fActionRoll;
 local fOnModuleLoad;
 
@@ -236,9 +235,6 @@ function onInit()
 	fGetNPCSourceType = NPCManager.getNPCSourceType;
 	NPCManager.getNPCSourceType = getNPCSourceType;
 
-	fHandleDrop = CampaignDataManager.handleDrop;
-	CampaignDataManager.handleDrop = handleUnitDropOnCT;
-
 	fActionRoll = ActionsManager.actionRoll;
 	ActionsManager.actionRoll = actionRoll;
 end
@@ -348,7 +344,7 @@ function getNPCSourceType(vNode)
 	if not sNodePath then
 		return "";
 	end
-	
+
 	local type = fGetNPCSourceType(vNode);
 
 	if type == "" then
@@ -358,25 +354,8 @@ function getNPCSourceType(vNode)
 			end
 		end
 	end
-		
+
 	return type;
-end
-
-function handleUnitDropOnCT(sTarget, draginfo)
-	local handled = fHandleDrop(sTarget, draginfo);
-
-	-- if not handled by something else, check if we're dropping a unit on the CT
-	if not handled then
-		if sTarget == "combattracker" then
-			local sClass, sRecord = draginfo.getShortcutData();
-			if sClass == "unit" or sClass == "reference_unit" then
-				-- For some reason draginfo.getDatabaseNode() isn't working here
-				handled = CombatManager.addNPC(sClass, DB.findNode(sRecord)) ~= nil;
-			end
-		end
-	end
-
-	return handled;
 end
 
 -- Big hack

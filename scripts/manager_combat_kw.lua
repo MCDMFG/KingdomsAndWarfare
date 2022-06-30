@@ -1,5 +1,5 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -7,10 +7,11 @@
 
 OOB_MSGTYPE_ACTIVATEUNIT = "activateunit";
 
-local fAddNPC;
-local fCustomAddPC;
+local fOnNPCPostAdd;
+local fGetCTFromNode;
+local fGetCTFromTokenRef;
 local fParseAttackLine;
-local parseNPCPower;
+local fParseNPCPower;
 
 LIST_MODE_NPC = 1;
 LIST_MODE_UNIT = 2;
@@ -19,11 +20,10 @@ local aModeStack = { LIST_MODE_NPC };
 
 function onInit()
 	CombatManager.setCustomGetCombatantNodes(getCombatantNodes);
-	fAddNPC = CombatManager2.addNPC;
-	CombatManager.setCustomAddNPC(addNpcOrUnit);
-	fAddPC = CombatManager.addPC;
-	CombatManager.addPC = addPC;
-	-- We don't use the setCustomAddPC() function because we don't want to replace the function, just add to it.
+	CombatRecordManager.setRecordTypeCallback("unit", addUnit);
+	fOnNPCPostAdd = CombatRecordManager.getRecordTypePostAddCallback("npc");
+	CombatRecordManager.setRecordTypePostAddCallback("npc", onNPCPostAdd);
+	CombatRecordManager.setRecordTypePostAddCallback("charsheet", onPCPostAdd);
 	CombatManager.setCustomTurnStart(onTurnStart);
 	CombatManager.setCustomTurnEnd(onTurnEnd);
 	CombatManager.setCustomRoundStart(onRoundStart);
@@ -142,52 +142,38 @@ function selectUnit(nodeUnit, nSlot)
 	end
 end
 
--- Override default add NPC function to handle Units.
-function addNpcOrUnit(sClass, nodeActor, sName)
-	local nodeEntry = nil;
-	if sClass == "npc" or sClass == "reference_npc" then
-		nodeEntry = addNpc(sClass, nodeActor, sName);
-	elseif sClass == "unit" or sClass == "reference_unit" then
-		nodeEntry = addUnit(sClass, nodeActor, sName);
+-- customize this so it triggers the BT when a PC is added
+function onPCPostAdd(tCustom)
+	-- Parameter validation
+	if tCustom.nodeCT then
+		return;
 	end
 
 	for fHandler,_ in pairs(combatantAddedHandlers) do
-		fHandler(nodeEntry);
-	end
-	
-	return nodeEntry;
-end
-
--- customize this so it triggers the BT when a PC is added
-function addPC(nodePC)
-	fAddPC(nodePC);
-
-	local ctnode = ActorManager.getCTNode(ActorManager.resolveActor(nodePC));
-	if ctnode then
-		for fHandler,_ in pairs(combatantAddedHandlers) do
-			fHandler(ctnode);
-		end
+		fHandler(tCustom.nodeCT);
 	end
 
-	return ctnode;
+
 end
 
 -- Temporary variables to allow adding a distinct effect for Souls without rewriting the whole addNpc flow.
 local sSoulsToAdd = nil;
 local bLetheImmune = false;
-function addNpc(sClass, nodeActor, sName)
-	local nodeEntry = fAddNPC(sClass, nodeActor, sName);
-	if nodeEntry and sSoulsToAdd then
-		SoulsManager.initializeSouls(nodeEntry, sSoulsToAdd, bLetheImmune)
+function onNPCPostAdd(tCustom)
+	fOnNPCPostAdd(tCustom);
+	if tCustom.nodeCT and sSoulsToAdd then
+		SoulsManager.initializeSouls(tCustom.nodeCT, sSoulsToAdd, bLetheImmune)
 	end
 	sSoulsToAdd = nil;
 	bLetheImmune = false;
 
 	if EffectManagerADND then
-		EffectManagerADND.updateCharEffects(nodeActor, nodeEntry);
+		EffectManagerADND.updateCharEffects(tCustom.nodeRecord, tCustom.nodeCT);
 	end
 
-	return nodeEntry;
+	for fHandler,_ in pairs(combatantAddedHandlers) do
+		fHandler(tCustom.nodeCT);
+	end
 end
 
 function parseNPCPower(rActor, nodePower, aEffects, bAllowSpellDataOverride)
@@ -256,8 +242,8 @@ function clearUnitDropCommander()
 	nodeDropCommander = nilo;
 end
 
-function addUnit(sClass, nodeUnit, sName)
-	if not nodeUnit then
+function addUnit(tCustom)
+	if not tCustom.nodeRecord then
 		return nil;
 	end
 
@@ -265,24 +251,24 @@ function addUnit(sClass, nodeUnit, sName)
 	local aCurrentCombatants = CombatManager.getCombatantNodes();
 
 	-- Get the name to use for this addition
-	local bIsCT = (UtilityManager.getRootNodeName(nodeUnit) == CombatManager.CT_MAIN_PATH);
+	local bIsCT = (UtilityManager.getRootNodeName(tCustom.nodeRecord) == CombatManager.CT_MAIN_PATH);
 	local sNameLocal = sName;
 	if not sNameLocal then
-		sNameLocal = DB.getValue(nodeUnit, "name", "");
+		sNameLocal = DB.getValue(tCustom.nodeRecord, "name", "");
 		if bIsCT then
 			sNameLocal = CombatManager.stripCreatureNumber(sNameLocal);
 		end
 	end
-	local sNonIDLocal = DB.getValue(nodeUnit, "nonid_name", "");
+	local sNonIDLocal = DB.getValue(tCustom.nodeRecord, "nonid_name", "");
 	if sNonIDLocal == "" then
 		sNonIDLocal = Interface.getString("library_recordtype_empty_nonid_npc");
 	elseif bIsCT then
 		sNonIDLocal = CombatManager.stripCreatureNumber(sNonIDLocal);
 	end
-	
-	local nLocalID = DB.getValue(nodeUnit, "isidentified", 1);
+
+	local nLocalID = DB.getValue(tCustom.nodeRecord, "isidentified", 1);
 	if not bIsCT then
-		local sSourcePath = nodeUnit.getPath()
+		local sSourcePath = tCustom.nodeRecord.getPath()
 		local aMatches = {};
 		for _,v in pairs(aCurrentCombatants) do
 			local _,sRecord = DB.getValue(v, "sourcelink", "", "");
@@ -299,7 +285,7 @@ function addUnit(sClass, nodeUnit, sName)
 			end
 		end
 	end
-	
+
 	local nodeLastMatch = nil;
 	if sNameLocal:len() > 0 then
 		-- Determine the number of Units with the same name
@@ -311,7 +297,7 @@ function addUnit(sClass, nodeUnit, sName)
 			local sTemp, sNumber = CombatManager.stripCreatureNumber(sEntryName);
 			if sTemp == sNameLocal then
 				nodeLastMatch = v;
-				
+
 				local nNumber = tonumber(sNumber) or 0;
 				if nNumber > 0 then
 					nNameHigh = math.max(nNameHigh, nNumber);
@@ -321,12 +307,12 @@ function addUnit(sClass, nodeUnit, sName)
 				end
 			end
 		end
-	
+
 		-- If multiple Units of same name, then figure out whether we need to adjust the name based on options
 		local sOptNNPC = OptionsManager.getOption("NNPC");
 		if sOptNNPC ~= "off" then
 			local nNameCount = #aMatchesWithNumber + #aMatchesToNumber;
-			
+
 			for _,v in ipairs(aMatchesToNumber) do
 				local sEntryName = DB.getValue(v, "name", "");
 				local sEntryNonIDName = DB.getValue(v, "nonid_name", "");
@@ -343,7 +329,7 @@ function addUnit(sClass, nodeUnit, sName)
 					DB.setValue(v, "nonid_name", "string", sEntryNonIDName .. " " .. nSuffix);
 				end
 			end
-			
+
 			if nNameCount > 0 then
 				if sOptNNPC == "append" then
 					nNameHigh = nNameHigh + 1;
@@ -357,43 +343,43 @@ function addUnit(sClass, nodeUnit, sName)
 			end
 		end
 	end
-	
+
 	DB.createNode(CombatManager.CT_LIST);
-	local nodeEntry = DB.createChild(CombatManager.CT_LIST);
-	if not nodeEntry then
+	tCustom.nodeCT = DB.createChild(CombatManager.CT_LIST);
+	if not tCustom.nodeCT then
 		return nil;
 	end
-	DB.copyNode(nodeUnit, nodeEntry);
+	DB.copyNode(tCustom.nodeRecord, tCustom.nodeCT);
 
 	-- Remove any combatant specific information
-	DB.setValue(nodeEntry, "active", "number", 0);
-	DB.setValue(nodeEntry, "tokenrefid", "string", "");
-	DB.setValue(nodeEntry, "tokenrefnode", "string", "");
-	DB.deleteChildren(nodeEntry, "effects");
-	
+	DB.setValue(tCustom.nodeCT, "active", "number", 0);
+	DB.setValue(tCustom.nodeCT, "tokenrefid", "string", "");
+	DB.setValue(tCustom.nodeCT, "tokenrefnode", "string", "");
+	DB.deleteChildren(tCustom.nodeCT, "effects");
+
 	-- Set the final name value
-	DB.setValue(nodeEntry, "name", "string", sNameLocal);
-	DB.setValue(nodeEntry, "nonid_name", "string", sNonIDLocal);
-	DB.setValue(nodeEntry, "isidentified", "number", nLocalID);
-	DB.setValue(nodeEntry, "tokenvis", "number", 1);
-	
+	DB.setValue(tCustom.nodeCT, "name", "string", sNameLocal);
+	DB.setValue(tCustom.nodeCT, "nonid_name", "string", sNonIDLocal);
+	DB.setValue(tCustom.nodeCT, "isidentified", "number", nLocalID);
+	DB.setValue(tCustom.nodeCT, "tokenvis", "number", 1);
+
 	-- Lock NPC record view by default when copying to CT
-	DB.setValue(nodeEntry, "locked", "number", 1);
+	DB.setValue(tCustom.nodeCT, "locked", "number", 1);
 
 	-- Set up the CT specific information
-	DB.setValue(nodeEntry, "link", "windowreference", "", ""); -- Workaround to force field update on client; client does not pass network update to other clients if setValue creates value node with default value
-	DB.setValue(nodeEntry, "link", "windowreference", "reference_unit", "");
-	DB.setValue(nodeEntry, "friendfoe", "string", "foe");
+	DB.setValue(tCustom.nodeCT, "link", "windowreference", "", ""); -- Workaround to force field update on client; client does not pass network update to other clients if setValue creates value node with default value
+	DB.setValue(tCustom.nodeCT, "link", "windowreference", "reference_unit", "");
+	DB.setValue(tCustom.nodeCT, "friendfoe", "string", "foe");
 	if not bIsCT then
-		DB.setValue(nodeEntry, "sourcelink", "windowreference", "reference_unit", nodeUnit.getPath());
+		DB.setValue(tCustom.nodeCT, "sourcelink", "windowreference", "reference_unit", tCustom.nodeRecord.getPath());
 	end
-	
+
 	-- Calculate space/reach
-	DB.setValue(nodeEntry, "space", "number", 1);
-	DB.setValue(nodeEntry, "reach", "number", 1);
+	DB.setValue(tCustom.nodeCT, "space", "number", 1);
+	DB.setValue(tCustom.nodeCT, "reach", "number", 1);
 
 	-- Set default letter token, if no token defined
-	local sToken = DB.getValue(nodeUnit, "token", "");
+	local sToken = DB.getValue(tCustom.nodeRecord, "token", "");
 	if sToken == "" or not Interface.isToken(sToken) then
 		local sLetter = StringManager.trim(sNameLocal):match("^([a-zA-Z])");
 		if sLetter then
@@ -401,36 +387,33 @@ function addUnit(sClass, nodeUnit, sName)
 		else
 			sToken = "tokens/Medium/z.png@Letter Tokens";
 		end
-		DB.setValue(nodeEntry, "token", "token", sToken);
+		DB.setValue(tCustom.nodeCT, "token", "token", sToken);
 	end
 
 	-- set casualty die (aka hit points)
-	local nHP = DB.getValue(nodeUnit, "casualties", 0);
-	DB.setValue(nodeEntry, "hptotal", "number", nHP);
+	local nHP = DB.getValue(tCustom.nodeRecord, "casualties", 0);
+	DB.setValue(tCustom.nodeCT, "hptotal", "number", nHP);
 
 	-- Add effects to the new ct node from the reference unit's effect list.
-	local aEffectsList = DB.getChildren(nodeUnit, "effects");
-	local aCTNodeEffects = nodeEntry.createChild("effects");
-	local aEffects = {};
+	local aEffectsList = DB.getChildren(tCustom.nodeRecord, "effects");
+	local aCTNodeEffects = tCustom.nodeCT.createChild("effects");
 	for _,v in pairs(aEffectsList) do
 		local effectNode = aCTNodeEffects.createChild();
 		DB.copyNode(v, effectNode);
 	end
 
 	-- Decode traits
-	local aTraits = DB.getChildren(nodeEntry, "traits");
+	local aTraits = DB.getChildren(tCustom.nodeCT, "traits");
 	for _,v in pairs(aTraits) do
-		parseUnitTrait(rActor, v);
+		parseUnitTrait(v);
 	end
 
 	-- try to find the Commander in the CT and use their initiative and faction
 	-- else leave initiative blank and faction = foe
-	local nodeCommander = nodeDropCommander or ActorManagerKw.getCommanderCT(nodeEntry);
-	configureUnitCommander(nodeEntry, nodeCommander);
+	local nodeCommander = nodeDropCommander or ActorManagerKw.getCommanderCT(tCustom.nodeCT);
+	configureUnitCommander(tCustom.nodeCT, nodeCommander);
 
-	DB.setValue(nodeEntry, "initresult", "number", calculateUnitInitiative());
-	
-	return nodeEntry;
+	DB.setValue(tCustom.nodeCT, "initresult", "number", calculateUnitInitiative());
 end
 
 function configureUnitCommander(nodeUnit, nodeCommander)
@@ -574,10 +557,10 @@ function activateUnit(nodeNext, bCommanderIsActive)
 	end
 end
 
-function parseUnitTrait(rUnit, nodeTrait)
+function parseUnitTrait(nodeTrait)
 	local sDisplay = DB.getValue(nodeTrait, "name", "");
 	local aDisplayOptions = {};
-	
+
 	local sName = StringManager.trim(sDisplay:lower());
 
 	-- Handle all the other traits and actions (i.e. look for recharge, attacks, damage, saves, reach, etc.)
@@ -592,9 +575,9 @@ function parseUnitTrait(rUnit, nodeTrait)
 				line = line .. " " .. DataCommon.ability_ltos[v.stat] .. "]"
 			else
 			end
-			
+
 			table.insert(aDisplayOptions, line);
-		
+
 		elseif v.type == "damage" then
 			local aDmgDisplay = {};
 			for _,vClause in ipairs(v.clauses) do
@@ -605,24 +588,24 @@ function parseUnitTrait(rUnit, nodeTrait)
 				table.insert(aDmgDisplay, sDmg);
 			end
 			table.insert(aDisplayOptions, string.format("[DMG: %s]", table.concat(aDmgDisplay, " + ")));
-			
+
 		elseif v.type == "heal" then
 			local aHealDisplay = {};
 			for _,vClause in ipairs(v.clauses) do
 				local sHeal = StringManager.convertDiceToString(vClause.dice, vClause.modifier);
 				table.insert(aHealDisplay, sHeal);
 			end
-			
+
 			local sHeal = table.concat(aHealDisplay, " + ");
 			if v.subtype then
 				sHeal = sHeal .. " " .. v.subtype;
 			end
-			
+
 			table.insert(aDisplayOptions, string.format("[HEAL: %s]", sHeal));
-		
+
 		elseif v.type == "effect" then
 			table.insert(aDisplayOptions, EffectManager5E.encodeEffectForCT(v));
-		
+
 		end
 
 		-- Remove recharge in title, and move to details
@@ -632,7 +615,7 @@ function parseUnitTrait(rUnit, nodeTrait)
 			table.insert(aDisplayOptions, "[R:" .. sRecharge .. "]");
 		end
 	end
-	
+
 	-- Set the value field to the short version
 	if #aDisplayOptions > 0 then
 		sDisplay = sDisplay .. " " .. table.concat(aDisplayOptions, " ");
