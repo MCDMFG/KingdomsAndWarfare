@@ -17,7 +17,7 @@ function onInit()
 	CombatManagerKw.registerUnitSelectionHandler(secondaryUnitSelected, 2);
 
 	-- Handle color changes
-	if Session.IsHost and UtilityManager.isClientFGU() then
+	if Session.IsHost then
 		User.onIdentityStateChange = onIdentityStateChange;
 	end
 

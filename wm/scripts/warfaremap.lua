@@ -1,5 +1,5 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -20,19 +20,8 @@ function onInit()
 		if toolbar and toolbar.subwindow then
 			toolbar.subwindow.toolbar_anchor.setAnchor("right", nil, "right", "absolute", -100);
 		end
-	else
-		if not UtilityManager.isClientFGU() then
-			registerMenuItem(Interface.getString("image_menu_size"), "imagesize", 3);
-			local x, y = image.getImageSize()
-			if (x > 500) or (y > 500) then
-				registerMenuItem(Interface.getString("image_menu_sizesmall"), "imagesizesmall", 3, 1)
-			end
-			registerMenuItem(Interface.getString("image_menu_sizeoriginal"), "imagesizeoriginal", 3, 2);
-			registerMenuItem(Interface.getString("image_menu_sizevertical"), "imagesizevertical", 3, 4);
-			registerMenuItem(Interface.getString("image_menu_sizehorizontal"), "imagesizehorizontal", 3, 5);
-		end
 	end
-	
+
 	saveImagePosition();
 
 	updateHeaderDisplay();
@@ -91,7 +80,7 @@ end
 
 function onTokenCountChanged()
 	updateToolbarDisplay();
-	
+
 	if not isPanel() then
 		local bHasTokens = image.hasTokens();
 		if _bLastHasTokens ~= bHasTokens then
@@ -109,17 +98,13 @@ end
 function updateImagePosition()
 	if not bImagePositionInitialized then return; end
 	if Session.IsHost then
-		if UtilityManager.isClientFGU() then
-			if WindowManager.getLockedState(getDatabaseNode()) then
-				image.setStaticBounds(nImageLeft, nImageTop, nImageRight, nImageBottom);
-				imagedata.setVisible(false);
-			else
-				image.setStaticBounds(nImageLeft, nImageTop, nImageRight - IMAGEDATA_WIDTH, nImageBottom);
-				imagedata.setVisible(true);
-				imagedata.setStaticBounds(nImageRight - IMAGEDATA_WIDTH, nImageTop, nImageRight, nImageBottom);
-			end
-		else
+		if WindowManager.getLockedState(getDatabaseNode()) then
 			image.setStaticBounds(nImageLeft, nImageTop, nImageRight, nImageBottom);
+			imagedata.setVisible(false);
+		else
+			image.setStaticBounds(nImageLeft, nImageTop, nImageRight - IMAGEDATA_WIDTH, nImageBottom);
+			imagedata.setVisible(true);
+			imagedata.setStaticBounds(nImageRight - IMAGEDATA_WIDTH, nImageTop, nImageRight, nImageBottom);
 		end
 	else
 		image.setStaticBounds(nImageLeft, nImageTop, nImageRight, nImageBottom);
@@ -147,7 +132,7 @@ end
 function updateToolbarVisibility(bShowToolbar)
 	if not bImagePositionInitialized then return; end
 	if not toolbar then return; end
-	
+
 	if isPanel() then
 		bShowToolbar = true;
 	end
@@ -175,7 +160,7 @@ end
 function onNameUpdated()
 	local nodeRecord = getDatabaseNode();
 	local bID = LibraryData.getIDState("image", nodeRecord);
-	
+
 	local sTooltip = "";
 	if bID then
 		sTooltip = DB.getValue(nodeRecord, "name", "");
@@ -236,7 +221,7 @@ function getWindowSizeAtSmallImageSize()
 	if h > SMALL_HEIGHT then
 		h = SMALL_HEIGHT;
 	end
-	
+
 	return w,h;
 end
 
@@ -260,7 +245,7 @@ function getWindowSizeAtOriginalImageSize()
 		w = w * fScaleH;
 		h = h * fScaleH;
 	end
-	
+
 	return w,h;
 end
 
@@ -274,7 +259,7 @@ function getWindowSizeAtOriginalHeight()
 
 	local w = cw + nMarginLeft + nMarginRight;
 	local h = ((ih/iw)*cw) + nMarginTop + nMarginBottom;
-	
+
 	return w,h;
 end
 
@@ -288,6 +273,6 @@ function getWindowSizeAtOriginalWidth()
 
 	local w = ((iw/ih)*ch) + nMarginLeft + nMarginRight;
 	local h = ch + nMarginTop + nMarginBottom;
-	
+
 	return w,h;
 end
