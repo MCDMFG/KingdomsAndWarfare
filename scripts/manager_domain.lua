@@ -14,9 +14,7 @@ function onInit()
 		DB.addHandler("partysheet.partyinformation.*.link", "onUpdate", onOfficerAdded);
 
 		-- Handle assigning prof and reaction checkboxes on the public party sheet
-		if UtilityManager.isClientFGU() then
-			User.onIdentityActivation = onIdentityActivation;
-		end
+		User.onIdentityActivation = onIdentityActivation;
 	end
 end
 
