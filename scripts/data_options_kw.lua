@@ -17,4 +17,6 @@ function registerOptions()
 	-- How should Demons' Souls be calculated when adding to the CT
 	OptionsManager.registerOption2("DSCT", false, "option_header_kw", "option_label_DSCT", "option_entry_cycler", 
 		{ labels = "option_val_max|option_val_random", values = "max|random", baselabel = "option_val_standard", baseval = "off", default = "off" });
+	OptionsManager.registerOption2("AAUS", false, "option_header_kw", "option_label_AAUS", "option_entry_cycler", 
+		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
 end

@@ -153,7 +153,6 @@ end
 
 function handleApplyDamage(msgOOB)
 	CombatManagerKw.pushListMode(CombatManagerKw.LIST_MODE_BOTH);
-	Debug.chat(msgOOB);
 	fHandleApplyDamage(msgOOB);
 	CombatManagerKw.popListMode();
 end

@@ -142,3 +142,263 @@ colors = {
 	["FF6600D2"] = true,
 	["FFFF7D04"] = true,
 }
+
+unit_experience = {
+	["infantry"] = {
+		["levies"] = {
+			["numberOfAttacks"] = 0,
+			["attack"] = -1,
+			["defense"] = -2,
+			["morale"] = -2,
+			["command"]= -1,
+		},
+		["regular"] = {
+			["numberOfAttacks"] = 0,
+			["attack"] = 0,
+			["defense"] = 0,
+			["morale"] = 0,
+			["command"]= 1,
+		},
+		["veteran"]= {
+			["numberOfAttacks"] = 0,
+			["attack"] = 1,
+			["defense"] = 2,
+			["morale"] = 2,
+			["command"]= 2,
+		},
+		["elite"] = {
+			["numberOfAttacks"] = 1,
+			["attack"] = 2,
+			["defense"] = 4,
+			["morale"] = 4,
+			["command"]= 2,
+		},
+		["super-elite"] = {
+			["numberOfAttacks"] = 1,
+			["attack"] = 3,
+			["defense"] = 6,
+			["morale"] = 6,
+			["command"]= 3,
+		},
+	},
+	["cavalry"] = {
+		["levies"] = {
+			["numberOfAttacks"] = 0,
+			["attack"] = 0,
+			["defense"] = 0,
+			["morale"] = 0,
+			["command"]= 0,
+		},
+		["regular"] = {
+			["numberOfAttacks"] = 0,
+			["attack"] = 0,
+			["defense"] = 0,
+			["morale"] = 0,
+			["command"]= 0,
+		},
+		["veteran"]= {
+			["numberOfAttacks"] = 0,
+			["attack"] = 1,
+			["defense"] = 1,
+			["morale"] = 1,
+			["command"]= 2,
+		},
+		["elite"] = {
+			["numberOfAttacks"] = 1,
+			["attack"] = 2,
+			["defense"] = 2,
+			["morale"] = 2,
+			["command"]= 4,
+		},
+		["super-elite"] = {
+			["numberOfAttacks"] = 1,
+			["attack"] = 3,
+			["defense"] = 3,
+			["morale"] = 3,
+			["command"]= 6,
+		},
+	},
+	["aerial"] = {
+		["levies"] = {
+			["numberOfAttacks"] = 0,
+			["attack"] = 0,
+			["defense"] = 0,
+			["morale"] = 0,
+			["command"]= 0,
+		},
+		["regular"] = {
+			["numberOfAttacks"] = 0,
+			["attack"] = 0,
+			["defense"] = 0,
+			["morale"] = 0,
+			["command"]= 0,
+		},
+		["veteran"]= {
+			["numberOfAttacks"] = 0,
+			["attack"] = 1,
+			["defense"] = 1,
+			["morale"] = 1,
+			["command"]= 2,
+		},
+		["elite"] = {
+			["numberOfAttacks"] = 1,
+			["attack"] = 2,
+			["defense"] = 2,
+			["morale"] = 2,
+			["command"]= 4,
+		},
+		["super-elite"] = {
+			["numberOfAttacks"] = 1,
+			["attack"] = 3,
+			["defense"] = 3,
+			["morale"] = 3,
+			["command"]= 6,
+		},
+	},
+	["artillery"] = {
+		["levies"] = {
+			["numberOfAttacks"] = 0,
+			["attack"] = 0,
+			["defense"] = 0,
+			["morale"] = 0,
+			["command"]= 0,
+		},
+		["regular"] = {
+			["numberOfAttacks"] = 0,
+			["attack"] = 0,
+			["defense"] = 0,
+			["morale"] = 0,
+			["command"]= 0,
+		},
+		["veteran"]= {
+			["numberOfAttacks"] = 1,
+			["attack"] = 2,
+			["defense"] = 1,
+			["morale"] = 1,
+			["command"]= 1,
+		},
+		["elite"] = {
+			["numberOfAttacks"] = 1,
+			["attack"] = 4,
+			["defense"] = 2,
+			["morale"] = 2,
+			["command"]= 2,
+		},
+		["super-elite"] = {
+			["numberOfAttacks"] = 1,
+			["attack"] = 6,
+			["defense"] = 3,
+			["morale"] = 3,
+			["command"]= 3,
+		},
+	}
+}
+
+unit_equipment = {
+	["infantry"] = {
+		["light"] = {
+			["power"] = 0,
+			["toughness"] = 0,
+			["damage"] = 0
+		},
+		["medium"] = {
+			["power"] = 2,
+			["toughness"] = 2,
+			["damage"] = 0
+		},
+		["heavy"] = {
+			["power"] = 4,
+			["toughness"] = 4,
+			["damage"] = 0
+		},
+		["super-heavy"] = {
+			["power"] = 6,
+			["toughness"] = 6,
+			["damage"] = 1
+		}
+	},
+	["cavalry"] = {
+		["light"] = {
+			["power"] = 0,
+			["toughness"] = 0,
+			["damage"] = 0
+		},
+		["medium"] = {
+			["power"] = 1,
+			["toughness"] = 1,
+			["damage"] = 0
+		},
+		["heavy"] = {
+			["power"] = 2,
+			["toughness"] = 2,
+			["damage"] = 0
+		},
+		["super-heavy"] = {
+			["power"] = 3,
+			["toughness"] = 3,
+			["damage"] = 1
+		}
+	},
+	["aerial"] = {
+		["light"] = {
+			["power"] = 0,
+			["toughness"] = 0,
+			["damage"] = 0
+		},
+		["medium"] = {
+			["power"] = 1,
+			["toughness"] = 1,
+			["damage"] = 0
+		},
+		["heavy"] = {
+			["power"] = 2,
+			["toughness"] = 2,
+			["damage"] = 0
+		},
+		["super-heavy"] = {
+			["power"] = 3,
+			["toughness"] = 3,
+			["damage"] = 1
+		}
+	},
+	["artillery"] = {
+		["light"] = {
+			["power"] = 0,
+			["toughness"] = 0,
+			["damage"] = 0
+		},
+		["medium"] = {
+			["power"] = 1,
+			["toughness"] = 1,
+			["damage"] = 0
+		},
+		["heavy"] = {
+			["power"] = 2,
+			["toughness"] = 2,
+			["damage"] = 0
+		},
+		["super-heavy"] = {
+			["power"] = 3,
+			["toughness"] = 3,
+			["damage"] = 0
+		}
+	}
+}
+
+function getUnitExperienceStats(sUnitType, sExperience)
+	local unit = unit_experience[sUnitType:lower()];
+	if unit and unit[sExperience:lower()] then
+		return unit[sExperience:lower()];
+	end
+
+	return nil;
+end
+
+function getUnitEquipmentStats(sUnitType, sEquipment)
+	local unit = unit_equipment[sUnitType:lower()];
+	if unit and unit[sEquipment:lower()] then
+		return unit[sEquipment:lower()];
+	end
+
+	return nil;
+end
