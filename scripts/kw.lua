@@ -230,7 +230,7 @@ function onInit()
 	TokenManager.addEffectTagIconSimple("GRANTDISPOW", "cond_advantage");
 	TokenManager.addEffectTagIconSimple("GRANTADVPOW", "cond_disadvantage");
 
-	LibraryData.setCustomData("battle", "acceptdrop", { "unit", "reference_unit" });
+	LibraryData.setCustomData("battle", "acceptdrop", { "unit", "reference_unit", "npc" });
 
 	fGetNPCSourceType = NPCManager.getNPCSourceType;
 	NPCManager.getNPCSourceType = getNPCSourceType;

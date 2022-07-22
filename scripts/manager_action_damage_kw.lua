@@ -153,27 +153,30 @@ end
 
 function handleApplyDamage(msgOOB)
 	CombatManagerKw.pushListMode(CombatManagerKw.LIST_MODE_BOTH);
+	Debug.chat(msgOOB);
 	fHandleApplyDamage(msgOOB);
 	CombatManagerKw.popListMode();
 end
 
 -- Fork the data flow here so that updates to the 5e ruleset don't break all damage
 -- it only risks breaking this extensions handling of unit damage.
-function applyDamage(rSource, rTarget, bSecret, sDamage, nTotal)
+function applyDamage(rSource, rTarget, rRoll)
 	local nodeTarget = ActorManager.getCTNode(rTarget);
 	local bIsUnit = ActorManagerKw.isUnit(nodeTarget);
 	if bIsUnit then
-		applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
+		applyDamageToUnit(rSource, rTarget, rRoll)
 	else
-		fApplyDamage(rSource, rTarget, bSecret, sDamage, nTotal);
+		fApplyDamage(rSource, rTarget, rRoll);
 	end
 end
 
 -- Trimmed down version of the applyDamge function. Got rid of most of the extraneous stuff:
 -- like concentration, half damage, avoidance, death saves, recovery, etc.
-function applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
+function applyDamageToUnit(rSource, rTarget, rRoll)
 	-- Get health fields
 	local nTotalHP, nTempHP, nWounds;
+	sDamage = rRoll.sDesc;
+	nTotal = rRoll.nTotal;
 
 	local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
 	if not nodeTarget then
@@ -339,7 +342,11 @@ function applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
 	end
 	
 	-- Output results
-	ActionDamage.messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(rDamageOutput.tNotifications, " "));
+	rRoll.sDamageText = rDamageOutput.sTypeOutput;
+	rRoll.nTotal = tonumber(rDamageOutput.sVal) or 0;
+	rRoll.sResults = table.concat(rDamageOutput.tNotifications, " ");
+	-- ActionDamage.messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(rDamageOutput.tNotifications, " "));
+	ActionDamage.messageDamage(rSource, rTarget, rRoll);
 
 	if nWounds >= nTotalHP then
 		--handleEndure(rSource, rTarget, rDamageOutput)

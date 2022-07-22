@@ -69,9 +69,9 @@
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/unit_header.lua" />
 		<sheetdata>
-			<link_record_header_id name="link">
+			<link_record_header name="link">
 				<class>reference_unit</class>
-			</link_record_header_id>
+			</link_record_header>
 			
 			<anchor_record_header_right name="rightanchor" />
 			<button_activateid>
