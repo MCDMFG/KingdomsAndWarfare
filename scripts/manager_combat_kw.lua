@@ -145,15 +145,13 @@ end
 -- customize this so it triggers the BT when a PC is added
 function onPCPostAdd(tCustom)
 	-- Parameter validation
-	if tCustom.nodeCT then
+	if not tCustom.nodeCT then
 		return;
 	end
 
 	for fHandler,_ in pairs(combatantAddedHandlers) do
 		fHandler(tCustom.nodeCT);
 	end
-
-
 end
 
 -- Temporary variables to allow adding a distinct effect for Souls without rewriting the whole addNpc flow.
