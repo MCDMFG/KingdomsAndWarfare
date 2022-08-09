@@ -266,8 +266,22 @@
 			<cycler_columnh name="experience">
 				<anchored width="150" />
 				<script>
+					local fCycleLabel;
+					local sPrevValue;
+					function onInit()
+						super.onInit();
+						fCycleLabel = super.super.cycleLabel;
+						super.super.cycleLabel = cycleLabel;
+					end
+					function cycleLabel(bBackward)
+						if getValue() ~= "-" then
+							sPrevValue = getValue();
+						end
+						fCycleLabel(bBackward)
+					end
 					function onValueChanged()
 						window.onSummaryChanged();
+						window.updateExperience(sPrevValue, getValue());
 					end
 				</script>
 				<parameters>
@@ -284,8 +298,22 @@
 			<cycler_columnh name="armor">
 				<anchored width="150" />
 				<script>
+					local fCycleLabel;
+					local sPrevValue;
+					function onInit()
+						super.onInit();
+						fCycleLabel = super.super.cycleLabel;
+						super.super.cycleLabel = cycleLabel;
+					end
+					function cycleLabel(bBackward)
+						if getValue() ~= "-" then
+							sPrevValue = getValue();
+						end
+						fCycleLabel(bBackward)
+					end
 					function onValueChanged()
 						window.onSummaryChanged();
+						window.updateArmor(sPrevValue, getValue());
 					end
 				</script>
 				<parameters>
@@ -314,8 +342,22 @@
 			<cycler_columnh name="type">
 				<anchored width="150" />
 				<script>
+					local fCycleLabel;
+					local sPrevValue;
+					function onInit()
+						super.onInit();
+						fCycleLabel = super.super.cycleLabel;
+						super.super.cycleLabel = cycleLabel;
+					end
+					function cycleLabel(bBackward)
+						if getValue() ~= "-" then
+							sPrevValue = getValue();
+						end
+						fCycleLabel(bBackward)
+					end
 					function onValueChanged()
 						window.onSummaryChanged();
+						window.updateType(sPrevValue, getValue());
 					end
 				</script>
 				<parameters>
