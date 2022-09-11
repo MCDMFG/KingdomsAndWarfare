@@ -187,20 +187,31 @@
 				</anchored>
 			</unitsummary_divider>
 
-			<label_ct_actions name="traits_label">
-				<anchored merge="replace" width="40">
+			<label name="traits_label">
+				<anchored width="40">
 					<left parent="contentanchor" />
 					<top parent="divider2" offset="5" />
 				</anchored>
 				<static textres="ct_label_traits" />
-			</label_ct_actions>
-			<list_ct_actions name="traits">
+			</label>
+			<windowlist name="traits">
 				<anchored merge="replace" to="traits_label" position="righthigh" offset="5,0">
 					<right parent="" offset="-10" />
 				<sizelimits><minimum height="20" /></sizelimits>
 				</anchored>
 				<datasource>.traits</datasource>
-			</list_ct_actions>
+				<class>ct_power</class>
+				<noscroll />
+				<script>
+					function addEntry()
+						local w = createWindow();
+						w.value.setFocus(true);
+					end
+					function onListChanged()
+						window.setActiveVisible();
+					end
+				</script>
+			</windowlist>
 			
 			<unitsummary_divider name="divider3">
 				<anchored>
