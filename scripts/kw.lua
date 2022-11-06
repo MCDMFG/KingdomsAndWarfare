@@ -358,6 +358,14 @@ function getNPCSourceType(vNode)
 	return type;
 end
 
+-- Invokes the provided function with DataCommon.abilities set to aBaseAbilities;
+function invokeWithBaseAbilities(fInvoke, ...)
+	local fullAbilities = DataCommon.abilities;
+	DataCommon.abilities = aBaseAbilities;
+	fInvoke(...);
+	DataCommon.abilities = fullAbilities;
+end
+
 -- Big hack
 -- Add a check so that we can bail early (if targeting a harrowing creature with an attack)
 function actionRoll(rSource, vTarget, rRolls)

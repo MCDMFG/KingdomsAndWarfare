@@ -3,17 +3,11 @@
 -- attribution and copyright information.
 --
 
-local onValueChangedOriginal;
-
 function onInit()
-	onValueChangedOriginal = super.onValueChanged;
-	super.onValueChanged = onValueChanged;
-	super.onInit();
-end
+	local onValueChanged = super.onValueChanged;
+	super.onValueChanged = function(...)
+		KingdomsAndWarfare.invokeWithBaseAbilities(onValueChanged, ...);
+	end
 
-function onValueChanged()
-	local fullAbilities = DataCommon.abilities;
-	DataCommon.abilities = KingdomsAndWarfare.aBaseAbilities;
-	onValueChangedOriginal();
-	DataCommon.abilities = fullAbilities;
+	super.onInit();
 end
