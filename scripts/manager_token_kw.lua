@@ -16,6 +16,7 @@ DEFAULT_COLOR = "FFFFFFFF";
 local fUpdateEffectsHelper;
 local fUpdateSizeHelper;
 local fUpdateTokenColor;
+local fLinkToken;
 
 function onInit()
 	fUpdateEffectsHelper = TokenManager.updateEffectsHelper;
@@ -24,6 +25,8 @@ function onInit()
 	TokenManager.updateSizeHelper = updateSizeHelper;
 	fUpdateTokenColor = TokenManager.updateTokenColor;
 	TokenManager.updateTokenColor = updateTokenColor;
+	fLinkToken = TokenManager.linkToken;
+	TokenManager.linkToken = linkToken;
 
 	TokenManager.registerWidgetSet("state", { "action", "reaction" });
 	TokenManager.registerWidgetSet("exposed", { "exposed", "reaction" });
@@ -65,6 +68,11 @@ function updateTokenColor(token)
 	else
 		fUpdateTokenColor(token);
 	end
+end
+
+function linkToken(nodeCT, newTokenInstance)
+	fLinkToken(nodeCT, newTokenInstance);
+	ImageManagerKw.configureSelection(newTokenInstance);
 end
 
 --==================================================================================--
