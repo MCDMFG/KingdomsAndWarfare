@@ -33,7 +33,7 @@ function onDrop(x, y, draginfo)
 			DB.setValue(vNew, "desc", "string", sText);
 			DB.setValue(vNew, "locked", "number", 1);
 
-			CombatManagerKw.parseUnitTrait(rUnit, vNew)
+			CombatManagerKw.parseUnitTrait(vNew)
 
 			CharManager.outputUserMessage("unit_traits_message_traitadd", sName, DB.getValue(unit, "name", ""));
 

@@ -556,6 +556,7 @@ function activateUnit(nodeNext, bCommanderIsActive)
 end
 
 function parseUnitTrait(nodeTrait)
+	Debug.chat(nodeTrait)
 	local sDisplay = DB.getValue(nodeTrait, "name", "");
 	local aDisplayOptions = {};
 
