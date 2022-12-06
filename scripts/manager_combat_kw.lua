@@ -8,6 +8,7 @@
 OOB_MSGTYPE_ACTIVATEUNIT = "activateunit";
 
 local fOnNPCPostAdd;
+local fOnPCPostAdd
 local fGetCTFromNode;
 local fGetCTFromTokenRef;
 local fParseAttackLine;
@@ -23,6 +24,7 @@ function onInit()
 	CombatRecordManager.setRecordTypeCallback("unit", addUnit);
 	fOnNPCPostAdd = CombatRecordManager.getRecordTypePostAddCallback("npc");
 	CombatRecordManager.setRecordTypePostAddCallback("npc", onNPCPostAdd);
+	fOnPCPostAdd = CombatRecordManager.getRecordTypePostAddCallback("charsheet");
 	CombatRecordManager.setRecordTypePostAddCallback("charsheet", onPCPostAdd);
 	CombatManager.setCustomTurnStart(onTurnStart);
 	CombatManager.setCustomTurnEnd(onTurnEnd);
@@ -144,6 +146,10 @@ end
 
 -- customize this so it triggers the BT when a PC is added
 function onPCPostAdd(tCustom)
+	if fOnPCPostAdd then
+		fOnPCPostAdd(tCustom);
+	end
+
 	-- Parameter validation
 	if not tCustom.nodeCT then
 		return;
@@ -158,7 +164,10 @@ end
 local sSoulsToAdd = nil;
 local bLetheImmune = false;
 function onNPCPostAdd(tCustom)
-	fOnNPCPostAdd(tCustom);
+	if fOnNPCPostAdd then
+		fOnNPCPostAdd(tCustom);
+	end
+
 	if tCustom.nodeCT and sSoulsToAdd then
 		SoulsManager.initializeSouls(tCustom.nodeCT, sSoulsToAdd, bLetheImmune)
 	end
