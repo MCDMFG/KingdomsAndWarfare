@@ -14,17 +14,17 @@ function onInit()
 	ActionsManager.registerModHandler("attack", modAttack);
 
 	fModCheck = ActionCheck.modRoll;
-	ActionAttack.modRoll = modCheck;
+	ActionCheck.modRoll = modCheck;
 	ActionsManager.registerModHandler("check", modCheck);
 
 	fModSave = ActionSave.modSave;
-	ActionAttack.modSave = modSave;
+	ActionSave.modSave = modSave;
 	ActionsManager.registerModHandler("save", modSave);
 
 	fModSkill = ActionSkill.modRoll;
-	ActionAttack.modRoll = modSkill;
+	ActionSkill.modRoll = modSkill;
 	ActionsManager.registerModHandler("skill", modSkill);
-	
+
 	ActionsManager.registerResultHandler("souls", onSouls);
 end
 
@@ -79,7 +79,7 @@ function modAttack(rSource, rTarget, rRoll)
 
 	addLetheTag(rRoll);
 
-	local _,bDIS = clearAdvantage(rRoll);	
+	local _,bDIS = clearAdvantage(rRoll);
 	ActionsManager2.encodeAdvantage(rRoll, true, bDIS);
 end
 
@@ -106,7 +106,7 @@ function modSave(rSource, rTarget, rRoll)
 		bDIS = true;
 		addLetheTag(rRoll);
 	end
-	
+
 	ActionsManager2.encodeAdvantage(rRoll, bADV, bDIS);
 end
 
@@ -115,16 +115,15 @@ function modSkill(rSource, rTarget, rRoll)
 	modIntelligence(rSource, rTarget, rRoll);
 end
 
-function modIntelligence(rSource, rTarget, rRoll)
+function modIntelligence(rSource, _, rRoll)
 	if not rSource then
 		return;
 	end
 	if not EffectManager5E.hasEffectCondition(rSource, "Lethe") then
 		return;
 	end
-	
+
 	-- Get ability used
-	local sActionStat = nil;
 	local sAbility = string.match(rRoll.sDesc, "%[CHECK%] (%w+)");
 	if not sAbility then
 		sAbility = rRoll.sDesc:match("%[SAVE%] (%w+)");
@@ -179,7 +178,7 @@ function clearAdvantage(rRoll)
 		bDIS = true;
 		rRoll.sDesc = rRoll.sDesc:gsub(" %[DIS%]", "");
 	end
-	
+
 	if (bADV and not bDIS) or (bDIS and not bADV) then
 		if #(rRoll.aDice) > 1 then
 			table.remove(rRoll.aDice, 2);
@@ -195,12 +194,12 @@ function addLetheTag(rRoll)
 	end
 end
 
-function getRoll(rActor, rAction)
+function getRoll(_, rAction)
 	local rRoll = {};
 	rRoll.sType = "souls";
 	rRoll.aDice = rAction.aDice;
 	rRoll.nMod = rAction.nMod;
-	
+
 	-- Build description
 	rRoll.sDesc = "[SOULS";
 	if rAction.order and rAction.order > 1 then
@@ -226,19 +225,19 @@ function applyOngoingSouls(nodeActor, nodeEffect, rEffectComp)
 	if #(rEffectComp.dice) == 0 and rEffectComp.mod == 0 then
 		return;
 	end
-	
+
 	local rActor = ActorManager.resolveActor(nodeActor);
-	
+
 	local rAction = {};
 	rAction.label = "Ongoing Souls";
 	rAction.aDice = rEffectComp.dice;
 	rAction.nMod = rEffectComp.mod;
-	
+
 	local rRoll = getRoll(rActor, rAction);
 	if EffectManager.isGMEffect(nodeActor, nodeEffect) then
 		rRoll.bSecret = true;
 	end
-	
+
 	ActionsManager.actionDirect(nil, "souls", { rRoll }, { { rActor } });
 end
 
