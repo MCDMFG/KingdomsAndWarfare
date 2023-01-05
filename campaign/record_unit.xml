@@ -198,7 +198,7 @@
 					end
 
 					function onCommanderNameChanged(nodeUpdated)
-						local sName = nodeUpdated.getValue();
+						local sName = DB.getValue(nodeUpdated);
 						window.commander.setValue(sName);
 					end
 				</script>

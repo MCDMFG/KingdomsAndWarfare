@@ -226,9 +226,9 @@
 			function createAction(sType)
 				local nodeAttack = getDatabaseNode();
 				if nodeAttack then
-					local nodeActions = nodeAttack.createChild("actions");
+					local nodeActions = DB.createChild(nodeAttack, "actions");
 					if nodeActions then
-						local nodeAction = nodeActions.createChild();
+						local nodeAction = DB.createChild(nodeActions);
 						if nodeAction then
 							DB.setValue(nodeAction, "type", "string", sType);
 						end

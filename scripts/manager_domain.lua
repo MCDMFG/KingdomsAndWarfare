@@ -48,10 +48,10 @@ function onOfficerAdded(nodeLink)
 		return;
 	end
 
-	local sClass, sRecord = nodeLink.getValue();
+	local sClass, sRecord = DB.getValue(nodeLink);
 	if sClass == "charsheet" and sRecord then
 		local nodePC = DB.findNode(sRecord);
-		local sOwner = nodePC.getOwner();
+		local sOwner = DB.getOwner(nodePC);
 		if sOwner ~= "" then
 			setPartySheetOwner(DB.getChild(nodeLink, ".."), sOwner);
 		end

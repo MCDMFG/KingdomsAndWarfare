@@ -405,7 +405,7 @@ function addUnit(tCustom)
 	local aEffectsList = DB.getChildren(tCustom.nodeRecord, "effects");
 	local aCTNodeEffects = tCustom.nodeCT.createChild("effects");
 	for _,v in pairs(aEffectsList) do
-		local effectNode = aCTNodeEffects.createChild();
+		local effectNode = DB.createChild(aCTNodeEffects);
 		DB.copyNode(v, effectNode);
 	end
 

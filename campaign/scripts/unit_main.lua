@@ -21,13 +21,13 @@ function onDrop(x, y, draginfo)
 				return true;
 			end
 			local sText = DB.getText(traitnode, "text", "");
-			local nodeList = unit.createChild("traits");
+			local nodeList = DB.createChild("traits");
 			if not nodeList then
 				return true;
 			end
 
 			-- Add the item
-			local vNew = nodeList.createChild();
+			local vNew = DB.createChild(nodeList);
 
 			DB.setValue(vNew, "name", "string", sName);
 			DB.setValue(vNew, "desc", "string", sText);
@@ -40,13 +40,13 @@ function onDrop(x, y, draginfo)
 			update();
 
 			-- Handle trait effects
-			local nodeEffects = unit.createChild("effects");
+			local nodeEffects = DB.createChild(unit, "effects");
 			if not nodeEffects then
 				return true;
 			end
 
 			for k,effectNode in pairs(DB.getChildren(traitnode, "uniteffects")) do
-				local vNewEffect = nodeEffects.createChild();
+				local vNewEffect = DB.createChild(nodeEffects);
 				DB.copyNode(effectNode, vNewEffect);
 			end
 

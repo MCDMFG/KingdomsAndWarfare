@@ -35,21 +35,21 @@ function addTitleDB(nodeChar, sClass, sRecord)
 	end
 
 	-- Get the list we are going to add to
-	local nodeList = nodeChar.createChild("featurelist");
+	local nodeList = DB.createChild(nodeChar, "featurelist");
 	if not nodeList then
 		return false;
 	end
 	
 	-- Make sure this item does not already exist
 	local sName = DB.getValue(nodeSource, "titlename", "");
-	for _,v in pairs(nodeList.getChildren()) do
+	for _,v in pairs(DB.getChildren(nodeList)) do
 		if DB.getValue(v, "name", "") == sName then
 			return false;
 		end
 	end
 
 	-- Add the item
-	local vNew = nodeList.createChild();
+	local vNew = DB.createChild(nodeList);
 	DB.copyNode(nodeSource, vNew);
 	DB.setValue(vNew, "name", "string", sName);
 	DB.setValue(vNew, "locked", "number", 1);
@@ -66,21 +66,21 @@ function addMartialAdvantageDB(nodeChar, sClass, sRecord, bSkipAction)
 	end
 
 	-- Get the list we are going to add to
-	local nodeList = nodeChar.createChild("martialadvantages");
+	local nodeList = DB.createChild(nodeChar, "martialadvantages");
 	if not nodeList then
 		return false;
 	end
 	
 	-- Make sure this item does not already exist
 	local sName = DB.getValue(nodeSource, "name", "");
-	for _,v in pairs(nodeList.getChildren()) do
+	for _,v in pairs(DB.getChildren(nodeList)) do
 		if DB.getValue(v, "name", "") == sName then
 			return false;
 		end
 	end
 
 	-- Add the item
-	local vNew = nodeList.createChild();
+	local vNew = DB.createChild(nodeList);
 	DB.copyNode(nodeSource, vNew);
 	DB.setValue(vNew, "locked", "number", 1);
 

@@ -197,9 +197,9 @@ function hasHarrowingTrait(rUnit)
 	if not unitNode then 
 		return false;
 	end
-	local traits = unitNode.getChild("traits");
+	local traits = DB.getChild(unitNode, "traits");
 	if traits then
-		for k,v in pairs(traits.getChildren(traits.getChildren())) do
+		for k,v in pairs(DB.getChildren(traits)) do
 			local traitName = DB.getValue(v, "name", "");
 			if traitName:lower() == "harrowing" then
 				return true;

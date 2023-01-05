@@ -46,7 +46,7 @@ function setLink(tokenLinked)
 	if tokenLinked then
 		local nodeContainer = tokenLinked.getContainerNode();
 		if nodeContainer then
-			imageref.setValue("imagewindow", nodeContainer.getPath());
+			imageref.setValue("imagewindow", DB.getPath(nodeContainer));
 			imageid.setValue(tokenLinked.getId());
 
 			local x,y = tokenLinked.getPosition();

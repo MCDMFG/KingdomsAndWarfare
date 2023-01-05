@@ -59,7 +59,7 @@ function loadActionData(sPowerName, nodePower)
 	-- Only process if there are no actions already added
 	if DB.getChildCount(nodePower, "actions") == 0 then
 		if DataKW.domainpowers[sNameLower] then
-			local nodeActions = nodePower.createChild("actions");
+			local nodeActions = createChild(nodePower, "actions");
 
 			-- the added flag only exists here because a power COULD have effects, but if aura effects
 			-- isn't loaded, then it won't add. So we want to make sure we don't print the 'added' message

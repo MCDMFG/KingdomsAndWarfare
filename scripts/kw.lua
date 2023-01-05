@@ -315,7 +315,7 @@ function addFortification(aForts, sName, nDef, nPow, nMor, aTokens)
 		return;
 	end
 	local fort = DB.createChild("warfare.fortifications");
-	fort.setPublic(true);
+	DB.setPublic(fort, true);
 
 	DB.setValue(fort, "name", "string", sName);
 	DB.setValue(fort, "defense", "number", nDef);
@@ -323,13 +323,13 @@ function addFortification(aForts, sName, nDef, nPow, nMor, aTokens)
 	DB.setValue(fort, "morale", "number", nMor);
 
 	local tokens = DB.createChild(fort, "tokens");
-	tokens.setPublic(true);
+	DB.setPublic(tokens, true);
 
 	for _,token in pairs(aTokens) do
-		local parentNode = tokens.createChild();
-		parentNode.setPublic(true);
-		local tokenNode = parentNode.createChild("token", "token");
-		tokenNode.setValue(token)
+		local parentNode = DB.createChild(tokens);
+		DB.setPublic(parentNode, true);
+		local tokenNode = DB.createChild(parentNode, "token", "token");
+		DB.setValue(tokenNode, token);
 	end
 end
 
@@ -337,7 +337,7 @@ end
 function getNPCSourceType(vNode)
 	local sNodePath = nil;
 	if type(vNode) == "databasenode" then
-		sNodePath = vNode.getPath();
+		sNodePath = DB.getPath(vNode);
 	elseif type(vNode) == "string" then
 		sNodePath = vNode;
 	end
@@ -443,24 +443,27 @@ function addDomainToPartySheet(domainNode)
 
 	-- Powers
 	local powerNode = DB.getChild(domainNode, "powers");
+	local partySheetPowerNode = DB.createChild(partysheet, "powers");
 	for _,power in pairs(DB.getChildren(powerNode)) do
-		local newPower = partysheet.createChild("powers").createChild()
+		local newPower = DB.createChild(partySheetPowerNode)
 		DB.setValue(newPower, "name", "string", DB.getValue(power, "name", ""))
 		DB.setValue(newPower, "desc", "formattedtext", DB.getValue(power, "desc", ""))
 	end
 
 	-- Features
 	local featureNode = DB.getChild(domainNode, "features");
+	local partySheetFeatureNode = DB.createChild(partysheet, "features");
 	for _,feature in pairs(DB.getChildren(featureNode)) do
-		local newFeature = partysheet.createChild("features").createChild()
+		local newFeature = DB.createChild(partySheetFeatureNode)
 		DB.setValue(newFeature, "name", "string", DB.getValue(feature, "name", ""))
 		DB.setValue(newFeature, "desc", "formattedtext", DB.getValue(feature, "desc", ""))
 	end
 
 	-- Power pool
 	local powerpoolNode = DB.getChild(domainNode, "powerpool");
+	local partySheetPowerPoolNode = DB.createChild(partysheet, "powerpool")
 	for _,die in pairs(DB.getChildren(powerpoolNode)) do
-		local newDie = partysheet.createChild("powerpool").createChild()
+		local newDie = DB.createChild(partySheetPowerPoolNode)
 		DB.copyNode(die, newDie);
 	end
 end
@@ -470,11 +473,11 @@ function addDefaultActionsToPartySheetPowers()
 	if not partysheet then
 		return;
 	end
-	local powers = partysheet.getChild("powers");
+	local powers = DB.getChild(partysheet, "powers");
 	if not powers then
 		return;
 	end
-	for k,powernode in pairs(powers.getChildren()) do
+	for k,powernode in pairs(DB.getChildren(powers)) do
 		local powername = DB.getValue(powernode, "name", "");
 		if powernode and (powername or "") ~= "" then
 			loadActionData(powername, powernode)
@@ -492,7 +495,7 @@ function loadActionData(sPowerName, nodePower)
 	-- Only process if there are no actions already added
 	if DB.getChildCount(nodePower, "actions") == 0 then
 		if DataKW.domainpowers[sNameLower] then
-			local nodeActions = nodePower.createChild("actions");
+			local nodeActions = DB.createChild(nodePower, "actions");
 
 			-- the added flag only exists here because a power COULD have effects, but if aura effects
 			-- isn't loaded, then it won't add. So we want to make sure we don't print the 'added' message

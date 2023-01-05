@@ -6,15 +6,16 @@
 function onInit()
 	local nodeUnit = getDatabaseNode();
 	activeUpdated(DB.getChild(nodeUnit, "active"));
-	DB.addHandler(nodeUnit.getPath("commander_link"), "onUpdate", commanderUpdated);
-	DB.addHandler(nodeUnit.getPath("active"), "onUpdate", activeUpdated);
+	DB.addHandler(DB.getPath(nodeUnit, "commander_link"), "onUpdate", commanderUpdated);
+	DB.addHandler(DB.getPath(nodeUnit, "active"), "onUpdate", activeUpdated);
 	
 	updateName();
 end
 
 function onClose()
-	DB.removeHandler(getDatabaseNode().getPath("commander_link"), "onUpdate", commanderUpdated);
-	DB.removeHandler(getDatabaseNode().getPath("active"), "onUpdate", activeUpdated);
+	local nodeUnit = getDatabaseNode();
+	DB.removeHandler(DB.getPath(nodeUnit, "commander_link"), "onUpdate", commanderUpdated);
+	DB.removeHandler(DB.getPath(nodeUnit, "active"), "onUpdate", activeUpdated);
 end
 
 function commanderUpdated(nodeLink)
@@ -23,17 +24,17 @@ function commanderUpdated(nodeLink)
 		_, sRecord = DB.getValue(nodeLink, "", "", CombatManager.CT_MAIN_PATH);
 	end
 
-	if sRecord ~= windowlist.window.getDatabaseNode().getPath() then
+	if sRecord ~= DB.getPath(windowlist.window.getDatabaseNode()) then
 		close();
 	end
 end
 
 function updateName()
-	token.setTooltipText(name.getValue());
+	token.setTooltipText(DB.getValue(name));
 end
 
 function activeUpdated(nodeActive)
-	local bActive = nodeActive and (nodeActive.getValue() == 1);
+	local bActive = nodeActive and (DB.getValue(nodeActive) == 1);
 	if bActive then
 		setFrame("border");
 		setBackColor(ColorManagerKw.COLOR_UNIT_SELECTION);

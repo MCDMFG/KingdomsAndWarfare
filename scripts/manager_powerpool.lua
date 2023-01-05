@@ -47,11 +47,11 @@ function handleAddPowerDie(msgOOB)
 		end
 		
 		local powerDice = domainNode.getChild("powerpool");
-		local newDie = powerDice.createChild();
-		local valueNode = newDie.createChild("value", "number")
+		local newDie = DB.createChild(powerDice);
+		local valueNode = DB.createChild(newDie, "value", "number")
 		valueNode.setValue(tonumber(msgOOB.nValue) or 0);
-		local dieNode = newDie.createChild("die", "dice");
-		dieNode.setValue({ powerdie });
+		local dieNode = DB.createChild(newDie, "die", "dice");
+		DB.setValue(dieNode, { powerdie });
 	end
 end
 
@@ -59,7 +59,7 @@ function RemoveDieFromPool(nValue, domainNode)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_REMOVEPOWERDIE;
 	msgOOB.nValue = nValue;
-	msgOOB.sDomain = domainNode.getNodeName();
+	msgOOB.sDomain = domainNode.getNodeName(); -- DB change
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end

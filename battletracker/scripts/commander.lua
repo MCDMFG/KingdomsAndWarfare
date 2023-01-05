@@ -6,10 +6,10 @@
 function onInit()
 	local node = getDatabaseNode();
 	DB.addHandler(CombatManager.CT_LIST .. ".*.commander_link", "onUpdate", commanderUpdated);
-	DB.addHandler(node.getPath("friendfoe"), "onUpdate", onFactionUpdated);
-	DB.addHandler(node.getPath("active"), "onUpdate", updateDisplay);
-	DB.addHandler(node.getPath(), "onDelete", onDelete);
-	DB.addHandler(node.getPath("isidentified"), "onUpdate", onIDChanged);
+	DB.addHandler(DB.getPath(node, "friendfoe"), "onUpdate", onFactionUpdated);
+	DB.addHandler(DB.getPath(node, "active"), "onUpdate", updateDisplay);
+	DB.addHandler(DB.getPath(node), "onDelete", onDelete);
+	DB.addHandler(DB.getPath(node, "isidentified"), "onUpdate", onIDChanged);
 
 	updateDisplay();
 	onIDChanged();
@@ -20,7 +20,7 @@ function onInit()
 		if rActor and ActorManager.isPC(rActor) then
 			local nodeCreature = ActorManager.getCreatureNode(rActor);
 			if nodeCreature then
-				local sCreatureIdentity = nodeCreature.getName();
+				local sCreatureIdentity = nodeCreature.getName(); -- DB Change
 
 				-- Check if the Pc is curerntly activated. If not, getIdentityColor will return black
 				if StringManager.isWord(sCreatureIdentity, User.getAllActiveIdentities()) then
@@ -35,10 +35,10 @@ end
 function onClose()
 	local node = getDatabaseNode();
 	DB.removeHandler(CombatManager.CT_LIST .. ".*.commander_link", "onUpdate", commanderUpdated);
-	DB.removeHandler(node.getPath("friendfoe"), "onUpdate", onFactionUpdated);
-	DB.removeHandler(node.getPath("active"), "onUpdate", updateDisplay);
-	DB.removeHandler(node.getPath(), "onDelete", onDelete);
-	DB.removeHandler(node.getPath("isidentified"), "onUpdate", onIDChanged);
+	DB.removeHandler(DB.getPath(node, "friendfoe"), "onUpdate", onFactionUpdated);
+	DB.removeHandler(DB.getPath(node, "active"), "onUpdate", updateDisplay);
+	DB.removeHandler(DB.getPath(node), "onDelete", onDelete);
+	DB.removeHandler(DB.getPath(node, "isidentified"), "onUpdate", onIDChanged);
 end
 
 -- Listen to its own delete event so it can neatly delete all of its units. Could also have the units set their commanders to nil.
@@ -46,7 +46,7 @@ function onDelete(nodeCommander)
 	for k,window in pairs(list.getWindows()) do
 		local node = window.getDatabaseNode();
 		if node then
-			node.delete();
+			DB.deleteNode(node);
 		end
 	end
 end
@@ -60,15 +60,15 @@ end
 
 function commanderUpdated(nodeLink)
 	if nodeLink then
-		local sClass, sRecord = nodeLink.getValue();
-		if sRecord == getDatabaseNode().getPath() then
+		local sClass, sRecord = DB.getValue(nodeLink);
+		if sRecord == DB.getPath(getDatabaseNode()) then
 			list.createWindow(DB.getChild(nodeLink, ".."));
 		end
 	end
 end
 
 function onFactionUpdated(nodeUpdated)
-	local sFaction = nodeUpdated.getValue();
+	local sFaction = DB.getValue(nodeUpdated);
 	for k,v in pairs(list.getWindows()) do
 		local windownode = v.getDatabaseNode();
 		if windownode then
@@ -127,7 +127,7 @@ function onDrop(x, y, draginfo)
 	local sClass, sRecord = draginfo.getShortcutData();
 	if sType == "battletrackerunit" then
 		local nodeCommander = getDatabaseNode();
-		local sPath = nodeCommander.getPath();
+		local sPath = DB.getPath(nodeCommander);
 		local nodeUnit = draginfo.getDatabaseNode();
 		local _,sCommander = DB.getValue(nodeUnit, "commander_link");
 		if sCommander ~= sPath then

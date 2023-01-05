@@ -35,13 +35,13 @@ function addMartialAdvantage(sClass, nodeSource, nodeCreature, bSkipAbility)
 	end
 	
 	-- Create the powers list entry
-	local nodePowers = nodeCreature.createChild("powers");
+	local nodePowers = DB.createChild(nodeCreature, "powers");
 	if not nodePowers then
 		return nil;
 	end
 	
 	-- Create the new power entry
-	local nodeNewPower = nodePowers.createChild();
+	local nodeNewPower = DB.createChild(nodePowers);
 	if not nodeNewPower then
 		return nil;
 	end
@@ -56,11 +56,11 @@ function addMartialAdvantage(sClass, nodeSource, nodeCreature, bSkipAbility)
 	DB.deleteChild(nodeNewPower, "level");
 		
 	-- Copy text to description
-	local nodeText = nodeNewPower.getChild("text");
+	local nodeText = DB.getChild(nodeNewPower, "text");
 	if nodeText then
-		local nodeDesc = nodeNewPower.createChild("description", "formattedtext");
+		local nodeDesc = DB.createChild(nodeNewPower, "description", "formattedtext");
 		DB.copyNode(nodeText, nodeDesc);
-		nodeText.delete();
+		DB.deleteNode(nodeText);
 	end
 	
 	-- Set locked state for editing detailed record
@@ -763,8 +763,8 @@ end
 
 function parseMartialAdvantage(nodePower)
 	-- Clean out old actions
-	local nodeActions = nodePower.createChild("actions");
-	for _,v in pairs(nodeActions.getChildren()) do
+	local nodeActions = DB.createChild(nodePower, "actions");
+	for _,v in pairs(DB.getChildren(nodeActions)) do
 		v.delete();
 	end
 	

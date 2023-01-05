@@ -126,7 +126,7 @@ function unitSelected(nodeUnit, nSlot)
 end
 
 function onActivatedUpdated(nodeActivated)
-	local bHasActivated = nodeActivated and (nodeActivated.getValue() == 1);
+	local bHasActivated = nodeActivated and (DB.getValue(nodeActivated) == 1);
 	if activatedWidget and not bHasActivated then
 		activatedWidget.destroy()
 		activatedWidget = nil;

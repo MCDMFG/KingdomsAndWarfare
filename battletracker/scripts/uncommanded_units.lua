@@ -14,7 +14,7 @@ function onClose()
 end
 
 function commanderDeleted(nodeCommander)
-	local sPath = nodeCommander.getPath();
+	local sPath = DB.getPath(nodeCommander);
 	for _,nodeCombatant in pairs(CombatManager.getCombatantNodes()) do
 		if ActorManagerKw.isUnit(nodeCombatant) then
 			local _,sRecord = DB.getValue(nodeCombatant, "commander_link");
@@ -28,7 +28,7 @@ end
 function commanderLinkUpdated(nodeLink)
 	local sRecord;
 	if nodeLink then
-		_, sRecord = nodeLink.getValue();
+		_, sRecord = DB.getValue(nodeLink);
 	end
 
 	if ((sRecord or "") == "") or (not DB.findNode(sRecord)) then

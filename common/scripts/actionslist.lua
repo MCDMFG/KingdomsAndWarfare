@@ -6,7 +6,7 @@
 function addEntry(sType, bFocus)
 	local nodelist = getDatabaseNode();
 	if nodelist then
-		local nodeAction = nodelist.createChild();
+		local nodeAction = DB.createChild(nodelist);
 		if nodeAction then
 			DB.setValue(nodeAction, "type", "string", sType);
 		end
@@ -15,7 +15,7 @@ end
 
 function reset()
 	for _,v in pairs(getWindows()) do
-		v.getDatabaseNode().delete();
+		DB.deleteNode(v.getDatabaseNode());
 	end
 end
 
