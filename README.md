@@ -2,7 +2,7 @@
 
 Adds Fantasy Grounds support for MCDM's Kingdoms and Warfare D&amp;D 5th edition supplement.
 
-[Download the latest version of the extension at this link](https://github.com/Gtaray/FG_KingdomsAndWarfare/releases/latest/download/KingdomsAndWarfare.ext)
+[Download the latest version of the extension at this link](https://github.com/MCDMFG/KingdomsAndWarfare/releases/latest/download/KingdomsAndWarfare.ext)
 
 For any suggestions, comments, or issues feel free to create an issue here, or reach out to me on Discord. My username is: Saagael#5728
 
