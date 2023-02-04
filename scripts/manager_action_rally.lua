@@ -267,7 +267,12 @@ function setRallyResult(rSource, bSuccess, nRecover)
 		end
 
 		-- Apply healing
-		ActionDamage.notifyApplyDamage(rSource, rSource, false, "Rally", -nRecover);
+		local rDmgRoll = {}
+		rDmgRoll.sLabel = "Rally";
+		rDmgRoll.bSecret = false;
+		rDmgRoll.nTotal = -nRecover;
+		rDmgRoll.sDesc = "";
+		ActionDamage.notifyApplyDamage(rSource, rSource, rDmgRoll);
 	else
 		-- Disband the unit
 		if not EffectManager5E.hasEffect(rSource, "Disbanded") then

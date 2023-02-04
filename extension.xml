@@ -3,7 +3,7 @@
 	<announcement text="Loaded Kingdoms and Warfare extension" font="emotefont" />
 	<properties>
 		<name>Kingdoms and Warfare</name>
-		<version>v2.0.4</version>
+		<version>v2.1.4</version>
 		<author>Shane Parker and George Taray</author>
 		<description>Support for MCDM's Kingdom and Warfare supplement</description>
 		<ruleset>
@@ -24,6 +24,7 @@
 		<script name="TokenManagerKw" file="scripts/manager_token_kw.lua" />
 		<script name="PowerManagerKw" file="scripts/manager_power_kw.lua" />
 		<script name="CharManagerKw" file="scripts/manager_char_kw.lua" />
+		<script name="CharWizardManagerKw" file="scripts/manager_charwizard_kw.lua" />
 		<script name="WarfareManager" file="scripts/manager_warfare.lua" />
 		<script name="ImageManagerKw" file="scripts/manager_image_kw.lua" />
 		<script name="ActionTest" file="scripts/manager_action_test.lua" />

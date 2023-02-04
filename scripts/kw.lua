@@ -230,7 +230,7 @@ function onInit()
 	TokenManager.addEffectTagIconSimple("GRANTDISPOW", "cond_advantage");
 	TokenManager.addEffectTagIconSimple("GRANTADVPOW", "cond_disadvantage");
 
-	LibraryData.setCustomData("battle", "acceptdrop", { "unit", "reference_unit" });
+	LibraryData.setCustomData("battle", "acceptdrop", { "unit", "reference_unit", "npc" });
 
 	fGetNPCSourceType = NPCManager.getNPCSourceType;
 	NPCManager.getNPCSourceType = getNPCSourceType;
@@ -356,6 +356,14 @@ function getNPCSourceType(vNode)
 	end
 
 	return type;
+end
+
+-- Invokes the provided function with DataCommon.abilities set to aBaseAbilities;
+function invokeWithBaseAbilities(fInvoke, ...)
+	local fullAbilities = DataCommon.abilities;
+	DataCommon.abilities = aBaseAbilities;
+	fInvoke(...);
+	DataCommon.abilities = fullAbilities;
 end
 
 -- Big hack

@@ -193,7 +193,12 @@ function onDiminished(rSource, rTarget, rRoll)
 	notifyDiminished(rSource, rTarget, false, rRoll.sDesc, rAction.nTotal, rRoll.nTarget, table.concat(rAction.aMessages, " "))	;
 
 	if rAction.sResult == "miss" or rAction.sResult == "fumble" then
-		ActionDamage.notifyApplyDamage(rSource, rSource, false, rRoll.sDesc, 1);
+		local rDmgRoll = {}
+		rDmgRoll.sLabel = "Diminished";
+		rDmgRoll.bSecret = false;
+		rDmgRoll.nTotal = 1;
+		rDmgRoll.sDesc = rRoll.sDesc;
+		ActionDamage.notifyApplyDamage(rSource, rSource, rDmgRoll);
 	end
 end
 

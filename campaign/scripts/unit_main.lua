@@ -33,7 +33,7 @@ function onDrop(x, y, draginfo)
 			DB.setValue(vNew, "desc", "string", sText);
 			DB.setValue(vNew, "locked", "number", 1);
 
-			CombatManagerKw.parseUnitTrait(rUnit, vNew)
+			CombatManagerKw.parseUnitTrait(vNew)
 
 			CharManager.outputUserMessage("unit_traits_message_traitadd", sName, DB.getValue(unit, "name", ""));
 
@@ -163,4 +163,85 @@ function addTrait(sName, sDesc)
 		w.name.setValue(sName);
 		w.desc.setValue(sDesc);
 	end
+end
+
+function updateExperience(sPrev, sCur)
+	if OptionsManager.getOption("AAUS") ~= "on" then
+		return;
+	end
+	local sType = type.getValue();
+	local prevStats = DataKW.getUnitExperienceStats(sType, sPrev)
+	local curStats = DataKW.getUnitExperienceStats(sType, sCur)
+
+	if curStats == nil or prevStats == nil then
+		return
+	end
+
+	local dAttacks = curStats["numberOfAttacks"] - prevStats["numberOfAttacks"];
+	local dAttack = curStats["attack"] - prevStats["attack"];
+	local dDefense = curStats["defense"] - prevStats["defense"];
+	local dMorale = curStats["morale"] - prevStats["morale"];
+	local dCommand = curStats["command"] - prevStats["command"];
+	
+	attacks.setValue(attacks.getValue() + dAttacks);
+	attack.setValue(attack.getValue() + dAttack);
+	defense.setValue(defense.getValue() + dDefense);
+	morale.setValue(morale.getValue() + dMorale);
+	command.setValue(command.getValue() + dCommand);
+end
+
+function updateArmor(sPrev, sCur)
+	if OptionsManager.getOption("AAUS") ~= "on" then
+		return;
+	end
+	local sType = type.getValue();
+	local prevStats = DataKW.getUnitEquipmentStats(sType, sPrev)
+	local curStats = DataKW.getUnitEquipmentStats(sType, sCur)
+
+	if curStats == nil or prevStats == nil then
+		return
+	end
+
+	local dPower = curStats["power"] - prevStats["power"];
+	local dToughness = curStats["toughness"] - prevStats["toughness"];
+	local dDamage = curStats["damage"] - prevStats["damage"];
+	
+	power.setValue(power.getValue() + dPower);
+	toughness.setValue(toughness.getValue() + dToughness);
+	damage.setValue(damage.getValue() + dDamage);
+end
+
+-- This one gets gnarly
+function updateType(sPrev, sCur)
+	if OptionsManager.getOption("AAUS") ~= "on" then
+		return;
+	end
+	local sExperience = experience.getValue();
+	local sArmor = armor.getValue();
+	local prevExp = DataKW.getUnitExperienceStats(sPrev, sExperience)
+	local curExp = DataKW.getUnitExperienceStats(sCur, sExperience)
+	local prevArmor = DataKW.getUnitEquipmentStats(sPrev, sArmor)
+	local curArmor = DataKW.getUnitEquipmentStats(sCur, sArmor)
+
+	if prevExp == nil or curExp == nil or prevArmor == nil or curArmor == nil then
+		return
+	end
+
+	local dAttacks = curExp["numberOfAttacks"] - prevExp["numberOfAttacks"];
+	local dAttack = curExp["attack"] - prevExp["attack"];
+	local dDefense = curExp["defense"] - prevExp["defense"];
+	local dMorale = curExp["morale"] - prevExp["morale"];
+	local dCommand = curExp["command"] - prevExp["command"];
+	local dPower = curArmor["power"] - prevArmor["power"];
+	local dToughness = curArmor["toughness"] - prevArmor["toughness"];
+	local dDamage = curArmor["damage"] - prevArmor["damage"];
+	
+	attacks.setValue(attacks.getValue() + dAttacks);
+	attack.setValue(attack.getValue() + dAttack);
+	defense.setValue(defense.getValue() + dDefense);
+	morale.setValue(morale.getValue() + dMorale);
+	command.setValue(command.getValue() + dCommand);
+	power.setValue(power.getValue() + dPower);
+	toughness.setValue(toughness.getValue() + dToughness);
+	damage.setValue(damage.getValue() + dDamage);
 end

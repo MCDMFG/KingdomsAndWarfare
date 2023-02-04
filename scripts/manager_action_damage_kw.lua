@@ -1,15 +1,16 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
 -- The only reason I have to make an entire new workflow is because I don't want the unconscious
--- status being applied to units. Since that bit of code is in the middle of a huge function, and I 
+-- status being applied to units. Since that bit of code is in the middle of a huge function, and I
 -- don't want to copy/re-implement hte whole function, I'm going to branch it, so units
 -- are dealt damage here, while pcs/npcs are dealt damage per the ActionDamage.applyDamage function
 
 local fGetRoll;
 local fApplyDmgEffectsToModRoll;
+local fHandleApplyDamage;
 local fApplyDamage;
 local fGetDamageAdjust;
 
@@ -31,7 +32,6 @@ function onInit()
 
 	fGetDamageAdjust = ActionDamage.getDamageAdjust;
 	ActionDamage.getDamageAdjust = getDamageAdjust;
-	
 end
 
 function getRoll(rActor, rAction)
@@ -52,7 +52,7 @@ function applyDmgEffectsToModRoll(rRoll, rSource, rTarget)
 		local sAttack = rRoll.sDesc:match("Attack");
 		local sPower = rRoll.sDesc:match("Power");
 
-		sTag = "";
+		local sTag = "";
 		if sAttack then
 			sTag = "ATKDMG"
 		elseif sPower then
@@ -80,12 +80,11 @@ function applyDmgEffectsToModRoll(rRoll, rSource, rTarget)
 						table.insert(aEffectDmgType, sType);
 					end
 				end
-				
+
 				if not bCritEffect or rRoll.bCritical then
 					rRoll.bEffects = true;
-			
+
 					local rClause = {};
-					
 					rClause.dice = {};
 					for _,vDie in ipairs(v.dice) do
 						table.insert(rRoll.tEffectDice, vDie);
@@ -99,13 +98,13 @@ function applyDmgEffectsToModRoll(rRoll, rSource, rTarget)
 							table.insert(rRoll.aDice, "p" .. vDie:sub(2));
 						end
 					end
-	
+
 					rRoll.nEffectMod = rRoll.nEffectMod + v.mod;
 					rClause.modifier = v.mod;
 					rRoll.nMod = rRoll.nMod + v.mod;
-					
+
 					rClause.stat = "";
-	
+
 					if #aEffectDmgType == 0 then
 						table.insert(aEffectDmgType, sEffectBaseType);
 					end
@@ -113,12 +112,12 @@ function applyDmgEffectsToModRoll(rRoll, rSource, rTarget)
 						table.insert(aEffectDmgType, vSpecialDmgType);
 					end
 					rClause.dmgtype = table.concat(aEffectDmgType, ",");
-	
+
 					table.insert(rRoll.clauses, rClause);
 				end
 			end
 		end
-		
+
 		-- if nEffectCount > 0 then
 		-- 	rRoll.nMod = rRoll.nMod + nTotalMod;
 		-- 	rRoll.nEffectMod = rRoll.nEffectMod + nTotalMod;
@@ -126,7 +125,7 @@ function applyDmgEffectsToModRoll(rRoll, rSource, rTarget)
 		-- 	for _,vDie in ipairs(aDice) do
 		-- 		table.insert(rRoll.tEffectDice, vDie);
 		-- 	end
-		-- 	rRoll.bEffects = true;	
+		-- 	rRoll.bEffects = true;
 		-- end
 	end
 end
@@ -159,21 +158,23 @@ end
 
 -- Fork the data flow here so that updates to the 5e ruleset don't break all damage
 -- it only risks breaking this extensions handling of unit damage.
-function applyDamage(rSource, rTarget, bSecret, sDamage, nTotal)
+function applyDamage(rSource, rTarget, rRoll)
 	local nodeTarget = ActorManager.getCTNode(rTarget);
 	local bIsUnit = ActorManagerKw.isUnit(nodeTarget);
 	if bIsUnit then
-		applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
+		applyDamageToUnit(rSource, rTarget, rRoll)
 	else
-		fApplyDamage(rSource, rTarget, bSecret, sDamage, nTotal);
+		fApplyDamage(rSource, rTarget, rRoll);
 	end
 end
 
 -- Trimmed down version of the applyDamge function. Got rid of most of the extraneous stuff:
 -- like concentration, half damage, avoidance, death saves, recovery, etc.
-function applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
+function applyDamageToUnit(rSource, rTarget, rRoll)
 	-- Get health fields
 	local nTotalHP, nTempHP, nWounds;
+	local sDamage = rRoll.sDesc;
+	local nTotal = rRoll.nTotal;
 
 	local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
 	if not nodeTarget then
@@ -194,7 +195,7 @@ function applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
 	local rDamageOutput = ActionDamage.decodeDamageText(nTotal, sDamage);
 	rDamageOutput.sOriginal = sDamage:lower();
 	rDamageOutput.tNotifications = {};
-	
+
 	-- Healing
 	if rDamageOutput.sType == "heal" then
 		if nWounds <= 0 then
@@ -202,15 +203,15 @@ function applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
 		else
 			-- Calculate heal amounts
 			local nHealAmount = rDamageOutput.nVal;
-			
+
 			-- If healing from zero (or negative), then remove Stable effect and reset wounds to match HP
 			if (nHealAmount > 0) and (nWounds >= nTotalHP) then
 				nWounds = nTotalHP;
 			end
-			
+
 			local nWoundHealAmount = math.min(nHealAmount, nWounds);
 			nWounds = nWounds - nWoundHealAmount;
-			
+
 			-- Display actual heal amount
 			rDamageOutput.nVal = nWoundHealAmount;
 			rDamageOutput.sVal = string.format("%01d", nWoundHealAmount);
@@ -227,7 +228,7 @@ function applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
 			ActionDamage.applyTargetedDmgEffectsToDamageOutput(rDamageOutput, rSource, rTarget);
 			ActionDamage.applyTargetedDmgTypeEffectsToDamageOutput(rDamageOutput, rSource, rTarget);
 		end
-		
+
 		-- Apply damage type adjustments
 		local nDamageAdjust, bVulnerable, bResist = ActionDamage.getDamageAdjust(rSource, rTarget, rDamageOutput.nVal, rDamageOutput);
 		local nAdjustedDamage = rDamageOutput.nVal + nDamageAdjust;
@@ -244,7 +245,7 @@ function applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
 		if bVulnerable then
 			table.insert(rDamageOutput.tNotifications, "[VULNERABLE]");
 		end
-		
+
 		-- Reduce damage by temporary hit points
 		if nTempHP > 0 and nAdjustedDamage > 0 then
 			if nAdjustedDamage > nTempHP then
@@ -262,28 +263,28 @@ function applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
 		if nAdjustedDamage > 0 then
 			-- Remember previous wounds
 			local nPrevWounds = nWounds;
-			
+
 			-- Apply wounds
 			nWounds = math.max(nWounds + nAdjustedDamage, 0);
-			
+
 			-- Calculate wounds above HP
 			local nRemainder = 0;
 			if nWounds > nTotalHP then
 				nRemainder = nWounds - nTotalHP;
 				nWounds = nTotalHP;
 			end
-			
+
 			-- Deal with remainder damage
 			if nRemainder > 0 then
 				table.insert(rDamageOutput.tNotifications, "[DAMAGE EXCEEDS CASUALTIES BY " .. nRemainder.. "]");
 			end
 		end
-		
+
 		-- Update the damage output variable to reflect adjustments
 		rDamageOutput.nVal = nAdjustedDamage;
 		rDamageOutput.sVal = string.format("%01d", nAdjustedDamage);
 	end
-	
+
 	-- Add unit conditions
 	updateStatusConditions(rSource, rTarget, rDamageOutput, nTotalHP, nWounds)
 	-- local immuneToDiminished = EffectManager5E.getEffectsByType(rTarget, "IMMUNE", { "diminished" });
@@ -337,9 +338,12 @@ function applyDamageToUnit(rSource, rTarget, bSecret, sDamage, nTotal)
 			table.insert(rDamageOutput.tNotifications, "[" .. Interface.getString("combat_tag_status") .. ": " .. sNewStatus .. "]");
 		end
 	end
-	
+
 	-- Output results
-	ActionDamage.messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(rDamageOutput.tNotifications, " "));
+	rRoll.sDamageText = rDamageOutput.sTypeOutput;
+	rRoll.nTotal = tonumber(rDamageOutput.sVal) or 0;
+	rRoll.sResults = table.concat(rDamageOutput.tNotifications, " ");
+	ActionDamage.messageDamage(rSource, rTarget, rRoll);
 
 	if nWounds >= nTotalHP then
 		--handleEndure(rSource, rTarget, rDamageOutput)

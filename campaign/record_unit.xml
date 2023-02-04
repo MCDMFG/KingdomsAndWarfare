@@ -69,9 +69,9 @@
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/unit_header.lua" />
 		<sheetdata>
-			<link_record_header_id name="link">
+			<link_record_header name="link">
 				<class>reference_unit</class>
-			</link_record_header_id>
+			</link_record_header>
 			
 			<anchor_record_header_right name="rightanchor" />
 			<button_activateid>
@@ -266,8 +266,22 @@
 			<cycler_columnh name="experience">
 				<anchored width="150" />
 				<script>
+					local fCycleLabel;
+					local sPrevValue;
+					function onInit()
+						super.onInit();
+						fCycleLabel = super.super.cycleLabel;
+						super.super.cycleLabel = cycleLabel;
+					end
+					function cycleLabel(bBackward)
+						if getValue() ~= "-" then
+							sPrevValue = getValue();
+						end
+						fCycleLabel(bBackward)
+					end
 					function onValueChanged()
 						window.onSummaryChanged();
+						window.updateExperience(sPrevValue, getValue());
 					end
 				</script>
 				<parameters>
@@ -284,8 +298,22 @@
 			<cycler_columnh name="armor">
 				<anchored width="150" />
 				<script>
+					local fCycleLabel;
+					local sPrevValue;
+					function onInit()
+						super.onInit();
+						fCycleLabel = super.super.cycleLabel;
+						super.super.cycleLabel = cycleLabel;
+					end
+					function cycleLabel(bBackward)
+						if getValue() ~= "-" then
+							sPrevValue = getValue();
+						end
+						fCycleLabel(bBackward)
+					end
 					function onValueChanged()
 						window.onSummaryChanged();
+						window.updateArmor(sPrevValue, getValue());
 					end
 				</script>
 				<parameters>
@@ -314,8 +342,22 @@
 			<cycler_columnh name="type">
 				<anchored width="150" />
 				<script>
+					local fCycleLabel;
+					local sPrevValue;
+					function onInit()
+						super.onInit();
+						fCycleLabel = super.super.cycleLabel;
+						super.super.cycleLabel = cycleLabel;
+					end
+					function cycleLabel(bBackward)
+						if getValue() ~= "-" then
+							sPrevValue = getValue();
+						end
+						fCycleLabel(bBackward)
+					end
 					function onValueChanged()
 						window.onSummaryChanged();
+						window.updateType(sPrevValue, getValue());
 					end
 				</script>
 				<parameters>

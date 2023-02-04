@@ -3,27 +3,18 @@
 -- attribution and copyright information.
 --
 
-local setAbilityScoresOriginal;
-
 function onInit()
-	setAbilityScoresOriginal = super.setAbilityScores;
-	super.setAbilityScores = setAbilityScores;
+	local setAbilityScores = super.setAbilityScores
+	super.setAbilityScores = function(...)
+		KingdomsAndWarfare.invokeWithBaseAbilities(setAbilityScores, ...);
+	end
+
+	local updateAbilityAlerts = super.updateAbilityAlerts
+	super.updateAbilityAlerts = function(...)
+		KingdomsAndWarfare.invokeWithBaseAbilities(updateAbilityAlerts, ...);
+	end
 
 	if super and super.onInit then
 		super.onInit()
 	end
-end
-
-function updateAbilityAlerts()
-	local fullAbilities = DataCommon.abilities;
-	DataCommon.abilities = KingdomsAndWarfare.aBaseAbilities;
-	super.updateAbilityAlerts();
-	DataCommon.abilities = fullAbilities;
-end
-
-function setAbilityScores(nodeChar)
-	local fullAbilities = DataCommon.abilities;
-	DataCommon.abilities = KingdomsAndWarfare.aBaseAbilities;
-	setAbilityScoresOriginal(nodeChar);
-	DataCommon.abilities = fullAbilities;
 end
