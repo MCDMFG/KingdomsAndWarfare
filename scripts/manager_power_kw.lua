@@ -1,5 +1,5 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.txt file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -26,6 +26,15 @@ function onInit()
 
 	fResetPowers = PowerManager.resetPowers;
 	PowerManager.resetPowers = resetPowers;
+
+	local tResourceActionHandlers = {
+		fnGetButtonIcons = getActionButtonIcons,
+		fnGetText = getActionText,
+		fnGetTooltip = getActionTooltip,
+		fnPerform = PowerManager5E.performAction,
+		nOrder = 100, -- Anything else going on the character sheet is likely to be more interacted with
+	};
+	PowerActionManagerCore.registerActionType("test", tResourceActionHandlers);
 end
 
 function addMartialAdvantage(sClass, nodeSource, nodeCreature, bSkipAbility)
@@ -85,7 +94,7 @@ function getPCPowerAction(nodeAction, sSubRoll)
 	end
 
 	local sPath = nodeAction.getPath();
-	
+
 	-- If rolling from the party sheet, diverge here
 	if StringManager.startsWith(sPath, "partysheet.powers") then
 		return getDomainPowerAction(nodeAction, sSubRoll);
@@ -95,21 +104,11 @@ function getPCPowerAction(nodeAction, sSubRoll)
 		return getMartialAdvantagePowerAction(nodeAction, sSubRoll);
 	end
 
-	local rActor;
-	rActor = ActorManager.resolveActor(nodeAction.getChild("....."));
-	if not rActor then
-		return;
-	end
-
-	local rAction = {};
-	rAction.type = DB.getValue(nodeAction, "type", "");
-	rAction.label = DB.getValue(nodeAction, "...name", "");
-	rAction.order = PowerManager.getPCPowerActionOutputOrder(nodeAction);
-
+	local rAction, rActor = fGetPCPowerAction(nodeAction, sSubRoll);
 	if rAction.type == "test" then
 		rAction.stat = DB.getValue(nodeAction, "ability", "");
 		rAction.savemod = DB.getValue(nodeAction, "savemod", 0);
-		
+
 		local savetype = DB.getValue(nodeAction, "dc", "");
 		if savetype == "fixed" then
 			rAction.base = "fixed";
@@ -119,11 +118,8 @@ function getPCPowerAction(nodeAction, sSubRoll)
 
 		rAction.rally = DB.getValue(nodeAction, "rally", 0) == 1;
 		rAction.battlemagic = DB.getValue(nodeAction, "battlemagic", 0) == 1;
-
-		return rAction, rActor;
-	else
-		return fGetPCPowerAction(nodeAction, sSubRoll);
 	end
+	return rAction, rActor;
 end
 
 function getDomainPowerAction(nodeAction, sSubRoll)
@@ -264,7 +260,7 @@ function getPCPowerTestActionText(node)
 			sTest = sTest .. "DC " .. rAction.savemod .. " ";
 		end
 		if rAction.stat then
-			sTest = sTest .. StringManager.capitalize(rAction.stat);	
+			sTest = sTest .. StringManager.capitalize(rAction.stat);
 		end		
 		if rAction.rally then
 			sTest  = sTest .. " [RALLY]";
@@ -274,6 +270,28 @@ function getPCPowerTestActionText(node)
 		end
 	end
 	return sTest;
+end
+
+function getActionButtonIcons(node, tData)
+	if tData.sType == "test" then
+		return "button_action_test", "button_action_test_down";
+	end
+	return "", "";
+end
+
+function getActionText(node, tData)
+	if tData.sType == "test" then
+		return getPCPowerTestActionText(node);
+	end
+	return "";
+end
+
+function getActionTooltip(node, tData)
+	if tData.sType == "test" then
+		local sResource = getPCPowerTestActionText(node);
+		return string.format("%s: %s", Interface.getString("power_tooltip_test"), sResource);
+	end
+	return "";
 end
 
 -- Small change to add domain size to the group table
