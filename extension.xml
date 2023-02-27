@@ -13,7 +13,7 @@
 	</properties>
 	<base>
 		<script name="KingdomsAndWarfare" file="scripts/kw.lua" />
-		<script name="DatOptionsKw" file="scripts/data_options_kw.lua" />
+		<script name="DataOptionsKw" file="scripts/data_options_kw.lua" />
 		<script name="PowerPoolManager" file="scripts/manager_powerpool.lua" />
 		<script name="SoulsManager" file="scripts/manager_souls.lua" />
 		<script name="ActorManagerKw" file="scripts/manager_actor_kw.lua" />

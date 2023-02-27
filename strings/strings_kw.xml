@@ -60,6 +60,7 @@
 	<string name="char_abilitise_label_martialadvantages">MARTIAL ADVANTAGES</string>
 	<string name="char_abilities_message_maadd">Martial Advantage '%s' added to '%s'.</string>
 	<string name="char_abilities_message_titleadd">Title '%s' added to '%s'.</string>
+	<string name="char_error_missingrecord">Unable to find record to match link dropped. Check to make sure the correct modules are open.</string>
 
 	<!-- Units -->
 	<string name="unit_label_commander">Commander</string>
