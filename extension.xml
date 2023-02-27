@@ -3,7 +3,7 @@
 	<announcement text="Loaded Kingdoms and Warfare extension" font="emotefont" />
 	<properties>
 		<name>Kingdoms and Warfare</name>
-		<version>v2.1.4</version>
+		<version>v2.1.5</version>
 		<author>Shane Parker and George Taray</author>
 		<description>Support for MCDM's Kingdom and Warfare supplement</description>
 		<ruleset>
