@@ -9,31 +9,9 @@
 	<windowclass name="power_page" merge="join">
 		<script file="campaign/scripts/power_page.lua" />
 	</windowclass>
-	<windowclass name="power_item" merge="join">
+
+	<windowclass name="power_action_test">
 		<margins control="0,0,0,2" />
-		<!-- Add menu option for unit save (displayed as 'Test'). Only use one option, we can tell it which roll to make based on data entered here -->
-		<script>
-			function onInit()
-				super.onInit()
-				registerMenuItem(Interface.getString("power_menu_addtest"), "radial_sword", 3, 8);
-			end
-
-			function onMenuSelection(selection, subselection)
-				if selection == 3 and subselection == 8 then
-					super.createAction("test");
-					activatedetail.setValue(1);
-				else
-					super.onMenuSelection(selection, subselection);
-				end
-			end
-		</script>
-	</windowclass>
-	
-	<windowclass name="power_action_mini" merge="join">
-		<script file="campaign/scripts/power_action_mini.lua" />
-	</windowclass>
-
-	<windowclass name="power_action" merge="join">
 		<script file="campaign/scripts/power_action.lua" />
 		<sheetdata>
 			<!-- TEST -->
@@ -50,9 +28,6 @@
 					<right parent="" offset="-55" />
 				</anchored>
 			</string_poweractionview>
-			<button_poweractioneditor name="testdetail">
-				<editor>power_test_editor</editor>
-			</button_poweractioneditor>
 		</sheetdata>
 	</windowclass>
 
@@ -77,49 +52,7 @@
 	</windowclass>
 
 	<!-- Test action editor-->
-	<windowclass name="power_test_editor">
-		<frame>charsheethelper</frame>
-		<placement>
-			<size width="370" height="350" />
-		</placement>
-		<sizelimits>
-			<minimum width="370" height="350" />
-			<dynamic />
-		</sizelimits>
-		<nodelete />
-		<playercontrol />
-		<minimize>minimized_char</minimize>
-		<tooltip control="name" />
-		<sheetdata>
-			<windowtitlebar_char name="title">
-				<resource>power_title_cast</resource>
-			</windowtitlebar_char>
-			<anchor_title_charsheethelper name="contentanchor" />
-			
-			<genericcontrol name="contentframe">
-				<anchored to="contentanchor">
-					<top anchor="bottom" offset="0" />
-					<left />
-					<right />
-					<bottom parent="" offset="-30" />
-				</anchored>
-			</genericcontrol>
-
-			<subwindow_record name="main">
-				<class>power_test_editor_main</class>
-				<activate />
-				<fastinit />
-			</subwindow_record>
-
-			<scrollbar_record>
-				<target>main</target>
-			</scrollbar_record>
-
-			<resize_charsheethelper />
-			<close_charsheethelper />
-		</sheetdata>
-	</windowclass>
-	<windowclass name="power_test_editor_main">
+	<windowclass name="power_action_editor_test">
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 			

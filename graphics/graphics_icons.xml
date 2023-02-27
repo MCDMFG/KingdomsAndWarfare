@@ -11,6 +11,8 @@
 	<!-- Roll icons -->
 	<icon name="roll_harrow" file="graphics/icons/roll_harrow.png" />
 	<icon name="roll_rally" file="graphics/icons/roll_rally.png" />
+	<icon name="button_action_test" file="graphics/buttons/button_roll.png" />
+	<icon name="button_action_test_down" file="graphics/buttons/button_roll_down.png" />
 
 	<!-- token icons -->
 	<icon name="cond_disoriented" file="graphics/tokens/token_cond_disoriented.png" />

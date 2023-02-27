@@ -60,6 +60,7 @@
 	<string name="char_abilitise_label_martialadvantages">MARTIAL ADVANTAGES</string>
 	<string name="char_abilities_message_maadd">Martial Advantage '%s' added to '%s'.</string>
 	<string name="char_abilities_message_titleadd">Title '%s' added to '%s'.</string>
+	<string name="char_error_missingrecord">Unable to find record to match link dropped. Check to make sure the correct modules are open.</string>
 
 	<!-- Units -->
 	<string name="unit_label_commander">Commander</string>
@@ -133,8 +134,9 @@
 	<string name="label_advantage_uniteffects">Unit Effects</string>
 
 	<!-- Actions tab -->
-	<string name="power_menu_addtest">Add Test (Unit)</string>
+	<string name="power_menu_action_add_test">Add Test (Unit)</string>
 	<string name="power_label_test">Test</string>
+	<string name="power_tooltip_test">TEST</string>
 	<string name="power_label_domainsize">Domain Size</string>
 	<string name="power_title_test">Unit Test Roll</string>
 	<string name="power_header_test">Test</string>
