@@ -206,9 +206,9 @@
 				update(false);
 
 				if Session.IsHost then
-					registerMenuItem(Interface.getString("power_menu_addaction"), "pointer", 3);
-					registerMenuItem(Interface.getString("power_menu_addcast"), "radial_sword", 3, 2);
-					registerMenuItem(Interface.getString("power_menu_addeffect"), "radial_effect", 3, 3);
+					registerMenuItem(Interface.getString("power_menu_action_add"), "pointer", 3);
+					registerMenuItem(Interface.getString("power_menu_action_add_cast"), "radial_sword", 3, 2);
+					registerMenuItem(Interface.getString("power_menu_action_add_effect"), "radial_effect", 3, 3);
 				end
 			end
 			function update(bEditMode)
@@ -351,6 +351,7 @@
 				<subroll>save</subroll>
 			</string_poweractionview>
 			<button_poweractioneditor name="castdetail">
+				<anchored position="insidetopright" offset="5,2" />
 				<editor>power_domain_save_editor</editor>
 			</button_poweractioneditor>
 
@@ -365,6 +366,7 @@
 				</anchored>
 			</string_poweractionview>
 			<button_poweractioneditor name="effectdetail">
+				<anchored position="insidetopright" offset="5,2" />
 				<editor>power_effect_editor</editor>
 			</button_poweractioneditor>
 		</sheetdata>
