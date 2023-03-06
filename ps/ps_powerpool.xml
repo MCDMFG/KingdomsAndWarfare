@@ -206,9 +206,9 @@
 				update(false);
 
 				if Session.IsHost then
-					registerMenuItem(Interface.getString("power_menu_addaction"), "pointer", 3);
-					registerMenuItem(Interface.getString("power_menu_addcast"), "radial_sword", 3, 2);
-					registerMenuItem(Interface.getString("power_menu_addeffect"), "radial_effect", 3, 3);
+					registerMenuItem(Interface.getString("power_menu_action_add"), "pointer", 3);
+					registerMenuItem(Interface.getString("power_menu_action_add_cast"), "radial_sword", 3, 2);
+					registerMenuItem(Interface.getString("power_menu_action_add_effect"), "radial_effect", 3, 3);
 				end
 			end
 			function update(bEditMode)
