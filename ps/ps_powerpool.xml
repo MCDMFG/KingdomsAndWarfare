@@ -351,6 +351,7 @@
 				<subroll>save</subroll>
 			</string_poweractionview>
 			<button_poweractioneditor name="castdetail">
+				<anchored position="insidetopright" offset="5,2" />
 				<editor>power_domain_save_editor</editor>
 			</button_poweractioneditor>
 
@@ -365,6 +366,7 @@
 				</anchored>
 			</string_poweractionview>
 			<button_poweractioneditor name="effectdetail">
+				<anchored position="insidetopright" offset="5,2" />
 				<editor>power_effect_editor</editor>
 			</button_poweractioneditor>
 		</sheetdata>

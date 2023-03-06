@@ -10,7 +10,7 @@ function onInit()
 	updateDisplay();
 	
 	local node = getDatabaseNode();
-	windowlist.setOrder(node);
+	WindowManager.setInitialOrder(self);
 
 	local sNode = getDatabaseNode().getPath();
 	DB.addHandler(sNode, "onChildUpdate", onDataChanged);
