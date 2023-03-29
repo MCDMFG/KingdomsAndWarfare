@@ -19,28 +19,39 @@ function onInit()
 end
 
 function update(bReadOnly, bForceHide)
-	local bLocalShow;
-	if bForceHide then
-		bLocalShow = false;
-	else
-		bLocalShow = true;
-	end
-	
-	setReadOnly(bReadOnly);
-	setVisible(bLocalShow);
-	
-	local sLabel = getName() .. "_label";
-	if window[sLabel] then
-		window[sLabel].setVisible(bLocalShow);
-	end
-	if separator then
-		if window[separator[1]] then
-			window[separator[1]].setVisible(bLocalShow);
+	-- CoreRPG was updated so that whne cyclers change value, it calls self.update through a DB handler
+	-- However we use update() to manage readonly/visibility, like every other window control
+	-- So we need to process vis/readonly updates when bReadOnly isn't a databasenode
+	-- But still need to call super.update() when it is, since stringcycler now also uses update()
+	-- bReadOnly is a DB Node because of the line DB.addHandler(_sSource, "onUpdate", self.update);
+	if type(bReadOnly) ~= "databasenode" then
+		local bLocalShow;
+		if bForceHide then
+			bLocalShow = false;
+		else
+			bLocalShow = true;
+		end
+		
+		setReadOnly(bReadOnly);
+		setVisible(bLocalShow);
+		
+		local sLabel = getName() .. "_label";
+		if window[sLabel] then
+			window[sLabel].setVisible(bLocalShow);
+		end
+		if separator then
+			if window[separator[1]] then
+				window[separator[1]].setVisible(bLocalShow);
+			end
+		end
+
+		if self.onVisUpdate then
+			self.onVisUpdate(bLocalShow, bReadOnly);
 		end
 	end
-	
-	if self.onVisUpdate then
-		self.onVisUpdate(bLocalShow, bReadOnly);
+
+	if super.update then
+		super.update();
 	end
 	
 	return bLocalShow;
