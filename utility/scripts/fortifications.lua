@@ -39,27 +39,9 @@ function onDrop(x, y, draginfo)
 		return true;
 	end
 end
-function onListChanged()
-	update();
-end
 
 function addEntry()
 	local w = createWindow();
-
-	local sEdit = getName() .. "_iedit";
-	window[sEdit].setValue(1);
-	return node;
-end
-function update()
-	local sEdit = getName() .. "_iedit";
-	if window[sEdit] then
-		local bEdit = (window[sEdit].getValue() == 1);
-		for _,w in ipairs(getWindows()) do
-			w.idelete.setVisibility(bEdit);
-			w.name.setReadOnly(not bEdit)
-			w.morale.setReadOnly(not bEdit)
-			w.defense.setReadOnly(not bEdit)
-			w.power.setReadOnly(not bEdit)
-		end
-	end
+	window[getName() .. "_iedit"].setValue(1);
+	w.name.setFocus();
 end

@@ -67,7 +67,6 @@
 					<bottom offset="-25" />
 				</anchored>
 				<frame name="groupbox" offset="5,10,15,10" />
-				<footer>footer_narrow</footer>
 				<datasource>.powers</datasource>
 				<class>ps_domain_power</class>
 				<useallmodules />
@@ -151,7 +150,6 @@
 					<bottom offset="-25" />
 				</anchored>
 				<frame name="groupbox" offset="5,10,15,10" />
-				<footer>footer_narrow</footer>
 				<datasource>.features</datasource>
 				<class>ps_domain_feature</class>
 				<useallmodules />
@@ -386,9 +384,9 @@
 		<minimize>minimized_char</minimize>
 		<tooltip control="name" />
 		<sheetdata>
-			<windowtitlebar_char name="title">
+			<windowtitlebar_charsheethelper name="title">
 				<resource>power_title_cast</resource>
-			</windowtitlebar_char>
+			</windowtitlebar_charsheethelper>
 			<anchor_title_charsheethelper name="contentanchor" />
 			
 			<genericcontrol name="contentframe">

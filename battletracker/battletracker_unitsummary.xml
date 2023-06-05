@@ -33,14 +33,14 @@
 				<anchored to="slot" position="left" offset="7,0" width="20" />
 				<frame name="border" />
 			</genericcontrol>
-			<link_ctentry name="link">
+			<link_ct_entry name="link">
 				<anchored merge="replace" to="color_swatch" position="left" offset="7,0" width="20" />
-			</link_ctentry>
-			<string_ctname name="name">
+			</link_ct_entry>
+			<string_ct_entry_name name="name">
 				<anchored merge="replace" to="contentanchor" position="below" offset="0,0" height="20">
 					<right parent="link" anchor="left" offset="-7" />
 				</anchored>
-			</string_ctname>
+			</string_ct_entry_name>
 			
 			<label name="summary_label">
 				<anchored merge="replace" to="name" position="belowleft" offset="0,7">
@@ -226,18 +226,23 @@
 				</anchored>
 				<static textres="unit_label_effects" />
 			</label>
-			<button_ctsection_effect_iadd name="effects_iadd">
-				<anchored merge="replace" width="20" height="20">
+			<button_iadd name="effects_iadd">
+				<anchored width="20" height="20">
 					<top parent="effects_label" offset="2" />
 					<right offset="-9" />
 				</anchored>
-			</button_ctsection_effect_iadd>
-			<list_ctsection_effect name="effects">
-				<anchored merge="replace" to="effects_label" position="belowleft" offset="0,5">
+				<target>effects</target>
+				<tooltip textres="ct_tooltip_effectadd" />
+			</button_iadd>
+			<windowlist name="effects">
+				<anchored to="effects_label" position="belowleft" offset="0,5">
 					<right parent="" offset="-5" />
 				</anchored>
-			</list_ctsection_effect>
-
+				<datasource>.effects</datasource>
+				<class>ct_effect</class>
+				<noscroll />
+				<script file="ct/scripts/ct_effectlist.lua" />
+			</windowlist>
 		</sheetdata>
 	</windowclass>
 </root>

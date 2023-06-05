@@ -236,17 +236,12 @@
 				<min>1</min>
 			</number_column_right>
 
-			<buttoncontrol name="button_rally">
+			<button_icon name="button_rally">
 				<anchored width="50" height="50">
 					<left parent="" anchor="center" offset="0" />
 					<top parent="casualties" anchor="top" offset="-2"/>
 				</anchored>
-				<frame name="buttonup" offset="5,5,5,5" />
 				<icon normal="rally" pressed="rally" />
-				<stateframe>
-					<pressed name="buttondown" offset="5,5,5,5" />
-				</stateframe>
-				<pressed offset="1,1" />
 				<tooltip textres="unit_tooltip_rally" />
 				<script>
 					function onButtonPress()
@@ -257,7 +252,7 @@
 						ActionRally.performRoll(nil, rActor, rAction)
 					end
 				</script>
-			</buttoncontrol>
+			</button_icon>
 
 			<!-- Experience Level -->
 			<label_column name="experience_label">
@@ -532,14 +527,6 @@
 		<script>
 			function onInit()	
 				update();
-			end
-
-			function updateControl(sControl, bReadOnly, bForceHide)
-				if not self[sControl] then
-					return false;
-				end
-				
-				return self[sControl].update(bReadOnly, bForceHide);
 			end
 
 			function update()

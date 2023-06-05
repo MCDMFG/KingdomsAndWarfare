@@ -7,7 +7,7 @@
 
 <root>
 	<windowclass name="warfare_tokens">
-		<frame>utilitybox3</frame>
+		<frame>utilitybox</frame>
 		<placement>
 			<size width="650" height="400" />
 		</placement>
@@ -21,45 +21,41 @@
 			<windowtitlebar name="title">
 				<resource>library_recordtype_label_warfare_tokens</resource>
 			</windowtitlebar>
-			<anchor_title_utilitybox3 name="contentanchor" />
 
-			<anchor_bottom_utilitybox3 name="bottomanchor" />
+			<anchor_content_utilitybox_top />
 
-			<sub_warfare_markers name="markers" />
-			<scrollbar name="scroll_markers">
+			<anchor_content_utilitybox_bottom />
+			<area_list_content_controls />
+			<anchor_list_content_controls_right />
+			<button_iedit_list_content_controls />
+			<button_iadd_list_content_controls />
+			<filter_list_content_controls />
+
+			<sub_content_labeled_framed_groupbox_left name="markers">
+				<class>warfare_markers</class>
+			</sub_content_labeled_framed_groupbox_left>
+			<scrollbar_content_base>
 				<anchored to="markers" />
 				<target>markers</target>
-			</scrollbar>
-			<label_markers name="label_markers" />
+			</scrollbar_content_base>
+			<label_list_content_full_framed_headersimple name="label_warfare_markers">
+				<anchored to="markers" />
+				<static textres="label_warfare_markers" />
+			</label_list_content_full_framed_headersimple>
 
-			<windowlist name="list">
-				<anchored to="contentanchor">
-					<top anchor="bottom" relation="relative" offset="35" />
-					<left offset="275" />
-					<right offset="-10" />
-					<bottom parent="" offset="-75" />
-				</anchored>
-				<frame name="groupbox" offset="10,10,15,10" />
-				<skipempty />
-				<allowdelete />
+			<list_content_labeled_framed_groupbox_right name="list">
 				<class>fortification</class>
 				<datasource>.fortifications</datasource>
+				<allowdelete />
 				<script file="utility/scripts/fortifications.lua" />
-			</windowlist>
-			<scrollbar name="scroll_fortifications">
-				<anchored to="list" />
-				<target>list</target>
-			</scrollbar>
-			<label_fortifications name="label_warfare_fortifications" />
+			</list_content_labeled_framed_groupbox_right>
+			<scrollbar_content_list />
+			<label_list_content_full_framed_headersimple name="label_warfare_fortifications">
+				<static textres="label_warfare_fortifications" />
+			</label_list_content_full_framed_headersimple>
 
-			<anchor_utility_controls />
-			<button_iedit_utility />
-			<button_iadd_campaign>
-			</button_iadd_campaign>
-			
-			<resize_utilitybox3 />
-			<helper_effects />
-			<close_utilitybox3 />
+			<resize_utilitybox />
+			<close_utilitybox />
 		</sheetdata>
 	</windowclass>
 
@@ -158,8 +154,16 @@
 		<margin>0,0,0,20</margin>
 		<script>
 			function onInit()
-				local node = getDatabaseNode();
-				node.setPublic(true);
+				DB.setPublic(getDatabaseNode(), true);
+				self.onEditModeChanged();
+			end
+
+			function onEditModeChanged()
+				local bEditMode = WindowManager.getEditMode(self, "list_iedit");
+				name.setReadOnly(not bEditMode);
+				morale.setReadOnly(not bEditMode);
+				defense.setReadOnly(not bEditMode);
+				power.setReadOnly(not bEditMode);
 			end
 
 			function onDrop(x, y, draginfo)
@@ -204,6 +208,7 @@
 					<top offset="2" />
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
 				</anchored>
+				<editmode>list_iedit</editmode>
 			</button_idelete>
 
 			<stringfield name="name">
@@ -282,19 +287,6 @@
 		</sheetdata>
 	</windowclass>
 
-	<template name="sub_warfare_markers">
-		<subwindow>
-			<anchored to="contentanchor">
-				<top anchor="bottom" relation="current" offset="35" />
-				<left offset="5" />
-				<right anchor="left" offset="245" />
-				<bottom parent="" offset="-75" />
-			</anchored>
-			<frame name="groupbox" offset="10,10,15,10" />
-			<class>warfare_markers</class>
-			<activate />
-		</subwindow>
-	</template>
 	<template name="column_token">
 		<tokenfield>
 			<anchored height="34">
@@ -317,21 +309,5 @@
 				end
 			</script>
 		</tokenfield>
-	</template>
-	<template name="label_markers">
-		<label>
-			<anchored to="markers" position="above" offset="0,10" height="20" />
-			<font>utility_label</font>
-			<center />
-			<static textres="label_warfare_markers" />
-		</label>
-	</template>
-	<template name="label_fortifications">
-		<label>
-			<anchored to="list" position="above" offset="0,10" height="20" />
-			<font>utility_label</font>
-			<center />
-			<static textres="label_warfare_fortifications" />
-		</label>
 	</template>
 </root>

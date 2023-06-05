@@ -72,14 +72,6 @@ function onSummaryChanged()
 	summary_label.setValue(sText);
 end
 
-function updateControl(sControl, bReadOnly, bForceHide)
-	if not self[sControl] then
-		return false;
-	end
-		
-	return self[sControl].update(bReadOnly, bForceHide);
-end
-
 function updateFriendZoneControls(sControl, bReadOnly, bForceHide)
 	if KingdomsAndWarfare.IsFriendZoneLoaded() then
 		-- if the path starts with unit, force hide
@@ -102,12 +94,12 @@ function update()
 
 	local bSection1 = false;
 	if Session.IsHost then
-		if updateControl("nonid_name", bReadOnly) then bSection1 = true; end;
+		if WindowManager.callSafeControlUpdate(self, "nonid_name", bReadOnly) then bSection1 = true; end;
 	else
-		updateControl("nonid_name", bReadOnly, true);
+		WindowManager.callSafeControlUpdate(self, "nonid_name", bReadOnly, true);
 	end
-	if updateControl("commander", bReadOnly) then bSection1 = true; end;
-	if updateControl("commander_readonly", bReadOnly) then bSection1 = true; end;
+	if WindowManager.callSafeControlUpdate(self, "commander", bReadOnly) then bSection1 = true; end;
+	if WindowManager.callSafeControlUpdate(self, "commander_readonly", bReadOnly) then bSection1 = true; end;
 	
 	summary_label.setVisible(bReadOnly);
 	divider.setVisible(bSection1);
@@ -121,17 +113,17 @@ function update()
 
 	updateFriendZoneControls("wounds", bReadOnly)
 
-	updateControl("experience", bReadOnly, bReadOnly);
-	updateControl("armor", bReadOnly, bReadOnly);
-	updateControl("ancestry", bReadOnly, bReadOnly);
-	updateControl("type", bReadOnly, bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "experience", bReadOnly, bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "ancestry", bReadOnly, bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "type", bReadOnly, bReadOnly);
 	
-	updateControl("attack", bReadOnly);
-	updateControl("defense", bReadOnly);
-	updateControl("power", bReadOnly);
-	updateControl("toughness", bReadOnly);
-	updateControl("morale", bReadOnly);
-	updateControl("command", bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "attack", bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "defense", bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "power", bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "toughness", bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "morale", bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "command", bReadOnly);
 	
 	if bReadOnly then
 		if traits_iedit then

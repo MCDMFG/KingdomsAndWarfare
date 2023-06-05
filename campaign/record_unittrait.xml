@@ -126,17 +126,6 @@
 				update();
 			end
 
-			function onClose()
-			end
-
-			function updateControl(sControl, bReadOnly, bForceHide)
-				if not self[sControl] then
-					return false;
-				end
-				
-				return self[sControl].update(bReadOnly, bForceHide);
-			end
-
 			function update()
 				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
 				uniteffect_iadd.setVisible(not bReadOnly);

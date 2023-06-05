@@ -7,22 +7,14 @@ function onInit()
 	update();
 end
 
-function updateControl(sControl, bReadOnly, bForceHide)
-	if not self[sControl] then
-		return false;
-	end
-		
-	return self[sControl].update(bReadOnly, bForceHide);
-end
-
 function update()
 	local nodeRecord = getDatabaseNode();
 	local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);
 
 	if Session.IsHost then
-		if updateControl("nonid_name", bReadOnly) then bSection1 = true; end;
+		if WindowManager.callSafeControlUpdate(self, "nonid_name", bReadOnly) then bSection1 = true; end;
 	else
-		updateControl("nonid_name", bReadOnly, true);
+		WindowManager.callSafeControlUpdate(self, "nonid_name", bReadOnly, true);
 	end
 
 	powerdie.setReadOnly(bReadOnly);

@@ -199,12 +199,12 @@
 				<script file="battletracker/scripts/commander_colorswatch.lua" />
 			</genericcontrol>
 
-			<link_ctentry name="link">
+			<link_ct_entry name="link">
 				<anchored merge="replace" to="rightanchor" width="20" height="20">
 					<top offset="7" />
 					<right anchor="left" relation="relative" offset="-5" />
 				</anchored>
-			</link_ctentry>
+			</link_ct_entry>
 			<number_ctentry_initresult name="initresult">
 				<anchored merge="replace" to="rightanchor" width="20" height="20">
 					<top offset="7" />
@@ -218,15 +218,15 @@
 				</anchored>
 				<static textres="init" />
 			</label>
-			<string_ctname name="name">
+			<string_ct_entry_name name="name">
 				<anchored merge="replace" height="20">
 					<left parent="leftanchor" anchor="right" relation="relative" offset="7" />
 					<top offset="7" />
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
 				</anchored>
 				<empty textres="unknown_commander" />
-			</string_ctname>
-			<string_ctname name="nonid_name">
+			</string_ct_entry_name>
+			<string_ct_entry_name name="nonid_name">
 				<empty textres="library_recordtype_empty_nonid_npc" />
 				<anchored merge="replace" height="20">
 					<left parent="leftanchor" anchor="right" relation="relative" offset="7" />
@@ -234,7 +234,7 @@
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
 				</anchored>
 				<invisible />
-			</string_ctname>
+			</string_ct_entry_name>
 
 			<battletracker_unitlist/>
 		</sheetdata>
