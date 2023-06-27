@@ -386,6 +386,8 @@ unit_equipment = {
 }
 
 function getUnitExperienceStats(sUnitType, sExperience)
+	sUnitType = sUnitType or "";
+	sExperience = sExperience or "";
 	local unit = unit_experience[sUnitType:lower()];
 	if unit and unit[sExperience:lower()] then
 		return unit[sExperience:lower()];
@@ -395,6 +397,8 @@ function getUnitExperienceStats(sUnitType, sExperience)
 end
 
 function getUnitEquipmentStats(sUnitType, sEquipment)
+	sUnitType = sUnitType or "";
+	sEquipment = sEquipment or "";
 	local unit = unit_equipment[sUnitType:lower()];
 	if unit and unit[sEquipment:lower()] then
 		return unit[sEquipment:lower()];
