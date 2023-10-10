@@ -12,7 +12,6 @@ function update(bReadOnly)
 end
 
 function action(draginfo)
-	CombatManagerKw.pushListMode(CombatManagerKw.LIST_MODE_UNIT);
 	local rActor = ActorManager.resolveActor(window.getDatabaseNode());
 	local rAction = {};
 	rAction.label = StringManager.capitalize(target[1]);
@@ -22,7 +21,6 @@ function action(draginfo)
 
 
 	ActionTest.performRoll(draginfo, rActor, rAction);
-	CombatManagerKw.popListMode();
 	return true;
 end
 

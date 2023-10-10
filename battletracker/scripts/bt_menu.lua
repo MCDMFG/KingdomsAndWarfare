@@ -82,7 +82,7 @@ function onMenuSelection(selection, subselection, subsubselection)
 end
 
 function clearNPCs(bDeleteOnlyFoe)
-	for _, vChild in pairs(DB.getChildren(CombatManager.CT_LIST)) do
+	for _, vChild in pairs(CombatManager.getCombatantNodes()) do
 		local sFaction = vChild.getChild("friendfoe").getValue();
 
 		if bDeleteOnlyFoe then
@@ -98,7 +98,7 @@ function clearNPCs(bDeleteOnlyFoe)
 end
 
 function clearUnits(bDeleteOnlyFoe)
-	for _, vChild in pairs(DB.getChildren(CombatManager.CT_LIST)) do
+	for _, vChild in pairs(CombatManager.getCombatantNodes("unit")) do
 		if ActorManagerKw.isUnit(vChild) then
 			local sFaction = vChild.getChild("friendfoe").getValue();
 

@@ -6,21 +6,17 @@
 -- This class manages overrides for the combat manager 5e script
 
 OOB_MSGTYPE_ACTIVATEUNIT = "activateunit";
+BT_MAIN_PATH = "battletracker";
+BT_COMBATANT_PATH = "battletracker.list.*";
+BT_COMBATANT_PARENT = "battletracker.list";
+BT_LIST = "battletracker.list";
 
 local fOnNPCPostAdd;
-local fOnPCPostAdd
-local fGetCTFromNode;
-local fGetCTFromTokenRef;
+local fOnPCPostAdd;
 local fParseAttackLine;
 local fParseNPCPower;
 
-LIST_MODE_NPC = 1;
-LIST_MODE_UNIT = 2;
-LIST_MODE_BOTH = 3;
-local aModeStack = { LIST_MODE_NPC };
-
 function onInit()
-	CombatManager.setCustomGetCombatantNodes(getCombatantNodes);
 	CombatRecordManager.setRecordTypeCallback("unit", addUnit);
 	fOnNPCPostAdd = CombatRecordManager.getRecordTypePostAddCallback("npc");
 	CombatRecordManager.setRecordTypePostAddCallback("npc", onNPCPostAdd);
@@ -30,16 +26,26 @@ function onInit()
 	CombatManager.setCustomTurnEnd(onTurnEnd);
 	CombatManager.setCustomRoundStart(onRoundStart);
 
-	fGetCTFromNode = CombatManager.getCTFromNode;
-	CombatManager.getCTFromNode = getCTFromNode;
-	fGetCTFromTokenRef = CombatManager.getCTFromTokenRef;
-	CombatManager.getCTFromTokenRef = getCTFromTokenRef;
+	local tData = {
+		sTrackerPath = CombatManagerKw.BT_LIST,
+		sCombatantParentPath = CombatManagerKw.BT_COMBATANT_PARENT,
+		sCombatantPath = CombatManagerKw.BT_COMBATANT_PATH,
+		fSort = CombatManager.getCustomSort() or CombatManager.sortfuncSimple,
+		fCleanup = CombatManager.deleteCleanup,
+	};
+	CombatManager.setTracker("unit", tData);
+
 	fParseAttackLine = CombatManager2.parseAttackLine;
 	CombatManager2.parseAttackLine = parseAttackLine;
 	fParseNPCPower = CombatManager2.parseNPCPower;
 	CombatManager2.parseNPCPower = parseNPCPower;
 
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_ACTIVATEUNIT, handleActivateUnit);
+end
+
+function onTabletopInit()
+	-- Migrate after the base CombatManager has finished setting up.
+	migrateUnits();
 end
 
 local combatantAddedHandlers = {};
@@ -51,63 +57,26 @@ function unregisterCombatantAddedHandler(fHandler)
 	combatantAddedHandlers[fHandler] = nil;
 end
 
-function pushListMode(nListMode)
-	table.insert(aModeStack, nListMode);
-end
-
-function popListMode()
-	if #aModeStack > 1 then
-		return table.remove(aModeStack);
-	else
-		return aModeStack[1];
-	end
-end
-
-function peekListMode()
-	return aModeStack[#aModeStack];
-end
-
-function getCombatantNodes(nMode)
-	if not nMode then
-		nMode = peekListMode();
-	end
-
-	if nMode == LIST_MODE_BOTH then
-		return DB.getChildren(CombatManager.CT_LIST);
-	end
-
-	local combatants = {};
-	for _,nodeCombatant in pairs(DB.getChildren(CombatManager.CT_LIST)) do
-		if ActorManagerKw.isUnit(nodeCombatant) == (nMode == LIST_MODE_UNIT) then
-			combatants[nodeCombatant.getPath()] = nodeCombatant;
+function migrateUnits()
+	for _,nodeCombatant in pairs(CombatManager.getCombatantNodes()) do
+		if ActorManagerKw.isUnit(nodeCombatant) then
+			local nodeUnit = CombatManager.createCombatantNode("unit");
+			DB.copyNode(nodeCombatant, nodeUnit);
+			-- Clear token references before deleting, so that the tokens remain linked to the migrated unit.
+			DB.setValue(nodeCombatant, "tokenrefid", "string", "");
+			DB.setValue(nodeCombatant, "tokenrefnode", "string", "");
+			DB.deleteNode(nodeCombatant);
 		end
 	end
-	return combatants;
 end
 
 function getActiveUnitCT()
-	for _,nodeCombatant in pairs(CombatManagerKw.getCombatantNodes(LIST_MODE_UNIT)) do
+	for _,nodeCombatant in pairs(CombatManager.getCombatantNodes("unit")) do
 		if DB.getValue(nodeCombatant, "active", 0) == 1 then
 			return nodeCombatant;
 		end
 	end
 	return nil;
-end
-
-function getCTFromNode(varNode)
-	pushListMode(LIST_MODE_BOTH);
-	local result = fGetCTFromNode(varNode);
-	popListMode();
-
-	return result;
-end
-
-function getCTFromTokenRef(vContainer, nId)
-	pushListMode(LIST_MODE_BOTH);
-	local result = fGetCTFromTokenRef(vContainer, nId);
-	popListMode();
-
-	return result;
 end
 
 local unitSelectionHandlers = {};
@@ -225,7 +194,7 @@ end
 -- able to activate in arbitrary order under their commander.
 function calculateUnitInitiative()
 	local initiatives = {};
-	for _,nodeCombatant in pairs(CombatManagerKw.getCombatantNodes(LIST_MODE_UNIT)) do
+	for _,nodeCombatant in pairs(CombatManager.getCombatantNodes("unit")) do
 		local initiative = DB.getValue(nodeCombatant, "initresult", 0);
 		initiatives[initiative] = true;
 	end
@@ -246,7 +215,7 @@ function setUnitDropCommander(nodeCommander)
 end
 
 function clearUnitDropCommander()
-	nodeDropCommander = nilo;
+	nodeDropCommander = nil;
 end
 
 function addUnit(tCustom)
@@ -255,10 +224,11 @@ function addUnit(tCustom)
 	end
 
 	-- Setup
-	local aCurrentCombatants = CombatManager.getCombatantNodes();
+	local aCurrentCombatants = CombatManager.getCombatantNodes("unit");
+	tCustom.sTrackerKey = "unit";
 
 	-- Get the name to use for this addition
-	local bIsCT = (UtilityManager.getRootNodeName(tCustom.nodeRecord) == CombatManager.CT_MAIN_PATH);
+	local bIsCT = (UtilityManager.getRootNodeName(tCustom.nodeRecord) == CombatManagerKw.BT_MAIN_PATH);
 	local sNameLocal = sName;
 	if not sNameLocal then
 		sNameLocal = DB.getValue(tCustom.nodeRecord, "name", "");
@@ -351,8 +321,7 @@ function addUnit(tCustom)
 		end
 	end
 
-	DB.createNode(CombatManager.CT_LIST);
-	tCustom.nodeCT = DB.createChild(CombatManager.CT_LIST);
+	tCustom.nodeCT = CombatManager.createCombatantNode(tCustom.sTrackerKey);
 	if not tCustom.nodeCT then
 		return nil;
 	end
@@ -442,7 +411,7 @@ function onTurnEnd(nodeCT)
 		return;
 	end
 
-	local aCurrentCombatants = CombatManagerKw.getCombatantNodes(LIST_MODE_UNIT);
+	local aCurrentCombatants = CombatManager.getCombatantNodes("unit");
 	for _,v in pairs(aCurrentCombatants) do
 		if ActorManagerKw.getCommanderCT(v) == nodeCT then
 			activateUnit(v, true);
@@ -450,7 +419,7 @@ function onTurnEnd(nodeCT)
 	end
 
 	local nodeActive = CombatManagerKw.getActiveUnitCT();
-	local nodeFake = DB.createChild(CombatManager.CT_MAIN_PATH, "fake");
+	local nodeFake = DB.createChild(CombatManagerKw.BT_MAIN_PATH, "fake");
 	DB.setValue(nodeFake, "commander_link", "windowreference", DB.getValue(nodeActive, "commander_link"));
 	DB.setValue(nodeFake, "hptotal", "number", 1);
 	DB.setValue(nodeFake, "initresult", "number", DB.getValue(nodeActive, "initresult", 98) - 1);
@@ -466,7 +435,7 @@ function onRoundStart(nCurRound)
 	-- which image the token is on in order to check if any ranks have collapsed
 	-- CAVEAT: This will fail if units are on multiple maps. So just don't do that.
 	local anyUnit = nil;
-	local aCurrentCombatants = CombatManagerKw.getCombatantNodes(LIST_MODE_UNIT);
+	local aCurrentCombatants = CombatManager.getCombatantNodes("unit");
 	for _,v in pairs(aCurrentCombatants) do
 		if ActorManagerKw.isUnit(v) then
 			DB.setValue(v, "activated", "number", 0);
@@ -504,7 +473,7 @@ end
 
 function requestUnitActivation(nodeEntry, bSkipBell)
 	-- De-activate all other entries
-	for _,v in pairs(CombatManagerKw.getCombatantNodes(LIST_MODE_UNIT)) do
+	for _,v in pairs(CombatManager.getCombatantNodes("unit")) do
 		if DB.getValue(v, "active", 0) == 1 then
 			DB.setValue(v, "active", "number", 0);
 			DB.setValue(v, "activated", "number", 1);
@@ -542,7 +511,6 @@ end
 
 function activateUnit(nodeNext, bCommanderIsActive)
 	if nodeNext and CombatManagerKw.canUnitActivate(nodeNext, bCommanderIsActive) then
-		pushListMode(LIST_MODE_UNIT);
 		local nodeActive = CombatManagerKw.getActiveUnitCT();
 		CombatManager.onTurnEndEvent(nodeActive);
 
@@ -560,7 +528,6 @@ function activateUnit(nodeNext, bCommanderIsActive)
 
 		CombatManagerKw.requestUnitActivation(nodeNext);
 		CombatManager.onTurnStartEvent(nodeNext);
-		popListMode();
 	end
 end
 

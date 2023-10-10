@@ -5,22 +5,20 @@
 
 function onInit()
 	--DB.addHandler(CombatManager.CT_COMBATANT_PATH, "onDelete", commanderDeleted);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".commander_link", "onUpdate", commanderLinkUpdated);
+	CombatManager.addKeyedCombatantFieldChangeHandler("unit", "commander_link", "onUpdate", commanderLinkUpdated);
 end
 
 function onClose()
 	--DB.removeHandler(CombatManager.CT_COMBATANT_PATH, "onDelete", commanderDeleted);
-	DB.removeHandler(CombatManager.CT_COMBATANT_PATH .. ".commander_link", "onUpdate", commanderLinkUpdated);
+	CombatManager.removeKeyedCombatantFieldChangeHandler("unit", "commander_link", "onUpdate", commanderLinkUpdated);
 end
 
 function commanderDeleted(nodeCommander)
 	local sPath = nodeCommander.getPath();
-	for _,nodeCombatant in pairs(CombatManager.getCombatantNodes()) do
-		if ActorManagerKw.isUnit(nodeCombatant) then
-			local _,sRecord = DB.getValue(nodeCombatant, "commander_link");
-			if sRecord == sPath then
-				DB.setValue(nodeCombatant, "commander_link", "windowreference", "", "");
-			end
+	for _,nodeCombatant in pairs(CombatManager.getCombatantNodes("unit")) do
+		local _,sRecord = DB.getValue(nodeCombatant, "commander_link");
+		if sRecord == sPath then
+			DB.setValue(nodeCombatant, "commander_link", "windowreference", "", "");
 		end
 	end
 end

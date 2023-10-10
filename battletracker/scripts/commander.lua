@@ -5,7 +5,7 @@
 
 function onInit()
 	local node = getDatabaseNode();
-	DB.addHandler(CombatManager.CT_LIST .. ".*.commander_link", "onUpdate", commanderUpdated);
+	CombatManager.addKeyedCombatantFieldChangeHandler("unit", "commander_link", "onUpdate", commanderUpdated);
 	DB.addHandler(node.getPath("friendfoe"), "onUpdate", onFactionUpdated);
 	DB.addHandler(node.getPath("active"), "onUpdate", updateDisplay);
 	DB.addHandler(node.getPath(), "onDelete", onDelete);
@@ -34,7 +34,8 @@ end
 
 function onClose()
 	local node = getDatabaseNode();
-	DB.removeHandler(CombatManager.CT_LIST .. ".*.commander_link", "onUpdate", commanderUpdated);
+	CombatManager.removeKeyedCombatantFieldChangeHandler("unit", "commander_link", "onUpdate", commanderUpdated);
+	DB.removeHandler(CombatManagerKw.BT_COMBATANT_PATH .. ".commander_link", "onUpdate", commanderUpdated);
 	DB.removeHandler(node.getPath("friendfoe"), "onUpdate", onFactionUpdated);
 	DB.removeHandler(node.getPath("active"), "onUpdate", updateDisplay);
 	DB.removeHandler(node.getPath(), "onDelete", onDelete);
@@ -136,7 +137,7 @@ function onDrop(x, y, draginfo)
 		return true;
 	elseif sClass == "reference_unit" then
 		CombatManagerKw.setUnitDropCommander(getDatabaseNode());
-		return CampaignDataManager.handleDrop("combattracker", draginfo);
+		return CombatDropManager.handleAnyDrop(draginfo, "unit"); -- TODO check here
 	end
 end
 

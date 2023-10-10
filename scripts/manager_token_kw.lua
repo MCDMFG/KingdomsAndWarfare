@@ -79,7 +79,7 @@ end
 
 function initializeStates()
 	-- todo relocate this to updateAttributesHelper, which is invoked (indirectly) on demand by the ImageManager
-	local aCurrentCombatants = CombatManagerKw.getCombatantNodes(CombatManagerKw.LIST_MODE_UNIT);
+	local aCurrentCombatants = CombatManager.getCombatantNodes("unit");
 	for _,nodeCT in pairs(aCurrentCombatants) do
 		if ActorManagerKw.isUnit(nodeCT) then
 			local tokenCT = CombatManager.getTokenFromCT(nodeCT);
@@ -264,7 +264,7 @@ function onBattleTrackerSelection(nodeUnit, nSlot)
 		end
 	end
 
-	for _,nodeCombatant in pairs(CombatManagerKw.getCombatantNodes(CombatManagerKw.LIST_MODE_UNIT)) do
+	for _,nodeCombatant in pairs(CombatManager.getCombatantNodes("unit")) do
 		if nodeCombatant ~= nodeUnit then
 			tokenCT = CombatManager.getTokenFromCT(nodeCombatant);
 			if tokenCT then
