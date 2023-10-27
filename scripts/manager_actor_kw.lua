@@ -16,12 +16,14 @@ function isUnit(v)
 end
 
 function getCommanderCT(v)
+	local rActor = ActorManager.resolveActor(v);
+
 	-- Only get commander's for units
-	if not isUnit(v) then
+	if not isUnit(rActor) then
 		return;
 	end
 
-	local sType, node = ActorManager.getTypeAndNode(ActorManager.resolveActor(v));
+	local sType, node = ActorManager.getTypeAndNode(ActorManager.resolveActor(rActor));
 	if not node then
 		return;
 	end

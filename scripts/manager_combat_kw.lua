@@ -407,7 +407,7 @@ end
 
 function onTurnEnd(nodeCT)
 	-- Just process commander turns ending here.
-	if ActorManagerKw.isUnit(nodeCT) then
+	if (not nodeCT) or ActorManagerKw.isUnit(nodeCT) then
 		return;
 	end
 
@@ -450,7 +450,7 @@ end
 
 function canUnitActivate(nodeUnit, bCommanderIsActive)
 	-- Uncommanded units cannot activate.
-	local nodeCommander = ActorManagerKw.getCommanderCT(nodeUnit)
+	local nodeCommander = ActorManagerKw.getCommanderCT(nodeUnit);
 	if not nodeCommander then
 		return false;
 	end
@@ -471,15 +471,7 @@ function canUnitActivate(nodeUnit, bCommanderIsActive)
 		(DB.getValue(nodeUnit, "wounds", 0) < DB.getValue(nodeUnit, "hptotal"));
 end
 
-function requestUnitActivation(nodeEntry, bSkipBell)
-	-- De-activate all other entries
-	for _,v in pairs(CombatManager.getCombatantNodes("unit")) do
-		if DB.getValue(v, "active", 0) == 1 then
-			DB.setValue(v, "active", "number", 0);
-			DB.setValue(v, "activated", "number", 1);
-		end
-	end
-	
+function requestUnitActivation(nodeEntry, bSkipBell)	
 	-- Set active flag
 	DB.setValue(nodeEntry, "active", "number", 1);
 
@@ -510,22 +502,24 @@ function handleActivateUnit(msgOOB)
 end
 
 function activateUnit(nodeNext, bCommanderIsActive)
+	local nodeActive = CombatManagerKw.getActiveUnitCT();
+	CombatManager.onTurnEndEvent(nodeActive);
+
+	local activeInit;
+	if nodeActive then
+		activeInit = DB.getValue(nodeActive, "initresult", 98);
+		DB.setValue(nodeActive, "initresult", "number", DB.getValue(nodeNext, "initResult", 98) + 1);
+	end
+
+	CombatManager.onInitChangeEvent(nodeActive, nodeNext);
+
+	if nodeActive then
+		DB.setValue(nodeActive, "initresult", "number", activeInit);
+		DB.setValue(nodeActive, "active", "number", 0);
+		DB.setValue(nodeActive, "activated", "number", 1);
+	end
+
 	if nodeNext and CombatManagerKw.canUnitActivate(nodeNext, bCommanderIsActive) then
-		local nodeActive = CombatManagerKw.getActiveUnitCT();
-		CombatManager.onTurnEndEvent(nodeActive);
-
-		local activeInit;
-		if nodeActive then
-			activeInit = DB.getValue(nodeActive, "initresult", 98);
-			DB.setValue(nodeActive, "initresult", "number", DB.getValue(nodeNext, "initResult", 98) + 1);
-		end
-
-		CombatManager.onInitChangeEvent(nodeActive, nodeNext);
-
-		if nodeActive then
-			DB.setValue(nodeActive, "initresult", "number", activeInit);
-		end
-
 		CombatManagerKw.requestUnitActivation(nodeNext);
 		CombatManager.onTurnStartEvent(nodeNext);
 	end
