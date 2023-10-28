@@ -270,7 +270,6 @@ function notifyAddHarrowEffect(rSource, rTarget, bSuccess)
 end
 
 function handleAddHarrowEffect(msgOOB)
-	CombatManagerKw.pushListMode(CombatManagerKw.LIST_MODE_UNIT);
 	local rSource = ActorManager.resolveActor(msgOOB.sSourceNode)
 	local ctnode = ActorManager.getCTNode(rSource)
 	if msgOOB.nSuccess == '0' then
@@ -287,7 +286,6 @@ function handleAddHarrowEffect(msgOOB)
 			ActionsManager.actionRoll(rSource, aState.aTargets, aState.rRolls);
 		end
 	end
-	CombatManagerKw.popListMode();
 end
 
 ----------------------------------------

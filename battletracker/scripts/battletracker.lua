@@ -5,12 +5,15 @@
 
 function onInit()
 	local commanderWindows = mapCommanderWindows();
-	for _,nodeCombatant in pairs(CombatManagerKw.getCombatantNodes(CombatManagerKw.LIST_MODE_BOTH)) do
+	for _,nodeCombatant in pairs(CombatManager.getCombatantNodes()) do
+		addCombatant(nodeCombatant, commanderWindows);
+	end
+	for _,nodeCombatant in pairs(CombatManager.getCombatantNodes("unit")) do
 		addCombatant(nodeCombatant, commanderWindows);
 	end
 
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH, "onDelete", onDeleted);
-	DB.addHandler(DB.getPath(CombatManager.CT_COMBATANT_PATH, "tokenvis"), "onUpdate", onTokenVisChanged);
+	CombatManager.setCustomDeleteCombatantHandler(onDeleted);
+	CombatManager.addKeyedCombatantFieldChangeHandler("unit", "tokenvis", "onUpdate", onTokenVisChanged);
 
 	CombatManagerKw.registerCombatantAddedHandler(combatantAdded);
 	CombatManagerKw.registerUnitSelectionHandler(primaryUnitSelected, 1);
@@ -25,8 +28,8 @@ function onInit()
 end
 
 function onClose()
-	DB.removeHandler(CombatManager.CT_COMBATANT_PATH, "onDelete", onDeleted);
-	DB.removeHandler(DB.getPath(CombatManager.CT_COMBATANT_PATH, "tokenvis"), "onUpdate", onTokenVisChanged);
+	CombatManager.removeCustomDeleteCombatantHandler(onDeleted);
+	CombatManager.removeKeyedCombatantFieldChangeHandler("unit", "tokenvis", "onUpdate", onTokenVisChanged);
 	
 	CombatManagerKw.unregisterCombatantAddedHandler(combatantAdded);
 	CombatManagerKw.unregisterUnitSelectionHandler(primaryUnitSelected, 1);
@@ -63,8 +66,10 @@ end
 function onDeleted(nodeDeleted)
 	if nodeDeleted == primary_selected_unit.subwindow.getDatabaseNode() then
 		primary_selected_unit.setValue("battletracker_emptysummary");
+		return true;
 	elseif nodeDeleted == secondary_selected_unit.subwindow.getDatabaseNode() then
 		secondary_selected_unit.setValue("battletracker_emptysummary");
+		return true;
 	end
 end
 

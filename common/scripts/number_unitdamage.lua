@@ -4,7 +4,6 @@
 --
 
 function action(draginfo)
-	CombatManagerKw.pushListMode(CombatManagerKw.LIST_MODE_UNIT);
 	local rActor = ActorManager.resolveActor(window.getDatabaseNode());
 	local rAction = {};
 	rAction.label = "Power";
@@ -17,7 +16,6 @@ function action(draginfo)
 	table.insert(rAction.clauses, clause);					
 
 	ActionDamage.performRoll(draginfo, rActor, rAction);
-	CombatManagerKw.popListMode();
 	return true;
 end
 function onDragStart(button, x, y, draginfo)
