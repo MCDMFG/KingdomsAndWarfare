@@ -5,18 +5,10 @@
 -->
 
 <root>
-	<template name="button_ct_menu_original">
-		<metalplate>
-			<bounds>120,-45,50,26</bounds>
-			<tooltip textres="ct_tooltip_menu" />
-			<static textres="ct_label_menu" />
-			<script file="ct/scripts/ct_menu.lua" />
-		</metalplate>
-	</template>
-	<template name="button_ct_menu">
-		<button_ct_menu_original>
+	<template name="button_ct_menu" merge="join">
+		<buttoncontrol>
 			<script file="ct/scripts/ct_menu_kw.lua" />
-		</button_ct_menu_original>
+		</buttoncontrol>
 	</template>
 
 	<windowclass name="ct_power" merge="join">

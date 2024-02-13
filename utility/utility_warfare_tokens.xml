@@ -16,11 +16,12 @@
 			<minimum width="650" height="400" />
 		</sizelimits>
 		<nodelete />
-		<script file="utility/scripts/warfare_tokens.lua" />
 		<sheetdata>
-			<windowtitlebar name="title">
+			<windowtitlebar_utilitybox name="title">
 				<resource>library_recordtype_label_warfare_tokens</resource>
-			</windowtitlebar>
+			</windowtitlebar_utilitybox>
+			<windowmenubar_utilitybox name="menubar" />
+			<resize_utilitybox />
 
 			<anchor_content_utilitybox_top />
 
@@ -31,31 +32,17 @@
 			<button_iadd_list_content_controls />
 			<filter_list_content_controls />
 
-			<sub_content_labeled_framed_groupbox_left name="markers">
+			<sub_content_framed_groupbox_left name="markers">
 				<class>warfare_markers</class>
-			</sub_content_labeled_framed_groupbox_left>
+			</sub_content_framed_groupbox_left>
 			<scrollbar_content_base>
 				<anchored to="markers" />
 				<target>markers</target>
 			</scrollbar_content_base>
-			<label_list_content_full_framed_headersimple name="label_warfare_markers">
-				<anchored to="markers" />
-				<static textres="label_warfare_markers" />
-			</label_list_content_full_framed_headersimple>
 
-			<list_content_labeled_framed_groupbox_right name="list">
-				<class>fortification</class>
-				<datasource>.fortifications</datasource>
-				<allowdelete />
-				<script file="utility/scripts/fortifications.lua" />
-			</list_content_labeled_framed_groupbox_right>
-			<scrollbar_content_list />
-			<label_list_content_full_framed_headersimple name="label_warfare_fortifications">
-				<static textres="label_warfare_fortifications" />
-			</label_list_content_full_framed_headersimple>
-
-			<resize_utilitybox />
-			<close_utilitybox />
+			<sub_content_framed_groupbox_right name="fortifications">
+				<class>warfare_fortifications</class>
+			</sub_content_framed_groupbox_right>
 		</sheetdata>
 	</windowclass>
 
@@ -147,6 +134,24 @@
 				<fallback>tokens/Medium/o.png@Letter Tokens</fallback>
 				<tooltip textres="marker_collapsed" />
 			</column_token>
+		</sheetdata>
+	</windowclass>
+	<windowclass name="warfare_fortifications">
+		<sheetdata>
+			<anchor_content_top />
+			<anchor_content_bottom />
+
+			<header_content_framed_headersimple name="header">
+				<static textres="label_warfare_fortifications" />
+			</header_content_framed_headersimple>
+			<list_content name="list">
+				<class>fortification</class>
+				<datasource>.fortifications</datasource>
+				<allowcreate />
+				<allowdelete />
+				<script file="utility/scripts/fortifications.lua" />
+			</list_content>
+			<scrollbar_content_list />
 		</sheetdata>
 	</windowclass>
 

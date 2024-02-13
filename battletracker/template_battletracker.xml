@@ -70,12 +70,11 @@
 
 	<template name="battletracker_moralelabel">
 		<label>
-			<font>sheetlabel_ps</font>
-			<center />
 			<anchored height="22" width="40">
 				<top />
 				<right anchor="left" offset="-5" />
 			</anchored>
+			<center />
 		</label>
 	</template>
 

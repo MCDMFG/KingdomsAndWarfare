@@ -120,6 +120,10 @@ aWarfareAbilities = {
 aBaseAbilities = {};
 
 function onInit()
+	if Session.IsHost then
+		DB.setPublic(DB.createNode("battletracker"), true);
+	end
+
 	for kRecordType,vRecordType in pairs(aRecordOverrides) do
 		LibraryData.overrideRecordTypeInfo(kRecordType, vRecordType);
 	end
@@ -129,13 +133,12 @@ function onInit()
 		end
 	end
 	if Session.IsHost then
-		DesktopManager.registerSidebarStackButton({
-			icon="button_kw_tokens",
-			icon_down="button_kw_tokens_down",
+		local tButton = {
 			tooltipres="sidebar_tooltip_warfaretokens",
 			class="warfare_tokens",
-			path="warfare"
-		});
+			path="warfare",
+		};
+		DesktopManager.registerSidebarToolButton(tButton);
 	end
 
 	fOnModuleLoad = Module.onModuleLoad;
@@ -237,6 +240,11 @@ function onInit()
 
 	fActionRoll = ActionsManager.actionRoll;
 	ActionsManager.actionRoll = actionRoll;
+
+	WindowTabManager.registerTab("partysheet_host", { sName = "domain", sIcon = "tab_domain", sClass = "ps_domain" });
+	WindowTabManager.registerTab("partysheet_host", { sName = "powerpool", sIcon = "tab_powerpool", sClass = "ps_powerpool" });
+	WindowTabManager.registerTab("partysheet_client", { sName = "domain", sIcon = "tab_domain", sClass = "ps_domain" });
+	WindowTabManager.registerTab("partysheet_client", { sName = "powerpool", sIcon = "tab_powerpool", sClass = "ps_powerpool" });
 end
 
 

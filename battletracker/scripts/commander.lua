@@ -6,68 +6,62 @@
 function onInit()
 	local node = getDatabaseNode();
 	CombatManager.addKeyedCombatantFieldChangeHandler("unit", "commander_link", "onUpdate", commanderUpdated);
-	DB.addHandler(node.getPath("friendfoe"), "onUpdate", onFactionUpdated);
-	DB.addHandler(node.getPath("active"), "onUpdate", updateDisplay);
-	DB.addHandler(node.getPath(), "onDelete", onDelete);
-	DB.addHandler(node.getPath("isidentified"), "onUpdate", onIDChanged);
+	DB.addHandler(DB.getPath(node, "friendfoe"), "onUpdate", onFactionUpdated);
+	DB.addHandler(DB.getPath(node, "active"), "onUpdate", onActiveUpdated);
+	DB.addHandler(DB.getPath(node, "isidentified"), "onUpdate", onIDChanged);
+	if Session.IsHost then
+		DB.addHandler(DB.getPath(node), "onDelete", onDelete);
+	else
+		DB.addHandler(DB.getPath(node, "tokenvis"), "onUpdate", onTokenVisUpdated);
+	end
 
 	updateDisplay();
 	onIDChanged();
 	
 	-- Initialize color
-	if Session.IsHost and node then
+	if Session.IsHost then
 		local rActor = ActorManager.resolveActor(node);
 		if rActor and ActorManager.isPC(rActor) then
-			local nodeCreature = ActorManager.getCreatureNode(rActor);
-			if nodeCreature then
-				local sCreatureIdentity = nodeCreature.getName();
-
-				-- Check if the Pc is curerntly activated. If not, getIdentityColor will return black
-				if StringManager.isWord(sCreatureIdentity, User.getAllActiveIdentities()) then
-					local sColor = User.getIdentityColor(sCreatureIdentity);
-					color_swatch.setColor(sColor);
+			local nodeActor = ActorManager.getCreatureNode(rActor);
+			if nodeActor then
+				-- Check if the Pc is currently activated. If not, getIdentityColor will return black
+				if StringManager.isWord(DB.getName(nodeActor), User.getAllActiveIdentities()) then
+					color_swatch.setColor(User.getIdentityColor(sCreatureIdentity));
 				end
 			end
 		end
 	end
 end
-
 function onClose()
 	local node = getDatabaseNode();
 	CombatManager.removeKeyedCombatantFieldChangeHandler("unit", "commander_link", "onUpdate", commanderUpdated);
-	DB.removeHandler(CombatManagerKw.BT_COMBATANT_PATH .. ".commander_link", "onUpdate", commanderUpdated);
-	DB.removeHandler(node.getPath("friendfoe"), "onUpdate", onFactionUpdated);
-	DB.removeHandler(node.getPath("active"), "onUpdate", updateDisplay);
-	DB.removeHandler(node.getPath(), "onDelete", onDelete);
-	DB.removeHandler(node.getPath("isidentified"), "onUpdate", onIDChanged);
+	DB.removeHandler(DB.getPath(node, "friendfoe"), "onUpdate", onFactionUpdated);
+	DB.removeHandler(DB.getPath(node, "active"), "onUpdate", onActiveUpdated);
+	DB.removeHandler(DB.getPath(node, "isidentified"), "onUpdate", onIDChanged);
+	if Session.IsHost then
+		DB.removeHandler(DB.getPath(node), "onDelete", onDelete);
+	else
+		DB.removeHandler(DB.getPath(node, "tokenvis"), "onUpdate", onTokenVisUpdated);
+	end
 end
 
 -- Listen to its own delete event so it can neatly delete all of its units. Could also have the units set their commanders to nil.
 function onDelete(nodeCommander)
-	for k,window in pairs(list.getWindows()) do
-		local node = window.getDatabaseNode();
+	for _,w in pairs(list.getWindows()) do
+		local node = w.getDatabaseNode();
 		if node then
-			node.delete();
+			DB.deleteNode(node);
 		end
 	end
 end
-
--- this function is necessary because the link_ctentry template calls window.onLinkChanged()
-function onLinkChanged()
-	if link then
-		commanderUpdated(link.getDatabaseNode())
-	end
-end
-
 function commanderUpdated(nodeLink)
 	if nodeLink then
-		local sClass, sRecord = nodeLink.getValue();
-		if sRecord == getDatabaseNode().getPath() then
+		local _, sRecord = nodeLink.getValue();
+		if sRecord == DB.getPath(getDatabaseNode()) then
 			list.createWindow(DB.getChild(nodeLink, ".."));
 		end
 	end
 end
-
 function onFactionUpdated(nodeUpdated)
 	local sFaction = nodeUpdated.getValue();
 	for k,v in pairs(list.getWindows()) do
@@ -77,6 +71,24 @@ function onFactionUpdated(nodeUpdated)
 		end
 	end
 	updateDisplay();
+end
+function onActiveUpdated(node)
+	updateDisplay();
+end
+function onIDChanged()
+	local nodeRecord = getDatabaseNode();
+	local sClass = DB.getValue(nodeRecord, "link", "", "");
+	if sClass == "npc" then
+		local bID = LibraryData.getIDState("npc", nodeRecord, true);
+		name.setVisible(bID);
+		nonid_name.setVisible(not bID);
+	else
+		name.setVisible(true);
+		nonid_name.setVisible(false);
+	end
+end
+function onTokenVisUpdated(nodeTokenVis)
+	windowlist.applyFilter();
 end
 
 function updateDisplay()
@@ -110,9 +122,16 @@ function updateDisplay()
 	end
 end
 
+
+-- this function is necessary because the link_ctentry template calls window.onLinkChanged()
+function onLinkChanged()
+	if link then
+		commanderUpdated(link.getDatabaseNode())
+	end
+end
+
 function onUnitListChanged()
-	local sColor = color_swatch.getColor();
-	setColor(sColor);
+	setColor(color_swatch.getColor());
 end
 
 function setColor(sColor)
@@ -141,15 +160,3 @@ function onDrop(x, y, draginfo)
 	end
 end
 
-function onIDChanged()
-	local nodeRecord = getDatabaseNode();
-	local sClass = DB.getValue(nodeRecord, "link", "", "");
-	if sClass == "npc" then
-		local bID = LibraryData.getIDState("npc", nodeRecord, true);
-		name.setVisible(bID);
-		nonid_name.setVisible(not bID);
-	else
-		name.setVisible(true);
-		nonid_name.setVisible(false);
-	end
-end

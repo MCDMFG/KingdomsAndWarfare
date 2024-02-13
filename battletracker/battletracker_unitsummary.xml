@@ -156,7 +156,7 @@
 				<state icon="button_checkoff" tooltipres="ct_tooltip_reactionoff" />
 				<state icon="button_checkon" tooltipres="ct_tooltip_reactionon" />
 			</buttonfield>
-			<buttoncontrol name="rally">
+			<button_text_sm name="rally">
 				<script>
 					function onButtonPress()
 						local node = window.getDatabaseNode()
@@ -171,15 +171,9 @@
 					<top anchor="bottom" offset="7" />
 					<right position="right" />
 				</anchored>
-				<frame name="buttonup" offset="2,3,5,3" />
-				<stateframe>
-					<pressed name="buttondown" offset="2,3,5,3" />
-				</stateframe>
-				<pressed offset="1,1" />
-				<font>button-white</font>
 				<textres>unit_tooltip_rally</textres>
 				<tooltip textres="unit_tooltip_rally" />
-			</buttoncontrol>
+			</button_text_sm>
 			
 			<unitsummary_divider name="divider2">
 				<anchored>

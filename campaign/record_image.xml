@@ -6,7 +6,7 @@
 -->
 
 <root>
-	<windowclass name="imagewindow" version="&gt;=4" merge="join">
+	<windowclass name="imagewindow" merge="join">
 		<sheetdata>
 			<image_record name="image">
 				<script file="campaign/scripts/image.lua" />
@@ -84,45 +84,7 @@
 		</tokenfield>
 	</template>
 
-	<windowclass name="imagewindow_toolbar" version="&gt;=4" merge="join">
-		<script>
-			function onInit()
-				super.onInit();
-				h6.setVisible(true);
-				rank_position.setVisible(false);
-				files_label.setVisible(false);
-
-				WarfareManager.setMarkersActive(parentcontrol.window, false);
-			end
-		</script>
-		<sheetdata>
-			<image_toolbar_separator name="h6" />
-			<image_toolbar_warfare name="warfare" />
-			<image_toolbar_rank_position name="rank_position" />
-
-			<image_toolbar_separator name="h7" />
-
-			<basicnumber name="files">
-				<anchored to="toolbar_anchor" width="26" height="26">
-					<top offset="4" />
-					<right anchor="left" relation="relative" offset="-6" />
-				</anchored>
-				<min>1</min>
-				<default>5</default>
-				<max>10</max>
-				<invisible />
-			</basicnumber>
-			<label name="files_label">
-				<anchored to="toolbar_anchor" width="56" height="26">
-					<top offset="4" />
-					<right anchor="left" relation="relative" offset="-6" />
-				</anchored>
-				<static textres="label_image_files" />
-			</label>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="imagewindow_toolbar" version="&lt;4" merge="join">
+	<windowclass name="imagewindow_toolbar" merge="join">
 		<script>
 			function onInit()
 				super.onInit();

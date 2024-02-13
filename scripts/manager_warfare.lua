@@ -49,8 +49,7 @@ function setMarkersActive(windowinstance, bActive)
 			if not CombatManager.getCTFromToken(v) then
 				local prototype = v.getPrototype();
 				if (markers and markers[prototype]) or prototype == collapsedMarker then
-					v.setActivable(bActive);
-					v.setModifiable(bActive);
+					v.setPublicEdit(bActive);
 				end
 			end
 		end
