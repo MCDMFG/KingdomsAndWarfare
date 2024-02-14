@@ -412,9 +412,9 @@ function onTurnEnd(nodeCT)
 	end
 
 	local aCurrentCombatants = CombatManager.getCombatantNodes("unit");
-	for _,v in pairs(aCurrentCombatants) do
-		if ActorManagerKw.getCommanderCT(v) == nodeCT then
-			activateUnit(v, true);
+	for _,nodeCombatant in pairs(aCurrentCombatants) do
+		if ActorManagerKw.getCommanderCT(nodeCombatant) == nodeCT then
+			activateUnit(nodeCombatant, true);
 		end
 	end
 
@@ -511,7 +511,11 @@ function activateUnit(nodeNext, bCommanderIsActive)
 		DB.setValue(nodeActive, "initresult", "number", DB.getValue(nodeNext, "initResult", 98) + 1);
 	end
 
+	-- As of 2024-02-14 CoreRPG's EffectManager is hardcoded to iterate over the CT for effects.
+	local getSortedCombatantListOriginal = CombatManager.getSortedCombatantList;
+	CombatManager.getSortedCombatantList = function() return getSortedCombatantListOriginal("unit") end
 	CombatManager.onInitChangeEvent(nodeActive, nodeNext);
+	CombatManager.getSortedCombatantList = getSortedCombatantListOriginal;
 
 	if nodeActive then
 		DB.setValue(nodeActive, "initresult", "number", activeInit);
