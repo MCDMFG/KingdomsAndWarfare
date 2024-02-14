@@ -13,9 +13,6 @@ function onInit()
 	fOnFilter = list.onFilter;
 	list.onFilter = onFilter;
 	list.applyFilter();
-
-	CombatManager.setCustomTurnStart(onTurnStartSetCommander);
-	CombatManager.setCustomDeleteCombatantHandler(onCommanderDelete);
 end
 
 function onFilter(w)

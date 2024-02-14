@@ -120,6 +120,10 @@ aWarfareAbilities = {
 aBaseAbilities = {};
 
 function onInit()
+	if Session.IsHost then
+		DB.setPublic(DB.createNode("battletracker"), true);
+	end
+
 	for kRecordType,vRecordType in pairs(aRecordOverrides) do
 		LibraryData.overrideRecordTypeInfo(kRecordType, vRecordType);
 	end
@@ -129,13 +133,12 @@ function onInit()
 		end
 	end
 	if Session.IsHost then
-		DesktopManager.registerSidebarStackButton({
-			icon="button_kw_tokens",
-			icon_down="button_kw_tokens_down",
+		local tButton = {
 			tooltipres="sidebar_tooltip_warfaretokens",
 			class="warfare_tokens",
-			path="warfare"
-		});
+			path="warfare",
+		};
+		DesktopManager.registerSidebarToolButton(tButton);
 	end
 
 	fOnModuleLoad = Module.onModuleLoad;

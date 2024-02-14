@@ -159,7 +159,6 @@
 					<bottom offset="-22" />
 				</anchored>
 				<static textres="bt_label_morale" />
-				<font>sheetlabel_ps</font>
 			</label>
 
 			<button_ct_setactive>

@@ -27,7 +27,7 @@
 					<width>35</width>
 					<fillwidth />
 				</columns>
-				<empty font="list-empty-ps" textres="ps_empty_powerpool" />
+				<empty font="list-empty" textres="ps_empty_powerpool" />
 				<frame name="groupbox" offset="5,10,15,10" />
 			</windowlist>
 			<scrollbar_list>
@@ -73,7 +73,7 @@
 				<allowcreate />
 				<allowdelete />
 				<child></child>
-				<empty font="list-empty-ps" textres="ps_empty_powers" />
+				<empty font="list-empty" textres="ps_empty_powers" />
 				<frame name="groupbox" offset="5,10,15,10" />
 				<script>
 					function addEntry()
@@ -156,7 +156,7 @@
 				<allowcreate />
 				<allowdelete />
 				<child></child>
-				<empty font="list-empty-ps" textres="ps_empty_features" />
+				<empty font="list-empty" textres="ps_empty_features" />
 				<frame name="groupbox" offset="5,10,15,10" />
 				<script>
 					function addEntry()

@@ -28,9 +28,6 @@ function onInit()
 	fLinkToken = TokenManager.linkToken;
 	TokenManager.linkToken = linkToken;
 
-	TokenManager.registerWidgetSet("state", { "action", "reaction" });
-	TokenManager.registerWidgetSet("exposed", { "exposed", "reaction" });
-	TokenManager.registerWidgetSet("unithealth", { "broken" });
 	CombatManager.addCombatantFieldChangeHandler("activated", "onUpdate", updateState);
 	CombatManager.addCombatantFieldChangeHandler("reaction", "onUpdate", updateState);
 	CombatManager.addCombatantFieldChangeHandler("exposed", "onUpdate", updateExposed);
@@ -93,128 +90,109 @@ function initializeStates()
 end
 
 function updateWounds(nodeWounds)
-	if not nodeWounds then return; end
-
-	local nodeCT = nodeWounds.getParent();
+	local nodeCT = DB.getParent(nodeWounds);
 	local tokenCT = CombatManager.getTokenFromCT(nodeCT);
 	if tokenCT and ActorManagerKw.isUnit(nodeCT) then
 		updateWoundsHelper(tokenCT, nodeCT)
 	end
 end
-
 function updateWoundsHelper(tokenCT, nodeCT)
-	if tokenCT and ActorManagerKw.isUnit(nodeCT) then
-		local aWidgets = TokenManager.getWidgetList(tokenCT, "unithealth");
-		local bIsBroken = ActorHealthManager.getWoundPercent(ActorManager.resolveActor(nodeCT)) >= 1;
+	if not tokenCT or not ActorManagerKw.isUnit(nodeCT) then
+		return;
+	end
 
-		local wBroken = aWidgets["broken"];
-		if wBroken and not bIsBroken then
-			wBroken.destroy();
-			wBroken = nil;
+	if (ActorHealthManager.getWoundPercent(ActorManager.resolveActor(nodeCT)) >= 1) then
+		if not tokenCT.findWidget("broken") then
+			local tWidget = {
+				name = "broken",
+				icon = "cond_broken", 
+				tooltip = "Broken",
+				w = TOKEN_BROKEN_SIZE, h = TOKEN_BROKEN_SIZE, 
+			};
+			tokenCT.addBitmapWidget(tWidget);
 		end
-		if not wBroken and bIsBroken then
-			wBroken = tokenCT.addBitmapWidget();
-			if wBroken then
-				wBroken.setName("broken")
-			end
-		end
-
-		if wBroken then
-			wBroken.setBitmap("cond_broken");
-			wBroken.setTooltipText("Broken");
-			wBroken.setSize(TOKEN_BROKEN_SIZE, TOKEN_BROKEN_SIZE);
-		end
+	else
+		tokenCT.deleteWidget("broken");
 	end
 end
 
 function updateState(nodeState)
-	if not nodeState then return; end
-
-	local nodeCT = nodeState.getParent();
+	local nodeCT = DB.getParent(nodeState);
 	local tokenCT = CombatManager.getTokenFromCT(nodeCT);
 	if tokenCT and ActorManagerKw.isUnit(nodeCT) then
 		updateStateHelper(tokenCT, nodeCT);	 
 	end
 end
-
 function updateStateHelper(tokenCT, nodeCT)
-	-- Only do this for units
-	if tokenCT and ActorManagerKw.isUnit(nodeCT) then
-		local aWidgets = TokenManager.getWidgetList(tokenCT, "state");
-		local bHasActivated = DB.getValue(nodeCT, "activated", 0) == 1;
-		local bHasReacted = DB.getValue(nodeCT, "reaction", 0) == 1;
+	if not tokenCT or not ActorManagerKw.isUnit(nodeCT) then
+		return;
+	end
 
-		local posx = 0;
+	local posx = 0;
 
-		local wAction = aWidgets["action"]
-		if wAction and not bHasActivated then
-			wAction.destroy()
-			wAction = nil;
-		elseif not wAction and bHasActivated then
-			wAction = tokenCT.addBitmapWidget();
-			if wAction then
-				wAction.setName("action");
-			end
+	if (DB.getValue(nodeCT, "activated", 0) == 1) then
+		if not tokenCT.findWidget("action") then
+			local tWidget = {
+				name = "action",
+				icon = "state_activated", 
+				tooltip = "Has Activated",
+				position = "topleft",
+				x = posx + TOKEN_STATE_SIZE / 2,
+				y = TOKEN_STATE_SIZE / 2,
+				w = TOKEN_STATE_SIZE, h = TOKEN_STATE_SIZE, 
+			};
+			tokenCT.addBitmapWidget(tWidget);
 		end
-		if wAction then
-			wAction.setBitmap("state_activated");
-			wAction.setTooltipText("Has Activated");
-			wAction.setSize(TOKEN_STATE_SIZE, TOKEN_STATE_SIZE);
-			wAction.setPosition("topleft", posx + TOKEN_STATE_SIZE / 2, TOKEN_STATE_SIZE / 2)
-			posx = posx + TOKEN_STATE_SIZE;
-		end
+		posx = posx + TOKEN_STATE_SIZE;
+	else
+		tokenCT.deleteWidget("action");
+	end
 
-		local wReaction = aWidgets["reaction"]
-		if wReaction and not bHasReacted then
-			wReaction.destroy()
-			wReaction = nil;
-		elseif not wReaction and bHasReacted then
-			wReaction = tokenCT.addBitmapWidget();
-			if wReaction then
-				wReaction.setName("reaction");
-			end
+	if (DB.getValue(nodeCT, "reaction", 0) == 1) then
+		if not tokenCT.findWidget("reaction") then
+			local tWidget = {
+				name = "reaction",
+				icon = "state_reacted", 
+				tooltip = "Has Reacted",
+				position = "topleft",
+				x = posx + TOKEN_STATE_SIZE / 2,
+				y = TOKEN_STATE_SIZE / 2,
+				w = TOKEN_STATE_SIZE, h = TOKEN_STATE_SIZE, 
+			};
+			tokenCT.addBitmapWidget(tWidget);
 		end
-		if wReaction then
-			wReaction.setBitmap("state_reacted");
-			wReaction.setTooltipText("Has Reacted");
-			wReaction.setSize(TOKEN_STATE_SIZE, TOKEN_STATE_SIZE);
-			wReaction.setPosition("topleft", posx + TOKEN_STATE_SIZE / 2, TOKEN_STATE_SIZE / 2)
-		end
+	else
+		tokenCT.deleteWidget("reaction");
 	end
 end
 
 function updateExposed(nodeExposed)
-	if not nodeExposed then return; end
-
-	local nodeCT = nodeExposed.getParent();
+	local nodeCT = DB.getParent(nodeExposed);
 	local tokenCT = CombatManager.getTokenFromCT(nodeCT);
 	if tokenCT and ActorManagerKw.isUnit(nodeCT) then
 		updateExposedHelper(tokenCT, nodeCT);	 
 	end
 end
-
 function updateExposedHelper(tokenCT, nodeCT)
-	-- Only do this for units
-	if tokenCT and ActorManagerKw.isUnit(nodeCT) then
-		local aWidgets = TokenManager.getWidgetList(tokenCT, "exposed");
-		local bIsExposed = DB.getValue(nodeCT, "exposed", 0) == 1;
+	if not tokenCT or not ActorManagerKw.isUnit(nodeCT) then
+		return;
+	end
 
-		local wExposed = aWidgets["exposed"]
-		if wExposed and not bIsExposed then
-			wExposed.destroy()
-			wExposed = nil;
-		elseif not wExposed and bIsExposed then
-			wExposed = tokenCT.addBitmapWidget();
-			if wExposed then
-				wExposed.setName("exposed");
-			end
+	if (DB.getValue(nodeCT, "exposed", 0) == 1) then
+		if not tokenCT.findWidget("exposed") then
+			local tWidget = {
+				name = "exposed",
+				icon = "state_exposed", 
+				tooltip = "Is Exposed",
+				position = "bottomright",
+				x = -(TOKEN_STATE_SIZE / 2),
+				y = -(TOKEN_STATE_SIZE / 2),
+				w = TOKEN_STATE_SIZE, h = TOKEN_STATE_SIZE, 
+			};
+			tokenCT.addBitmapWidget(tWidget);
 		end
-		if wExposed then
-			wExposed.setBitmap("state_exposed");
-			wExposed.setTooltipText("Is Exposed");
-			wExposed.setSize(TOKEN_STATE_SIZE, TOKEN_STATE_SIZE);
-			wExposed.setPosition("bottomright", -(TOKEN_STATE_SIZE / 2), -(TOKEN_STATE_SIZE / 2));
-		end
+	else
+		tokenCT.deleteWidget("exposed");
 	end
 end
 
@@ -227,40 +205,38 @@ function updateColor(nodeColor)
 		updateColorHelper(tokenCT, nodeCT);	 
 	end
 end
-
 function updateColorHelper(tokenCT, nodeCT)
-	-- Only do this for units
-	if tokenCT and ActorManagerKw.isUnit(nodeCT) then
-		local sColor = DB.getValue(nodeCT, "color", DEFAULT_COLOR);
-		local sUnderlay = UNDERLAY_OPACITY .. sColor:sub(3);
-
-		tokenCT.removeAllUnderlays();
-		tokenCT.addUnderlay(0.5, sUnderlay);
-		tokenCT.setColor(sColor);
+	if not tokenCT or not ActorManagerKw.isUnit(nodeCT) then
+		return;
 	end
-end
 
--- Return CT of a token, otherwise nil
-function hasCT(token)
-	local ct = CombatManager.getCTFromToken(token); 
-	return ct; 
+	local sColor = DB.getValue(nodeCT, "color", DEFAULT_COLOR);
+	local sUnderlay = UNDERLAY_OPACITY .. sColor:sub(3);
+
+	tokenCT.removeAllUnderlays();
+	tokenCT.addUnderlay(0.5, sUnderlay);
+	tokenCT.setColor(sColor);
 end
 
 function onBattleTrackerSelection(nodeUnit, nSlot)
 	local sSlot = tostring(nSlot);
 	local tokenCT = CombatManager.getTokenFromCT(nodeUnit);
 	if tokenCT then
-		local selectionWidget = tokenCT.findWidget("selectionslot");
-		if selectionWidget then
-			selectionWidget.setText(sSlot);
+		local wgt = tokenCT.findWidget("selectionslot");
+		if wgt then
+			wgt.setText(sSlot);
 		else
-			selectionWidget = tokenCT.addTextWidget("mini_name_selected", sSlot);
-			selectionWidget.setFrame("mini_name", 5, 2, 4, 2);
+			local tWidget = {
+				name = "selectionslot",
+				frame = "mini_name",
+				frameoffset = "5,2,4,2",
+				font = "mini_name_selected", 
+				text = sSlot,
+			};
+			wgt = tokenCT.addTextWidget(tWidget);
 	
-			local w,h = selectionWidget.getSize();
-			selectionWidget.setPosition("topright", -w/2-5, h/2+2);
-
-			selectionWidget.setName("selectionslot")
+			local w,h = wgt.getSize();
+			wgt.setPosition("topright", -w/2-5, h/2+2);
 		end
 	end
 
@@ -268,9 +244,9 @@ function onBattleTrackerSelection(nodeUnit, nSlot)
 		if nodeCombatant ~= nodeUnit then
 			tokenCT = CombatManager.getTokenFromCT(nodeCombatant);
 			if tokenCT then
-				local selectionWidget = tokenCT.findWidget("selectionslot");
-				if selectionWidget and (selectionWidget.getText() == sSlot) then
-					selectionWidget.destroy();
+				local wgt = tokenCT.findWidget("selectionslot");
+				if wgt and (wgt.getText() == sSlot) then
+					wgt.destroy();
 				end
 			end
 		end

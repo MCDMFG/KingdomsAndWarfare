@@ -6,8 +6,6 @@
 -->
 
 <root>
-	<string name="dash">-</string>
-
 	<!-- Options -->
 	<string name="option_header_kw">Kingdoms and Warfare</string>
 	<string name="option_label_MROT">Mark unit reactions on out of turn tests</string>
@@ -180,7 +178,6 @@
 	<!-- Party Sheet -->
 	<string name="ps_label_powerpool">Power Pool</string>
 	<string name="ps_label_domainsize">Domain Size</string>
-	<string name="ps_label_name">Name</string>
 	<string name="ps_label_titles">Titles</string>
 	<string name="ps_label_officiers">Officers</string>
 	<string name="ps_label_skills">Skills</string>
@@ -235,10 +232,9 @@
 	<!-- Warfare Tokens -->
 	<string name="sidebar_tooltip_warfaretokens">Warfare Tokens</string>
 	<string name="library_recordtype_label_warfare_tokens">Warfare Tokens</string>
-	<string name="label_warfare_markers">Markers</string>
 	<string name="label_warfare_markers_ranks_friendly">Allied Rank Markers</string>
 	<string name="label_warfare_markers_ranks_enemy">Enemy Rank Markers</string>
-	<string name="label_warfare_markers_other">Other</string>
+	<string name="label_warfare_markers_other">Other Markers</string>
 	<string name="label_warfare_fortifications">Fortifications</string>
 
 	<string name="label_rank_vanguard">Vanguard</string>

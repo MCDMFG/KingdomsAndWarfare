@@ -18,7 +18,7 @@
 				<class>ps_domainofficer</class>
 				<sortby><control>name</control></sortby>
 				<allowdelete />
-				<empty font="list-empty-ps" gmtextres="ps_emptylistother" />
+				<empty font="list-empty" gmtextres="ps_emptylistother" />
 			</windowlist>
 			<scrollbar>
 				<anchored to="officers" />

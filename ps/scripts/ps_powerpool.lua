@@ -47,7 +47,7 @@ function onDrop(x, y, draginfo)
 	elseif sDragType == "dice" then
 		local rAction = {}
 		rAction.add = true;
-		rAction.aDice = draginfo.getDieList();
+		rAction.aDice = draginfo.getDiceData();
 		rAction.nMod = 0;
 		rAction.domainNode = window.getDatabaseNode();
 		ActionPowerDie.performRoll(nil, nil, rAction);

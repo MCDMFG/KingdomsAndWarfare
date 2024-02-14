@@ -3,17 +3,6 @@
 -- attribution and copyright information.
 --
 
-function onInit()
-	if Session.IsHost then
-		registerMenuItem(Interface.getString("list_menu_createitem"), "insert", 5);
-	end
-end
-
-function onMenuSelection(selection)
-	if selection == 5 then
-		addEntry();
-	end
-end
 function onClickDown(button, x, y)
 	if Session.IsHost then
 		return true;
@@ -38,10 +27,4 @@ function onDrop(x, y, draginfo)
 		end
 		return true;
 	end
-end
-
-function addEntry()
-	local w = createWindow();
-	window[getName() .. "_iedit"].setValue(1);
-	w.name.setFocus();
 end
