@@ -22,6 +22,7 @@
 		<script name="DomainManager" file="scripts/manager_domain.lua" />
 		<script name="EffectManagerKw" file="scripts/manager_effect_kw.lua" />
 		<script name="TokenManagerKw" file="scripts/manager_token_kw.lua" />
+		<script name="PartyManagerKw" file="scripts/manager_ps_kw.lua" />
 		<script name="PowerManagerKw" file="scripts/manager_power_kw.lua" />
 		<script name="CharManagerKw" file="scripts/manager_char_kw.lua" />
 		<script name="CharWizardManagerKw" file="scripts/manager_charwizard_kw.lua" />
