@@ -409,10 +409,10 @@
 
 			<button_listitem_idelete_left name="idelete" />
 
-			<string_listitem_center_bold name="name">
+			<string_listitem_center name="name">
 				<frame name="rowshade" offset="5,2,5,2" />
 				<empty textres="unit_empty_traitname" />
-			</string_listitem_center_bold>
+			</string_listitem_center>
 			
 			<basicstring name="desc">
 				<anchored to="name" position="belowleft" offset="0,5">
