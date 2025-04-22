@@ -556,7 +556,7 @@ function parseTests(nodeUnit, sPowerName, aWords)
 	for i = 1, #aWords do
 		if StringManager.isWord(aWords[i], "test") then
 			local nIndex = i;
-			if StringManager.isWord(aWords[nIndex - 1], DataCommon.abilities) then
+			if StringManager.isWord(aWords[nIndex - 1], KingdomsAndWarfare.aWarfareAbilities) then
 				local rSave = {};
 				rSave.stat = aWords[nIndex - 1];
 				rSave.label = sPowerName;

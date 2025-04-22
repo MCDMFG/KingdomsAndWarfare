@@ -168,15 +168,6 @@ function onInit()
 	table.insert(GameSystem.targetactions, "unitsavedc");
 	table.insert(GameSystem.targetactions, "powerdie");
 
-	aBaseAbilities = UtilityManager.copyDeep(DataCommon.abilities);
-
-	table.insert(DataCommon.abilities, "attack");
-	table.insert(DataCommon.abilities, "defense");
-	table.insert(DataCommon.abilities, "power");
-	table.insert(DataCommon.abilities, "toughness");
-	table.insert(DataCommon.abilities, "morale");
-	table.insert(DataCommon.abilities, "command");
-
 	DataCommon.ability_ltos.attack = "ATK";
 	DataCommon.ability_ltos.defense = "DEF";
 	DataCommon.ability_ltos.power = "POW";
@@ -368,14 +359,6 @@ function getNPCSourceType(vNode)
 	end
 
 	return type;
-end
-
--- Invokes the provided function with DataCommon.abilities set to aBaseAbilities;
-function invokeWithBaseAbilities(fInvoke, ...)
-	local fullAbilities = DataCommon.abilities;
-	DataCommon.abilities = aBaseAbilities;
-	fInvoke(...);
-	DataCommon.abilities = fullAbilities;
 end
 
 -- Big hack
