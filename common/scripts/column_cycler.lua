@@ -44,10 +44,6 @@ function update(bReadOnly, bForceHide)
 				window[separator[1]].setVisible(bLocalShow);
 			end
 		end
-
-		if self.onVisUpdate then
-			self.onVisUpdate(bLocalShow, bReadOnly);
-		end
 	end
 
 	if super.update then
@@ -55,12 +51,4 @@ function update(bReadOnly, bForceHide)
 	end
 	
 	return bLocalShow;
-end
-
-function onVisUpdate(bLocalShow, bReadOnly)
-	if bReadOnly then
-		setFrame(nil);
-	else
-		setFrame("fielddark", 7,5,7,5);
-	end
 end

@@ -97,11 +97,7 @@ function modSave(rSource, rTarget, rRoll)
 
 	local bADV, bDIS = clearAdvantage(rRoll);
 
-	local sAbility = rRoll.sDesc:match("%[SAVE%] (%w+)");
-	if sAbility then
-		sAbility = string.lower(sAbility);
-	end
-
+	local sAbility = ActionCore.decodeLabelText(rRoll.sDesc, "action_save_tag"):lower();
 	if StringManager.contains({ "intelligence", "wisdom", "charisma" }, sAbility) then
 		bDIS = true;
 		addLetheTag(rRoll);
@@ -124,16 +120,16 @@ function modIntelligence(rSource, _, rRoll)
 	end
 
 	-- Get ability used
-	local sAbility = string.match(rRoll.sDesc, "%[CHECK%] (%w+)");
-	if not sAbility then
-		sAbility = rRoll.sDesc:match("%[SAVE%] (%w+)");
+	local sAbility = ActionCore.decodeLabelText(rRoll.sDesc, "action_check_tag"):lower();
+	if (sAbility or "") == "" then
+		sAbility = ActionCore.decodeLabelText(rRoll.sDesc, "action_save_tag"):lower();
 	end
-	if not sAbility then
-		local sSkill = StringManager.trim(string.match(rRoll.sDesc, "%[SKILL%] ([^[]+)"));
-		if sSkill then
-			sAbility = string.match(rRoll.sDesc, "%[MOD:(%w+)%]");
+	if (sAbility or "") == "" then
+		local sSkill = ActionCore.decodeLabelText(rRoll.sDesc, "action_skill_tag");
+		if sSkill ~= "" then
+			sAbility = string.match(rRoll.sDesc, "%[MOD:(%w*)%]");
 			if sAbility then
-				sAbility = DataCommon.ability_stol[sAbility];
+				sAbility = DataCommon.ability_stol[sAbility] or "";
 			else
 				local sSkillLower = sSkill:lower();
 				for k, v in pairs(DataCommon.skilldata) do
@@ -144,11 +140,8 @@ function modIntelligence(rSource, _, rRoll)
 			end
 		end
 	end
-	if sAbility then
-		sAbility = string.lower(sAbility);
-	end
 
-	if sAbility == "intelligence" then
+	if (sAbility or "") == "intelligence" then
 		local intMod = ActorManager5E.getAbilityBonus(rSource, "intelligence");
 		if intMod > -4 then
 			local nOriginalMod = rRoll.nMod;

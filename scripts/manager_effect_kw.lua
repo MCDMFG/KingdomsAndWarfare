@@ -106,7 +106,7 @@ function checkConditional(rActor, nodeEffect, aConditions, rTarget, aIgnore)
 		if not aIgnore then
 			aIgnore = {};
 		end
-		table.insert(aIgnore, nodeEffect.getPath());
+		table.insert(aIgnore, DB.getPath(nodeEffect));
 
 		for _,v in ipairs(aConditions) do
 			local sLower = v:lower();
@@ -288,7 +288,7 @@ function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedO
 end
 
 function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
-	rEffectComp.node = nodeEffect.getPath();
+	rEffectComp.node = DB.getPath(nodeEffect);
 	resolvePowerDie(ActorManager.resolveActor(nodeActor), rEffectComp);
 	fApplyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp);
 end

@@ -6,6 +6,9 @@
 -->
 
 <root>
+	<string name="tab_domain">Domain</string>
+	<string name="tab_powerpool">Pwr Pool</string>
+
 	<framedef name="field_friend">
 		<bitmap file="graphics/frames/fieldgreen.png" />
 		<offset>12,12,12,12</offset>

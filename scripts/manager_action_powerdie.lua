@@ -30,7 +30,7 @@ function getRoll(rActor, rAction)
 	end
 	
 	if rAction.domainNode then
-		rRoll.sDesc = rRoll.sDesc .. "[NODE:" .. rAction.domainNode.getNodeName() .. "]";
+		rRoll.sDesc = rRoll.sDesc .. "[NODE:" .. DB.getPath(rAction.domainNode) .. "]";
 	end
 
 	return rRoll;

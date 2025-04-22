@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root version="3.3" release="1.0">
-	<announcement text="Loaded Kingdoms and Warfare extension v2.1.8" font="emotefont" />
+	<announcement text="Loaded Kingdoms and Warfare extension (2024-10-11)" font="emotefont" />
 	<properties>
 		<name>Feature: Kingdoms and Warfare</name>
-		<version>v2.1.8</version>
 		<author>Shane Parker and George Taray</author>
 		<description>Support for MCDM's Kingdom and Warfare supplement</description>
 		<ruleset>
 			<name>5E</name>
 		</ruleset>
-		<loadorder>100</loadorder>
+		<loadorder>200</loadorder>
 	</properties>
 	<base>
 		<script name="KingdomsAndWarfare" file="scripts/kw.lua" />
@@ -22,8 +21,10 @@
 		<script name="DomainManager" file="scripts/manager_domain.lua" />
 		<script name="EffectManagerKw" file="scripts/manager_effect_kw.lua" />
 		<script name="TokenManagerKw" file="scripts/manager_token_kw.lua" />
+		<script name="PartyManagerKw" file="scripts/manager_ps_kw.lua" />
 		<script name="PowerManagerKw" file="scripts/manager_power_kw.lua" />
 		<script name="CharManagerKw" file="scripts/manager_char_kw.lua" />
+		<script name="CharWizardManagerKw" file="scripts/manager_charwizard_kw.lua" />
 		<script name="WarfareManager" file="scripts/manager_warfare.lua" />
 		<script name="ImageManagerKw" file="scripts/manager_image_kw.lua" />
 		<script name="ActionTest" file="scripts/manager_action_test.lua" />
@@ -34,7 +35,6 @@
 		<script name="ActionHarrowing" file="scripts/manager_action_harrowing.lua" />
 		<script name="ActionUnitSave" file="scripts/manager_action_unitsave.lua" />
 		<script name="ActionDamageKw" file="scripts/manager_action_damage_kw.lua" />
-		<script name="ActionSaveKw" file="scripts/manager_action_save_kw.lua" />
 
 		<!-- Data -->
 		<script name="DataKW" file="scripts/data_kw.lua" />
@@ -60,6 +60,9 @@
 		<includefile source="ct/ct_host.xml" />
 		<includefile source="ct/ct_client.xml" />
 		<includefile source="ct/template_ct.xml" />
+		
+		<!-- Character Wizard -->
+		<includefile source="charwizard/record_charwizard.xml" />
 
 		<!-- Party Sheet -->
 		<includefile source="ps/ps_domain.xml" />

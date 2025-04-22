@@ -17,8 +17,12 @@
 		</genericcontrol>
 	</template>
 	
-	<template name="battletracker_unitlist">
-		<windowlist name="list">
+	<template name="battletracker_content_unitlist">
+		<list_content_top name="list">
+			<class>battletracker_unit</class>
+			<sortby><control>name</control></sortby>
+			<columns width="180" fillwidth="true" />
+			<allowdelete />
 			<script>
 				function onDrop(x, y, draginfo)
 					return window.onDrop(x, y, draginfo);
@@ -29,6 +33,10 @@
 					end
 				end
 			</script>
+		</list_content_top>
+	</template>
+	<template name="battletracker_unitlist">
+		<windowlist name="list">
 			<anchored>
 				<left />
 				<top parent="" offset="34" />
@@ -36,55 +44,31 @@
 			</anchored>
 			<class>battletracker_unit</class>
 			<sortby><control>name</control></sortby>
-			<columns width="72" fillwidth="true" />
-			<skipempty />
 			<allowdelete />
-		</windowlist>
-	</template>
-
-	<template name="battletracker_morale">
-		<basicnumber>
-			<anchored height="22" width="40">
-				<bottom offset="-22" />
-			</anchored>
 			<script>
-				function onInit()
-					if Session.IsHost then
-						setReadOnly(false);
-					else
-						setReadOnly(false);
-					end
-					local sFaction = faction[1];
-					if sFaction or "" ~= "" then
-						setFrame("ctentrybox_" .. sFaction, 27, 2, 2, 5);
+				function onDrop(x, y, draginfo)
+					return window.onDrop(x, y, draginfo);
+				end
+				function onListChanged()
+					if window and window.onUnitListChanged then
+						window.onUnitListChanged();
 					end
 				end
 			</script>
-			<stateframe>
-				<keyedit name="fieldfocus" offset="5,5,3,5" />
-				<hover name="fieldfocus" offset="5,5,3,5" hidereadonly="true" />
-				<drophilight name="fieldfocus" offset="5,5,3,5" hidereadonly="true" />
-			</stateframe>
-		</basicnumber>
+		</windowlist>
 	</template>
 
-	<template name="battletracker_moralelabel">
-		<label>
-			<anchored height="22" width="40">
-				<top />
-				<right anchor="left" offset="-5" />
-			</anchored>
-			<center />
-		</label>
-	</template>
-
-	<template name="button_bt_menu">
-		<metalplate>
-			<bounds>120,-45,50,26</bounds>
-			<tooltip textres="ct_tooltip_menu" />
-			<static textres="ct_label_menu" />
-			<script file="battletracker/scripts/bt_menu.lua" />
-		</metalplate>
+	<template name="number_bt_controls_morale">
+		<number_listitem_base>
+			<script>
+				function onInit()
+					local sFaction = faction[1];
+					if sFaction or "" ~= "" then
+						setFrame("ctentrybox_" .. sFaction, 25, 2, 2, 5);
+					end
+				end
+			</script>
+		</number_listitem_base>
 	</template>
 
 	<template name="number_bt_unitstat">
@@ -113,32 +97,5 @@
 				end
 			</script>
 		</number_ct>
-	</template>
-	
-	<template name="button_battletracker_nextactor">
-		<buttoncontrol>
-			<anchored width="33" height="26">
-				<bottom offset="-19" />
-				<left parent="contentanchor" offset="35" />
-			</anchored>
-			<icon normal="button_ctnextactor" pressed="button_ctnextactor_down" />
-			<tooltip textres="ct_tooltip_nextactor" />
-			<script>
-				function onButtonPress()
-					if Session.IsHost then
-						CombatManager.nextActor();
-					else
-						CombatManager.notifyEndTurn();
-					end
-				end
-				
-				function onDragStart(button, x, y, draginfo)
-					draginfo.setType("combattrackernextactor");
-					draginfo.setIcon("button_ctnextactor");
-					
-					return true;
-				end
-			</script>
-		</buttoncontrol>
 	</template>
 </root>

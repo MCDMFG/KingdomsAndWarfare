@@ -3,8 +3,6 @@
 -- attribution and copyright information.
 --
 
-local sPreviousMode;
-
 function onInit()
 	if super and super.onInit then
 		super.onInit();
@@ -27,14 +25,15 @@ function onTokenAdded(token)
 	end
 end
 
-function onCursorModeChanged(mode)
-	if sPreviousMode == "select" then
-		local bEdit = window.toolbar.subwindow.warfare.getValue() == 1
-		ImageManagerKw.deselectLockableTokens(window.image, bEdit);
+local _sPreviousMode;
+function onCursorModeChanged(sMode)
+	if _sPreviousMode == "select" then
+		local bEdit = (window.toolbar.subwindow.warfare.getValue() == 1);
+		ImageManagerKw.deselectLockableTokens(self, bEdit);
 	end
-	sPreviousMode = mode;
+	_sPreviousMode = sMode;
 
 	if super and super.onCursorModeChanged then
-		super.onCursorModeChanged(mode);
+		super.onCursorModeChanged(sMode);
 	end
 end

@@ -8,70 +8,29 @@
 <root>
 	<windowclass name="charsheet_abilities_contents" merge="join">
 		<sheetdata>
-			<label_charframetop name="martialtitle" insertbefore="traitstitle">
-				<anchored to="featurestitle" height="20">
-					<top anchor="bottom" relation="relative" offset="7" />
-					<left />
-					<right />
-				</anchored>
-				<static textres="char_abilitise_label_martialadvantages" />
-				<icons>char_abilities_orange</icons>
-				<target>martialadvantages</target>
-			</label_charframetop>
-			<list_abilities name="martialadvantages" insertbefore="traitstitle">
-				<anchored to="martialtitle">
-					<top anchor="bottom" relation="relative" offset="5" />
-					<left />
-					<right />
-				</anchored>
-				<datasource>.martialadvantages</datasource>
-				<class>martialadvantage_item</class>
-				<listheader>martialtitle</listheader>
-			</list_abilities>
-			<button_iadd name="martialadvantages_iadd" insertbefore="traitstitle">
-				<anchored to="martialtitle" position="insidetopright" offset="5,0" />
-				<target>martialadvantages</target>
-			</button_iadd>
-
-			<label_charframetop name="traitstitle" merge="join">
-				<anchored to="martialtitle" height="20" merge="replace">
-					<top anchor="bottom" relation="relative" offset="7" />
-					<left />
-					<right />
-				</anchored>
-			</label_charframetop>
+			<sub_content_top name="martialadvantages" insertbefore="traits">
+				<class>charsheet_abilities_martialadvantages</class>
+			</sub_content_top>
 		</sheetdata>
 	</windowclass>
-
-	<windowclass name="martialadvantage_item">
-		<margins control="0,0,0,2" />
+	<windowclass name="charsheet_abilities_martialadvantages" copy="charsheet_abilities_list">
 		<sheetdata>
-			<genericcontrol name="rightanchor">
-				<anchored position="insidetopright" offset="0,2" height="0" width="0" />
-			</genericcontrol>
-			<linkcontrol name="shortcut">
-				<anchored to="rightanchor" width="20" height="20">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
+			<label_charframetop name="header">
+				<static textres="char_abilities_label_martialadvantages" />
+				<icons>char_abilities</icons>
+			</label_charframetop>
+			<list_content_noscroll_alternating_top name="list">
+				<datasource>.martialadvantages</datasource>
+				<class>charsheet_ability_martialadvantage</class>
+				<sortby><control>name</control></sortby>
+			</list_content_noscroll_alternating_top>
+		</sheetdata>
+	</windowclass>
+	<windowclass name="charsheet_ability_martialadvantage" copy="charsheet_ability_item">
+		<sheetdata>
+			<linkc_listitem_left name="shortcut">
 				<class>reference_martialadvantage</class>
-				<readonly />
-			</linkcontrol>
-			<button_idelete name="idelete">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" offset="-5" />
-				</anchored>
-			</button_idelete>
-			
-			<string_textlistitem name="name">
-				<anchored to="rightanchor">
-					<top />
-					<left parent="" offset="5" />
-					<right anchor="left" relation="relative" offset="-10" />
-				</anchored>
-				<multilinespacing>20</multilinespacing>
-			</string_textlistitem>
+			</linkc_listitem_left>
 		</sheetdata>
 	</windowclass>
 </root>

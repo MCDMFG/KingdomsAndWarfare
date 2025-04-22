@@ -4,8 +4,7 @@
 --
 
 function onInit()
-	onSummaryChanged();
-	update();
+	self.onSummaryChanged();
 end
 
 function onDrop(x, y, draginfo)
@@ -21,13 +20,13 @@ function onDrop(x, y, draginfo)
 				return true;
 			end
 			local sText = DB.getText(traitnode, "text", "");
-			local nodeList = unit.createChild("traits");
+			local nodeList = DB.createChild(unit, "traits");
 			if not nodeList then
 				return true;
 			end
 
 			-- Add the item
-			local vNew = nodeList.createChild();
+			local vNew = DB.createChild(nodeList);
 
 			DB.setValue(vNew, "name", "string", sName);
 			DB.setValue(vNew, "desc", "string", sText);
@@ -35,18 +34,18 @@ function onDrop(x, y, draginfo)
 
 			CombatManagerKw.parseUnitTrait(vNew)
 
-			CharManager.outputUserMessage("unit_traits_message_traitadd", sName, DB.getValue(unit, "name", ""));
+			ChatManager.SystemMessageResource("unit_traits_message_traitadd", sName, DB.getValue(unit, "name", ""));
 
 			update();
 
 			-- Handle trait effects
-			local nodeEffects = unit.createChild("effects");
+			local nodeEffects = DB.createChild(unit, "effects");
 			if not nodeEffects then
 				return true;
 			end
 
 			for k,effectNode in pairs(DB.getChildren(traitnode, "uniteffects")) do
-				local vNewEffect = nodeEffects.createChild();
+				local vNewEffect = DB.createChild(nodeEffects);
 				DB.copyNode(effectNode, vNewEffect);
 			end
 
@@ -76,8 +75,7 @@ function updateFriendZoneControls(sControl, bReadOnly, bForceHide)
 	if KingdomsAndWarfare.IsFriendZoneLoaded() then
 		-- if the path starts with unit, force hide
 		-- Since we only want to show the health field for cohorts
-		node = getDatabaseNode();
-		if StringManager.startsWith(node.getPath(), "unit.") then
+		if StringManager.startsWith(getDatabasePath(), "unit.") then
 			bForceHide = true;
 		end
 	else
@@ -93,11 +91,6 @@ function update()
 	local bID = LibraryData.getIDState("unit", nodeRecord);
 
 	local bSection1 = false;
-	if Session.IsHost then
-		if WindowManager.callSafeControlUpdate(self, "nonid_name", bReadOnly) then bSection1 = true; end;
-	else
-		WindowManager.callSafeControlUpdate(self, "nonid_name", bReadOnly, true);
-	end
 	if WindowManager.callSafeControlUpdate(self, "commander", bReadOnly) then bSection1 = true; end;
 	if WindowManager.callSafeControlUpdate(self, "commander_readonly", bReadOnly) then bSection1 = true; end;
 	

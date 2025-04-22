@@ -6,78 +6,25 @@
 -->
 
 <root> 
-	<windowclass name="reference_martialadvantage">
-		<frame>recordsheet</frame>
-		<placement>
-			<size width="350" height="350" />
-		</placement>
-		<sizelimits>
-			<minimum width="300" height="300" />
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<tooltip field="name" />
-		<nodelete />
-		<playercontrol />
-		<sharable />
-		<script>
-			function onLockChanged()
-				if header.subwindow then
-					header.subwindow.update();
-				end
-				if contents.subwindow then
-					contents.subwindow.update();
-				end
-				if actions.subwindow then
-					actions.subwindow.update();
-				end
-			end
-		</script>
-		<sheetdata>
-			<sub_record_header name="header">
-				<class>ref_martialadvantage_header</class>
-			</sub_record_header>
-
-			<frame_record_content />
-
-			<subwindow_record name="contents">
-				<class>martialadvantages_content</class>
-				<activate />
-			</subwindow_record>
-			<subwindow_record name="actions">
-				<class>martialadvantages_actions</class>
-			</subwindow_record>
-
-			<scrollbar_record>
-				<target>contents</target>
-				<activate />
-			</scrollbar_record>		
-			<scrollbar_record>
-				<target>actions</target>
-			</scrollbar_record>
-			
-			<tabs_recordsheet name="tabs">
-				<gmvisibleonly />
-				<tab>
-					<icon>tab_main</icon>
-					<subwindow>contents</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_actions</icon>
-					<subwindow>actions</subwindow>
-				</tab>
-			</tabs_recordsheet>
-			
-			<resize_recordsheet />
-			<close_recordsheet />
-		</sheetdata>
+	<windowclass name="reference_martialadvantage" copy="record_window_tabbed">
+		<tab>
+			<name>main</name>
+			<resource>tab_main</resource>
+			<class>martialadvantages_content</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>actions</name>
+			<resource>tab_actions</resource>
+			<class>martialadvantages_actions</class>
+			<embed />
+		</tab>
 	</windowclass>
+	<windowclass name="reference_martialadvantage_header" copy="record_header" />
+
 	<windowclass name="martialadvantages_content">
 		<margin control="0,0,0,7" />
 		<script>
-			function onInit()
-				update();
-			end
 			function update()
 				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
 				source.setReadOnly(bReadOnly);
@@ -98,42 +45,10 @@
 			</ft_columnh>
 		</sheetdata>
 	</windowclass>
-	<windowclass name="ref_martialadvantage_header">
-		<margins control="0,0,0,2" />
-		<script>
-			function onInit()
-				update();
-			end
-			function update()
-				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
-				name.setReadOnly(bReadOnly);
-			end
-		</script>
-		<sheetdata>
-			<link_record_header>
-				<class>reference_martialadvantage</class>
-			</link_record_header>
-
-			<anchor_record_header_right />
-			<icon_record_locked />
-			<button_record_locked />
-
-			<string_record_name name="name">
-				<empty textres="library_recordtype_empty_martialadvantage" />
-			</string_record_name>
-			<label_reftype name="reftype">
-				<static textres="ref_type_martialadvantage" />
-			</label_reftype>	
-		</sheetdata>
-	</windowclass>
 
 	<windowclass name="martialadvantages_actions">
 		<margins control="0,0,0,2" />
 		<script>
-			function onInit()	
-				update();
-			end
-
 			function update()
 				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
 				test_iadd.setVisible(not bReadOnly)

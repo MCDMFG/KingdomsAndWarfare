@@ -24,7 +24,7 @@ function addEntry(bFocus, nVal)
 		local sEdit = getName() .. "_iedit";
 		if window[sEdit] then
 			local bEdit = (window[sEdit].getValue() == 1);
-			w.idelete.setVisibility(bEdit);
+			w.idelete.setVisible(bEdit);
 		end
 		return w;
 	else
@@ -56,7 +56,7 @@ function update()
 	if window[sEdit] then
 		local bEdit = (window[sEdit].getValue() == 1);
 		for _,wAttribute in ipairs(getWindows()) do
-			wAttribute.idelete.setVisibility(bEdit);
+			wAttribute.idelete.setVisible(bEdit);
 			wAttribute.value.setReadOnly(not bEdit);
 		end
 	end						

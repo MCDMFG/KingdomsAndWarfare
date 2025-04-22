@@ -3,6 +3,34 @@
 -- attribution and copyright information.
 --
 
+function onInit()
+	registerToolbarButtons();
+end
+
+function registerToolbarButtons()
+	ToolbarManager.registerButton("warfare", 
+		{ 
+			sType = "field",
+			sIcon = "icon_warfare",
+			fnOnValueChange = onToolbarWarfareChanged,
+		});
+	ToolbarManager.registerButton("rank_position",
+		{
+			sType = "multifield",
+			{ icon="icon_rank_right", tooltipres="rank_position_right" },
+			{ icon="icon_rank_left", tooltipres="rank_position_left" },
+			{ icon="icon_rank_top", tooltipres="rank_position_top" },
+			{ icon="icon_rank_bottom", tooltipres="rank_position_bottom" },
+			fnOnValueChange = onToolbarRankPositionChanged,
+		});
+end
+function onToolbarWarfareChanged(c)
+	c.window.onWarfareChanged();
+end
+function onToolbarRankPositionChanged(c)
+	WarfareManager.updateTokensOnMap(UtilityManager.getTopWindow(c.window));
+end
+
 function configureLockability(tokenInstance, markers, collapsedMarker, fortifications)
 	if not markers then
 		markers = WarfareManager.getRankMarkers();

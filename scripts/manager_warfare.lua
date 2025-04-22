@@ -15,10 +15,6 @@ MARKERS = {
 	["rank_rear_foe"] = { rank = "rear", faction = "foe" },
 }
 
-function onInit()
-	
-end
-
 function getFactionMoraleBonus(faction)
 	if faction ~= "friend" and faction ~= "foe" and faction ~= "neutral" then
 		return 0;
@@ -223,7 +219,7 @@ function getRanksAndUnits(image, sMarkerPos)
 				local unit = {};
 				unit.x, unit.y = v.getPosition();
 				unit.unitfaction = DB.getValue(ctnode, "friendfoe", "string", "foe");
-				unit.ctnode = ctnode.getPath();
+				unit.ctnode = DB.getPath(ctnode);
 				table.insert(units, unit);
 			end
 		end
@@ -470,7 +466,7 @@ function notifyRankCollapsed(rank)
 		sFaction = "enemy"
 	end
 
-	CharManager.outputUserMessage("message_rank_collapsed", StringManager.capitalize(rank.rank), sFaction);
+	ChatManager.SystemMessageResource("message_rank_collapsed", StringManager.capitalize(rank.rank), sFaction);
 end
 
 --

@@ -5,15 +5,15 @@
 -->
 
 <root>
-	<template name="button_ct_menu" merge="join">
-		<buttoncontrol>
+	<template name="button_ct_controls_menu" merge="join">
+		<button_listitem_text_left_sm>
 			<script file="ct/scripts/ct_menu_kw.lua" />
-		</buttoncontrol>
+		</button_listitem_text_left_sm>
 	</template>
 
 	<windowclass name="ct_power" merge="join">
 		<sheetdata>
-			<string_textlistitem name="value" merge="join">
+			<string_listitem_center_underline_multiline name="value" merge="join">
 				<script>
 					local fActionAbility;
 
@@ -49,7 +49,7 @@
 						return true;
 					end
 				</script>
-			</string_textlistitem>
+			</string_listitem_center_underline_multiline>
 		</sheetdata>
 	</windowclass>
 </root>

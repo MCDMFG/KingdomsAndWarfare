@@ -6,104 +6,25 @@
 -->
 
 <root>
-	<windowclass name="reference_unit">
-		<frame>recordsheet</frame>
-		<placement>
-			<size width="460" height="550" />
-		</placement>
-		<sizelimits>
-			<minimum width="460" height="400" />
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_npc</minimize>
-		<tooltip field="name" />
-		<nodelete />
-		<gmexport>unit</gmexport>
-		<script file="campaign/scripts/unit.lua" />
-		<sheetdata>
-			<sub_record_header name="header">
-				<class>unit_header</class>
-			</sub_record_header>
-
-			<frame_record_content_tabbed name="contentframe" />
-
-			<subwindow_record name="main">
-				<class>unit_main</class>
-			</subwindow_record>
-			<ft_record name="description">
-				<anchored to="contentframe" position="over" />
-				<invisible />
-			</ft_record>
-			<subwindow_record name="effects">
-				<class>unit_effects</class>
-			</subwindow_record>
-
-			<scrollbar_record>
-				<target>main</target>
-			</scrollbar_record>
-			<scrollbar_record>
-				<target>description</target>
-			</scrollbar_record>
-
-			<tabs_recordsheet name="tabs">
-				<tab>
-					<icon>tab_main</icon>
-					<subwindow>main</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_other</icon>
-					<subwindow>description</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_effects</icon>
-					<subwindow>effects</subwindow>
-				</tab>
-			</tabs_recordsheet>
-			
-			<resize_recordsheet />
-			<close_recordsheet />
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="unit_header">
-		<margins control="0,0,0,2" />
-		<script file="campaign/scripts/unit_header.lua" />
-		<sheetdata>
-			<link_record_header name="link">
-				<class>reference_unit</class>
-			</link_record_header>
-			
-			<anchor_record_header_right name="rightanchor" />
-			<button_activateid>
-				<anchored to="rightanchor" width="23" height="22">
-					<top offset="-2" />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-			</button_activateid>
-			<tokenfield name="token">
-				<anchored to="rightanchor" width="25" height="25">
-					<top offset="-2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-3" />
-				</anchored>
-				<empty>token_empty</empty>
-				<script>
-					function onDoubleClick(x, y)
-						CombatManager.openMap(window.getDatabaseNode());
-					end
-				</script>
-			</tokenfield>
-			<button_record_isidentified name="isidentified" />
-			<icon_record_locked />
-			<button_record_locked />
-
-			<string_record_name_id name="name">
-				<empty textres="library_recordtype_empty_unit" />
-			</string_record_name_id>
-			<string_record_name_id name="nonid_name">
-				<empty textres="library_recordtype_empty_nonid_unit" />
-				<invisible />
-			</string_record_name_id>
-		</sheetdata>
+	<windowclass name="reference_unit" copy="record_window_tabbed">
+		<tab>
+			<name>main</name>
+			<resource>tab_main</resource>
+			<class>unit_main</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>effects</name>
+			<resource>tab_effects</resource>
+			<class>unit_effects</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>notes</name>
+			<resource>tab_notes</resource>
+			<class>record_content_description</class>
+			<embed />
+		</tab>
 	</windowclass>
 
 	<windowclass name="unit_main">
@@ -112,11 +33,6 @@
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 			
-			<label_column name="nonid_name_label">
-				<static textres="npc_label_unidentified" />
-			</label_column>
-			<string_columnh name="nonid_name" />
-
 			<!-- Summary, for when locked -->
 			<label_column name="summary_label">
 				<anchored>
@@ -390,7 +306,7 @@
 			<number_unitstat name="attack" source="abilities.attack">
 				<anchored merge="replace" width="40" height="30">
 					<top parent="columnanchor" anchor="bottom" relation="relative" offset="12" />
-					<left anchor="center" offset="-182" />
+					<left anchor="center" offset="-192" />
 				</anchored>
 				<target>attack</target>
 				<defense>defense</defense>
@@ -404,7 +320,7 @@
 			<number_unitstat name="defense" source="abilities.defense">
 				<anchored merge="replace" to="attack" width="40" height="30">
 					<top />
-					<left anchor="right" relation="relative" offset="25" />
+					<left anchor="right" relation="relative" offset="30" />
 				</anchored>
 				<target>defense</target>
 				<default>10</default>
@@ -417,7 +333,7 @@
 			<number_unitstat name="power" source="abilities.power">
 				<anchored merge="replace" to="attack" width="40" height="30">
 					<top />
-					<left anchor="right" relation="relative" offset="25" />
+					<left anchor="right" relation="relative" offset="30" />
 				</anchored>
 				<target>power</target>
 				<defense>toughness</defense>
@@ -431,7 +347,7 @@
 			<number_unitstat name="toughness" source="abilities.toughness">
 				<anchored merge="replace" to="attack" width="40" height="30">
 					<top />
-					<left anchor="right" relation="relative" offset="25" />
+					<left anchor="right" relation="relative" offset="30" />
 				</anchored>
 				<target>toughness</target>
 				<default>10</default>
@@ -444,7 +360,7 @@
 			<number_unitstat name="morale" source="abilities.morale">
 				<anchored merge="replace" to="attack" width="40" height="30">
 					<top />
-					<left anchor="right" relation="relative" offset="25" />
+					<left anchor="right" relation="relative" offset="30" />
 				</anchored>
 				<target>morale</target>
 				<rollable />
@@ -457,7 +373,7 @@
 			<number_unitstat name="command" source="abilities.command">
 				<anchored merge="replace" to="attack" width="40" height="30">
 					<top />
-					<left anchor="right" relation="relative" offset="25" />
+					<left anchor="right" relation="relative" offset="30" />
 				</anchored>
 				<target>command</target>
 				<rollable />
@@ -469,7 +385,6 @@
 
 			<!-- Traits -->
 			<header_column name="header_traits">
-				<anchored to="columnanchor" />
 				<static textres="npc_header_traits"/>
 			</header_column>
 			<button_iedit name="traits_iedit">
@@ -480,45 +395,31 @@
 				<anchored to="traits_iedit" position="lefthigh" offset="5,0" />
 				<target>traits</target>
 			</button_iadd>
-			<list_npcactions name="traits">
-				<anchored to="columnanchor" />
+			<list_actions_kw name="traits">
 				<datasource>.traits</datasource>
 				<class>unit_trait</class>
-			</list_npcactions>
+			</list_actions_kw>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="unit_trait">
 		<margins control="0,0,0,2" />
 		<sheetdata>
-			<genericcontrol name="rightanchor">
-				<anchored height="0" width="0">
-					<top />
-					<right />
-				</anchored>
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored>
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
-			</button_idelete>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
 
-			<stringfield name="name">
-				<anchored position="insidetopleft" offset="5,2">
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
+			<button_listitem_idelete_left name="idelete" />
+
+			<string_listitem_center_bold name="name">
 				<frame name="rowshade" offset="5,2,5,2" />
-				<font>sheetlabel</font>
-				<multilinespacing>20</multilinespacing>
 				<empty textres="unit_empty_traitname" />
-			</stringfield>
+			</string_listitem_center_bold>
 			
 			<basicstring name="desc">
 				<anchored to="name" position="belowleft" offset="0,5">
 					<right parent="" offset="-5" />
 				</anchored>
 				<multilinespacing>20</multilinespacing>
+				<nodragselect />
 				<script file="campaign/scripts/unit_trait.lua" />
 			</basicstring>
 		</sheetdata>

@@ -14,7 +14,7 @@ function onClose()
 end
 
 function commanderDeleted(nodeCommander)
-	local sPath = nodeCommander.getPath();
+	local sPath = DB.getPath(nodeCommander);
 	for _,nodeCombatant in pairs(CombatManager.getCombatantNodes("unit")) do
 		local _,sRecord = DB.getValue(nodeCombatant, "commander_link");
 		if sRecord == sPath then

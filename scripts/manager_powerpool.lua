@@ -16,7 +16,7 @@ function AddDieToPool(nValue, domainNode)
 	if domainNode then
 		local msgOOB = {};
 		msgOOB.type = OOB_MSGTYPE_ADDPOWERDIE;
-		msgOOB.sDomain = domainNode.getNodeName();
+		msgOOB.sDomain = DB.getPath(domainNode);
 		msgOOB.nValue = nValue;
 
 		Comm.deliverOOBMessage(msgOOB, "");
@@ -30,7 +30,7 @@ function handleAddPowerDie(msgOOB)
 		local bReadOnly = true;
 		local powerdie = nil;
 
-		if domainNode.getPath():match("partysheet") then
+		if DB.getPath(domainNode):match("partysheet") then
 			local domainsize = DB.getValue("partysheet.domainsize", "", 1)
 			powerdie = "d4";
 			if domainsize == 2 then powerdie = "d6"
@@ -46,12 +46,10 @@ function handleAddPowerDie(msgOOB)
 			end
 		end
 		
-		local powerDice = domainNode.getChild("powerpool");
-		local newDie = powerDice.createChild();
-		local valueNode = newDie.createChild("value", "number")
-		valueNode.setValue(tonumber(msgOOB.nValue) or 0);
-		local dieNode = newDie.createChild("die", "dice");
-		dieNode.setValue({ powerdie });
+		local powerDice = DB.getChild(domainNode, "powerpool");
+		local newDie = DB.createChild(powerDice);
+		DB.setValue(newDie, "value", "number", tonumber(msgOOB.nValue) or 0);
+		DB.setValue(newDie, "die", "dice", { powerdie });
 	end
 end
 
@@ -59,7 +57,7 @@ function RemoveDieFromPool(nValue, domainNode)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_REMOVEPOWERDIE;
 	msgOOB.nValue = nValue;
-	msgOOB.sDomain = domainNode.getNodeName();
+	msgOOB.sDomain = DB.getPath(domainNode);
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end

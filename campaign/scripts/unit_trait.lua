@@ -20,8 +20,7 @@ end
 
 function getActor()
 	local nodePower = getPowerNode();
-	local nodeCreature = nodePower.getChild("...");
-	return ActorManager.resolveActor(nodeCreature);
+	return ActorManager.resolveActor(DB.getChild(nodePower, "..."));
 end
 
 function onValueChanged()

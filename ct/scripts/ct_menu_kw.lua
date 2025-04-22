@@ -20,7 +20,7 @@ function onMenuSelection(selection, subselection, subsubselection)
 end
 
 function extendedRest()
-	ChatManager.Message(Interface.getString("message_ct_restextended"), true);
+	ChatManager.Message(Interface.getString("message_restallextended"), true);
 	PowerManagerKw.beginExtended();
 	CombatManager2.rest(true);
 	PowerManagerKw.endExtended();

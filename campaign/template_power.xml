@@ -6,6 +6,13 @@
 -->
 
 <root>
+	<template name="list_actions_kw">
+		<list_column>
+			<child merge="delete" />
+			<sortby merge="delete" />
+		</list_column>
+	</template>
+
 	<template name="cycler_power_useperiod">
 		<button_stringcycler>
 			<anchored width="60" height="20" />

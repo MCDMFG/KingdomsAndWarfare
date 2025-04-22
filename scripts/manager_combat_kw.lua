@@ -245,7 +245,7 @@ function addUnit(tCustom)
 
 	local nLocalID = DB.getValue(tCustom.nodeRecord, "isidentified", 1);
 	if not bIsCT then
-		local sSourcePath = tCustom.nodeRecord.getPath()
+		local sSourcePath = DB.getPath(tCustom.nodeRecord);
 		local aMatches = {};
 		for _,v in pairs(aCurrentCombatants) do
 			local _,sRecord = DB.getValue(v, "sourcelink", "", "");
@@ -347,7 +347,7 @@ function addUnit(tCustom)
 	DB.setValue(tCustom.nodeCT, "link", "windowreference", "reference_unit", "");
 	DB.setValue(tCustom.nodeCT, "friendfoe", "string", "foe");
 	if not bIsCT then
-		DB.setValue(tCustom.nodeCT, "sourcelink", "windowreference", "reference_unit", tCustom.nodeRecord.getPath());
+		DB.setValue(tCustom.nodeCT, "sourcelink", "windowreference", "reference_unit", DB.getPath(tCustom.nodeRecord));
 	end
 
 	-- Calculate space/reach
@@ -371,10 +371,9 @@ function addUnit(tCustom)
 	DB.setValue(tCustom.nodeCT, "hptotal", "number", nHP);
 
 	-- Add effects to the new ct node from the reference unit's effect list.
-	local aEffectsList = DB.getChildren(tCustom.nodeRecord, "effects");
-	local aCTNodeEffects = tCustom.nodeCT.createChild("effects");
-	for _,v in pairs(aEffectsList) do
-		local effectNode = aCTNodeEffects.createChild();
+	local aCTNodeEffects = DB.createChild(tCustom.nodeCT, "effects");
+	for _,v in pairs(DB.getChildren(tCustom.nodeRecord, "effects")) do
+		local effectNode = DB.createChild(aCTNodeEffects);
 		DB.copyNode(v, effectNode);
 	end
 
@@ -412,9 +411,9 @@ function onTurnEnd(nodeCT)
 	end
 
 	local aCurrentCombatants = CombatManager.getCombatantNodes("unit");
-	for _,v in pairs(aCurrentCombatants) do
-		if ActorManagerKw.getCommanderCT(v) == nodeCT then
-			activateUnit(v, true);
+	for _,nodeCombatant in pairs(aCurrentCombatants) do
+		if ActorManagerKw.getCommanderCT(nodeCombatant) == nodeCT then
+			activateUnit(nodeCombatant, true);
 		end
 	end
 
@@ -459,7 +458,7 @@ function canUnitActivate(nodeUnit, bCommanderIsActive)
 	if not Session.IsHost then
 		local rActor = ActorManager.resolveActor(nodeCommander);
 		local nodeActor = ActorManager.getCreatureNode(rActor);
-		if not (nodeActor and (nodeActor.getOwner() == User.getUsername())) then
+		if not (nodeActor and (DB.getOwner(nodeActor) == User.getUsername())) then
 			return false;
 		end
 	end
@@ -479,8 +478,8 @@ function requestUnitActivation(nodeEntry, bSkipBell)
 	CombatManager.showTurnMessage(nodeEntry, true, bSkipBell);
 
 	-- Handle GM identity list updates (based on option)
-	CombatManager.clearGMIdentity();
-	CombatManager.addGMIdentity(nodeEntry);
+	ChatIdentityManager.clearCombatantIdentity();
+	ChatIdentityManager.addCombatantIdentity(nodeEntry);
 end
 
 --
@@ -490,7 +489,7 @@ function notifyActivateUnit(nodeUnit)
 	if canUnitActivate(nodeUnit) then
 		local msgOOB = {};
 		msgOOB.type = OOB_MSGTYPE_ACTIVATEUNIT;
-		msgOOB.unit = nodeUnit.getPath();
+		msgOOB.unit = DB.getPath(nodeUnit);
 
 		Comm.deliverOOBMessage(msgOOB, "");
 	end
@@ -511,7 +510,11 @@ function activateUnit(nodeNext, bCommanderIsActive)
 		DB.setValue(nodeActive, "initresult", "number", DB.getValue(nodeNext, "initResult", 98) + 1);
 	end
 
+	-- As of 2024-02-14 CoreRPG's EffectManager is hardcoded to iterate over the CT for effects.
+	local getSortedCombatantListOriginal = CombatManager.getSortedCombatantList;
+	CombatManager.getSortedCombatantList = function() return getSortedCombatantListOriginal("unit") end
 	CombatManager.onInitChangeEvent(nodeActive, nodeNext);
+	CombatManager.getSortedCombatantList = getSortedCombatantListOriginal;
 
 	if nodeActive then
 		DB.setValue(nodeActive, "initresult", "number", activeInit);

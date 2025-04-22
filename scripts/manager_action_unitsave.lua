@@ -147,15 +147,15 @@ function notifyApplyUnitSaveDC(rSource, rTarget, bSecret, sDesc, nDC, sPowerName
 	msgOOB.sSourceNode = ActorManager.getCreatureNodeName(rSource);
 	msgOOB.sTargetNode = ActorManager.getCreatureNodeName(rTarget);
 
-	local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
-	if nodeTarget and (sTargetNodeType == "pc") then
+	if ActorManager.isPC(rTarget) then
+		local nodeTarget = ActorManager.getCreatureNode(rTarget);
 		if Session.IsHost then
 			local sOwner = DB.getOwner(nodeTarget);
 			if sOwner ~= "" then
 				for _,vUser in ipairs(User.getActiveUsers()) do
 					if vUser == sOwner then
 						for _,vIdentity in ipairs(User.getActiveIdentities(vUser)) do
-							if nodeTarget.getName() == vIdentity then
+							if DB.getName(nodeTarget) == vIdentity then
 								Comm.deliverOOBMessage(msgOOB, sOwner);
 								return;
 							end

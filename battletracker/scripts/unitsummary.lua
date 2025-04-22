@@ -36,17 +36,17 @@ end
 function linkFields()
 	local nodeUnit = link.getTargetDatabaseNode();
 	if nodeUnit and FriendZone.isCohort(nodeUnit) then
-		name.setLink(nodeUnit.createChild("name", "string"), true);
-		size.setLink(nodeUnit.createChild("casualties", "number"), false);
-		casualties.setLink(nodeUnit.createChild("wounds", "number"), false);
-		defense.setLink(nodeUnit.createChild("abilities.defense", "number"), true);
-		toughness.setLink(nodeUnit.createChild("abilities.toughness", "number"), true);
-		attack.setLink(nodeUnit.createChild("abilities.attack", "number"), true);
-		power.setLink(nodeUnit.createChild("abilities.power", "number"), true);
-		morale.setLink(nodeUnit.createChild("abilities.morale", "number"), true);
-		command.setLink(nodeUnit.createChild("abilities.command", "number"), true);
-		number_attacks.setLink(nodeUnit.createChild("attacks", "number"), true);
-		damage.setLink(nodeUnit.createChild("damage", "number"), true);
+		name.setLink(DB.createChild(nodeUnit, "name", "string"), true);
+		size.setLink(DB.createChild(nodeUnit, "casualties", "number"), false);
+		casualties.setLink(DB.createChild(nodeUnit, "wounds", "number"), false);
+		defense.setLink(DB.createChild(nodeUnit, "abilities.defense", "number"), true);
+		toughness.setLink(DB.createChild(nodeUnit, "abilities.toughness", "number"), true);
+		attack.setLink(DB.createChild(nodeUnit, "abilities.attack", "number"), true);
+		power.setLink(DB.createChild(nodeUnit, "abilities.power", "number"), true);
+		morale.setLink(DB.createChild(nodeUnit, "abilities.morale", "number"), true);
+		command.setLink(DB.createChild(nodeUnit, "abilities.command", "number"), true);
+		number_attacks.setLink(DB.createChild(nodeUnit, "attacks", "number"), true);
+		damage.setLink(DB.createChild(nodeUnit, "damage", "number"), true);
 	end
 end
 

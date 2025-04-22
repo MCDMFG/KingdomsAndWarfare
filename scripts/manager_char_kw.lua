@@ -29,58 +29,60 @@ function addInfoDB(nodeChar, sClass, sRecord)
 end
 
 function addTitleDB(nodeChar, sClass, sRecord)
-	local nodeSource = CharManagerKw.resolveRefNode(sRecord);
+	local nodeSource = DB.findNode(sRecord);
 	if not nodeSource then
+		ChatManager.SystemMessage(Interface.getString("char_error_missingrecord"));
 		return;
 	end
 
-	-- Get the list we are going to add to
-	local nodeList = nodeChar.createChild("featurelist");
-	if not nodeList then
-		return false;
-	end
-	
 	-- Make sure this item does not already exist
 	local sName = DB.getValue(nodeSource, "titlename", "");
-	for _,v in pairs(nodeList.getChildren()) do
+	for _,v in pairs(DB.getChildren(nodeChar, "featurelist")) do
 		if DB.getValue(v, "name", "") == sName then
 			return false;
 		end
 	end
 
+	-- Get the list we are going to add to
+	local nodeList = DB.createChild(nodeChar, "featurelist");
+	if not nodeList then
+		return false;
+	end
+	
 	-- Add the item
-	local vNew = nodeList.createChild();
+	local vNew = DB.createChild(nodeList);
 	DB.copyNode(nodeSource, vNew);
 	DB.setValue(vNew, "name", "string", sName);
 	DB.setValue(vNew, "locked", "number", 1);
 	
 	-- Announce
-	CharManager.outputUserMessage("char_abilities_message_titleadd", DB.getValue(vNew, "name", ""), DB.getValue(nodeChar, "name", ""));
+	ChatManager.SystemMessageResource("char_abilities_message_titleadd", DB.getValue(vNew, "name", ""), DB.getValue(nodeChar, "name", ""));
 	return true;
 end
 
 function addMartialAdvantageDB(nodeChar, sClass, sRecord, bSkipAction)
-	local nodeSource = CharManagerKw.resolveRefNode(sRecord);
+	local nodeSource = DB.findNode(sRecord);
 	if not nodeSource then
+		ChatManager.SystemMessage(Interface.getString("char_error_missingrecord"));
 		return;
 	end
 
-	-- Get the list we are going to add to
-	local nodeList = nodeChar.createChild("martialadvantages");
-	if not nodeList then
-		return false;
-	end
-	
 	-- Make sure this item does not already exist
 	local sName = DB.getValue(nodeSource, "name", "");
-	for _,v in pairs(nodeList.getChildren()) do
+	for _,v in pairs(DB.getChildren(nodeChar, "martialadvantages")) do
 		if DB.getValue(v, "name", "") == sName then
 			return false;
 		end
 	end
 
+	-- Get the list we are going to add to
+	local nodeList = DB.createChild(nodeChar, "martialadvantages");
+	if not nodeList then
+		return false;
+	end
+	
 	-- Add the item
-	local vNew = nodeList.createChild();
+	local vNew = DB.createChild(nodeList);
 	DB.copyNode(nodeSource, vNew);
 	DB.setValue(vNew, "locked", "number", 1);
 
@@ -90,23 +92,6 @@ function addMartialAdvantageDB(nodeChar, sClass, sRecord, bSkipAction)
 	end
 	
 	-- Announce
-	CharManager.outputUserMessage("char_abilities_message_maadd", DB.getValue(vNew, "name", ""), DB.getValue(nodeChar, "name", ""));
+	ChatManager.SystemMessageResource("char_abilities_message_maadd", DB.getValue(vNew, "name", ""), DB.getValue(nodeChar, "name", ""));
 	return true;
-end
-
-function resolveRefNode(sRecord)
-	if (sRecord or "") == "" then
-		return nil;
-	end
-
-	local nodeSource = DB.findNode(sRecord);
-
-	if not nodeSource then
-		local sRecordSansModule = StringManager.split(sRecord, "@")[1];
-		nodeSource = DB.findNode(sRecordSansModule .. "@*");
-		if not nodeSource then
-			ChatManager.SystemMessage(Interface.getString("char_error_missingrecord").." ["..sRecord.."]");
-		end
-	end
-	return nodeSource;
 end

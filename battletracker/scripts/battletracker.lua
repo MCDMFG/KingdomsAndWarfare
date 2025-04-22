@@ -48,7 +48,7 @@ function onIdentityStateChange(sIdentity, sUser, sStateName, vState)
 				if rActor and ActorManager.isPC(rActor) then
 					local nodeCreature = ActorManager.getCreatureNode(rActor);
 					if nodeCreature then
-						local sCreatureIdentity = nodeCreature.getName();
+						local sCreatureIdentity = DB.getName(nodeCreature);
 						if sCreatureIdentity == sIdentity then
 							winCommander.color_swatch.setColor(sColor);
 						end
@@ -221,7 +221,7 @@ function onDrop(x, y, draginfo)
 	if win then
 		local nodeWin = win.getDatabaseNode();
 		if nodeWin then
-			return CombatManager.onDrop("ct", nodeWin.getPath(), draginfo);
+			return CombatDropManager.handleAnyDrop("ct", DB.getPath(nodeWin), draginfo);
 		end
 	end
 end

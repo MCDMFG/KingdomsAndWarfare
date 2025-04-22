@@ -49,13 +49,13 @@ function addMartialAdvantage(sClass, nodeSource, nodeCreature, bSkipAbility)
 	end
 	
 	-- Create the powers list entry
-	local nodePowers = nodeCreature.createChild("powers");
+	local nodePowers = DB.createChild(nodeCreature, "powers");
 	if not nodePowers then
 		return nil;
 	end
 	
 	-- Create the new power entry
-	local nodeNewPower = nodePowers.createChild();
+	local nodeNewPower = DB.createChild(nodePowers);
 	if not nodeNewPower then
 		return nil;
 	end
@@ -70,11 +70,11 @@ function addMartialAdvantage(sClass, nodeSource, nodeCreature, bSkipAbility)
 	DB.deleteChild(nodeNewPower, "level");
 		
 	-- Copy text to description
-	local nodeText = nodeNewPower.getChild("text");
+	local nodeText = DB.getChild(nodeNewPower, "text");
 	if nodeText then
-		local nodeDesc = nodeNewPower.createChild("description", "formattedtext");
+		local nodeDesc = DB.createChild(nodeNewPower, "description", "formattedtext");
 		DB.copyNode(nodeText, nodeDesc);
-		nodeText.delete();
+		DB.deleteNode(nodeText);
 	end
 	
 	-- Set locked state for editing detailed record
@@ -87,7 +87,7 @@ function addMartialAdvantage(sClass, nodeSource, nodeCreature, bSkipAbility)
 
 	-- Add to abilities tab if not explicitly told not to
 	if not bSkipAbility then
-		CharManagerKw.addMartialAdvantageDB(nodeCreature, "reference_martialadvantage", nodeSource.getNodeName(), true)
+		CharManagerKw.addMartialAdvantageDB(nodeCreature, "reference_martialadvantage", DB.getPath(nodeSource), true)
 	end
 	
 	return nodeNewPower;
@@ -98,7 +98,7 @@ function getPCPowerAction(nodeAction, sSubRoll)
 		return;
 	end
 
-	local sPath = nodeAction.getPath();
+	local sPath = DB.getPath(nodeAction);
 
 	-- If rolling from the party sheet, diverge here
 	if StringManager.startsWith(sPath, "partysheet.powers") then
@@ -134,9 +134,6 @@ function getDomainPowerAction(nodeAction, sSubRoll)
 	else
 		rActor = ActorManager.resolveActor(CombatManager.getCurrentUserCT())
 	end
-	-- if not rActor then
-	-- 	return;
-	-- end
 
 	local rAction = {};
 	rAction.type = DB.getValue(nodeAction, "type", "");
@@ -256,10 +253,9 @@ end
 function getPCPowerTestActionText(node)
 	local sTest = "";
 	local rAction, rActor = PowerManager.getPCPowerAction(node);
-
 	if rAction then
 		-- All this call does is evaluate domain size from the group details
-		PowerManager.evalAction(rActor, node.getChild("..."), rAction);
+		PowerManager.evalAction(rActor, DB.getChild(node, "..."), rAction);
 
 		if rAction.savemod then
 			sTest = sTest .. "DC " .. rAction.savemod .. " ";
@@ -303,8 +299,8 @@ end
 function getPowerGroupRecord(rActor, nodePower, bNPCInnate)
 	local aPowerGroup = fGetPowerGroupRecord(rActor, nodePower, bNPCInnate);
 
-	local sNodeType, nodeActor = ActorManager.getTypeAndNode(rActor);
-	if sNodeType == "pc" then
+	if ActorManager.isPC(rActor) then
+		local nodeActor = ActorManager.getCreatureNode(rActor);
 		local nodePowerGroup = nil;
 		local sGroup = DB.getValue(nodePower, "group", "");
 		for _,v in pairs(DB.getChildren(nodeActor, "powergroup")) do
@@ -337,7 +333,7 @@ function evalAction(rActor, nodePower, rAction)
 end
 
 function performAction(draginfo, rActor, rAction, nodePower)
-	if StringManager.startsWith(nodePower.getPath(), "partysheet.powers") then
+	if StringManager.startsWith(DB.getPath(nodePower), "partysheet.powers") then
 		return performDomainPowerAction(draginfo, rActor, rAction, nodePower);
 	end
 
@@ -557,12 +553,10 @@ end
 function parseTests(nodeUnit, sPowerName, aWords)
 	local saves = {};
 
-
-
 	for i = 1, #aWords do
 		if StringManager.isWord(aWords[i], "test") then
 			local nIndex = i;
-			if StringManager.isWord(aWords[nIndex - 1], KingdomsAndWarfare.aWarfareAbilities) then
+			if StringManager.isWord(aWords[nIndex - 1], DataCommon.abilities) then
 				local rSave = {};
 				rSave.stat = aWords[nIndex - 1];
 				rSave.label = sPowerName;
@@ -867,10 +861,7 @@ end
 
 function parseMartialAdvantage(nodePower)
 	-- Clean out old actions
-	local nodeActions = nodePower.createChild("actions");
-	for _,v in pairs(nodeActions.getChildren()) do
-		v.delete();
-	end
+	DB.deleteChildren(nodePower, "actions");
 	
 	-- Track whether cast action already created
 	local nodeCastAction = nil;

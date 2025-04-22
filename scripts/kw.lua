@@ -13,7 +13,6 @@ end
 aRecordOverrides = {	
 	-- New record types
 	["unit"] = { 
-		bExport = true,
 		sRecordDisplayClass = "reference_unit", 
 		aDataMap = { "unit", "reference.unitdata" }, 
 		aGMListButtons = { "button_unit_letter", "button_unit_tier", "button_unit_type", "button_unit_ancestry" },
@@ -24,27 +23,37 @@ aRecordOverrides = {
 			["Ancestry"] = { sField = "ancestry" },
 			
 		},
+		tOptions = {
+			bExport = true,
+			bToken = true,
+		},
 	},
 	["domain"] = {
-		bExport = true,
 		sRecordDisplayClass = "reference_domain",
-		aDataMap = { "domain", "reference.domaindata" }
+		aDataMap = { "domain", "reference.domaindata" },
+		tOptions = {
+			bExport = true,
+		},
 	},
 	["advantage"] = {
-		bExport = true,
 		sSidebarCategory = "create",
 		sRecordDisplayClass = "reference_martialadvantage",
 		aDataMap = { "martialadvantage", "reference.martialadvantagedata" },
 		aCustomFilters = {
 			["Source"] = { sField = "source", fGetValue = getMartialAdvantageSourceValue },
 			["Domain Size"] = { sField = "domainsize" },
-		}
+		},
+		tOptions = {
+			bExport = true,
+		},
 	},
 	["trait"] = {
-		bExport = true,
 		sSidebarCategory = "campaign",
 		sRecordDisplayClass = "reference_unittrait",
-		aDataMap = { "unittrait", "reference.unittraitdata" }
+		aDataMap = { "unittrait", "reference.unittraitdata" },
+		tOptions = {
+			bExport = true,
+		},
 	}
 };
 
@@ -117,6 +126,8 @@ aWarfareAbilities = {
 	"command",
 };
 
+aBaseAbilities = {};
+
 function onInit()
 	if Session.IsHost then
 		DB.setPublic(DB.createNode("battletracker"), true);
@@ -156,6 +167,15 @@ function onInit()
 	table.insert(GameSystem.targetactions, "unitsaveinit");
 	table.insert(GameSystem.targetactions, "unitsavedc");
 	table.insert(GameSystem.targetactions, "powerdie");
+
+	aBaseAbilities = UtilityManager.copyDeep(DataCommon.abilities);
+
+	table.insert(DataCommon.abilities, "attack");
+	table.insert(DataCommon.abilities, "defense");
+	table.insert(DataCommon.abilities, "power");
+	table.insert(DataCommon.abilities, "toughness");
+	table.insert(DataCommon.abilities, "morale");
+	table.insert(DataCommon.abilities, "command");
 
 	DataCommon.ability_ltos.attack = "ATK";
 	DataCommon.ability_ltos.defense = "DEF";
@@ -229,11 +249,6 @@ function onInit()
 
 	fActionRoll = ActionsManager.actionRoll;
 	ActionsManager.actionRoll = actionRoll;
-
-	WindowTabManager.registerTab("partysheet_host", { sName = "domain", sIcon = "tab_domain", sClass = "ps_domain" });
-	WindowTabManager.registerTab("partysheet_host", { sName = "powerpool", sIcon = "tab_powerpool", sClass = "ps_powerpool" });
-	WindowTabManager.registerTab("partysheet_client", { sName = "domain", sIcon = "tab_domain", sClass = "ps_domain" });
-	WindowTabManager.registerTab("partysheet_client", { sName = "powerpool", sIcon = "tab_powerpool", sClass = "ps_powerpool" });
 end
 
 
@@ -323,9 +338,9 @@ function addFortification(aForts, sName, nDef, nPow, nMor, aTokens)
 	tokens.setPublic(true);
 
 	for _,token in pairs(aTokens) do
-		local parentNode = tokens.createChild();
+		local parentNode = DB.createChild(tokens);
 		parentNode.setPublic(true);
-		local tokenNode = parentNode.createChild("token", "token");
+		local tokenNode = DB.createChild(parentNode, "token", "token");
 		tokenNode.setValue(token)
 	end
 end
@@ -334,7 +349,7 @@ end
 function getNPCSourceType(vNode)
 	local sNodePath = nil;
 	if type(vNode) == "databasenode" then
-		sNodePath = vNode.getPath();
+		sNodePath = DB.getPath(vNode);
 	elseif type(vNode) == "string" then
 		sNodePath = vNode;
 	end
@@ -353,6 +368,14 @@ function getNPCSourceType(vNode)
 	end
 
 	return type;
+end
+
+-- Invokes the provided function with DataCommon.abilities set to aBaseAbilities;
+function invokeWithBaseAbilities(fInvoke, ...)
+	local fullAbilities = DataCommon.abilities;
+	DataCommon.abilities = aBaseAbilities;
+	fInvoke(...);
+	DataCommon.abilities = fullAbilities;
 end
 
 -- Big hack
@@ -433,7 +456,7 @@ function addDomainToPartySheet(domainNode)
 	-- Powers
 	local powerNode = DB.getChild(domainNode, "powers");
 	for _,power in pairs(DB.getChildren(powerNode)) do
-		local newPower = partysheet.createChild("powers").createChild()
+		local newPower = DB.createChild(DB.createChild(partysheet, "powers"))
 		DB.setValue(newPower, "name", "string", DB.getValue(power, "name", ""))
 		DB.setValue(newPower, "desc", "formattedtext", DB.getValue(power, "desc", ""))
 	end
@@ -441,7 +464,7 @@ function addDomainToPartySheet(domainNode)
 	-- Features
 	local featureNode = DB.getChild(domainNode, "features");
 	for _,feature in pairs(DB.getChildren(featureNode)) do
-		local newFeature = partysheet.createChild("features").createChild()
+		local newFeature = DB.createChild(DB.createChild(partysheet, "features"))
 		DB.setValue(newFeature, "name", "string", DB.getValue(feature, "name", ""))
 		DB.setValue(newFeature, "desc", "formattedtext", DB.getValue(feature, "desc", ""))
 	end
@@ -449,7 +472,7 @@ function addDomainToPartySheet(domainNode)
 	-- Power pool
 	local powerpoolNode = DB.getChild(domainNode, "powerpool");
 	for _,die in pairs(DB.getChildren(powerpoolNode)) do
-		local newDie = partysheet.createChild("powerpool").createChild()
+		local newDie = DB.createChild(DB.createChild(partysheet, "powerpool"))
 		DB.copyNode(die, newDie);
 	end
 end
@@ -459,11 +482,7 @@ function addDefaultActionsToPartySheetPowers()
 	if not partysheet then
 		return;
 	end
-	local powers = partysheet.getChild("powers");
-	if not powers then
-		return;
-	end
-	for k,powernode in pairs(powers.getChildren()) do
+	for _,powernode in ipairs(DB.getChildList(partysheet, "powers")) do
 		local powername = DB.getValue(powernode, "name", "");
 		if powernode and (powername or "") ~= "" then
 			loadActionData(powername, powernode)
@@ -481,7 +500,7 @@ function loadActionData(sPowerName, nodePower)
 	-- Only process if there are no actions already added
 	if DB.getChildCount(nodePower, "actions") == 0 then
 		if DataKW.domainpowers[sNameLower] then
-			local nodeActions = nodePower.createChild("actions");
+			local nodeActions = DB.createChild(nodePower, "actions");
 
 			-- the added flag only exists here because a power COULD have effects, but if aura effects
 			-- isn't loaded, then it won't add. So we want to make sure we don't print the 'added' message
@@ -493,10 +512,10 @@ function loadActionData(sPowerName, nodePower)
 				end
 			end
 			if bAdded then
-				CharManager.outputUserMessage("message_ps_addaction", sPowerName)
+				ChatManager.SystemMessageResource("message_ps_addaction", sPowerName)
 			end
 		else
-			CharManager.outputUserMessage("message_ps_addaction_empty", sPowerName)
+			ChatManager.SystemMessageResource("message_ps_addaction_empty", sPowerName)
 		end
 	end
 end
@@ -521,7 +540,7 @@ function addAction(nodeActions, vAction, sPowerName)
 	elseif vAction.type == "effect" then
 		-- if this effect has an aura and the aura effects extension isn't loaded, don't add it.
 		if vAction.sName:lower():match("aura:") and not KingdomsAndWarfare.isAuraEffectsLoaded() then
-			CharManager.outputUserMessage("message_ps_addaction_aura", sPowerName)
+			ChatManager.SystemMessageResource("message_ps_addaction_aura", sPowerName)
 			return false;
 		end
 

@@ -23,7 +23,7 @@ function commanderUpdated(nodeLink)
 		_, sRecord = DB.getValue(nodeLink, "", "", CombatManager.CT_MAIN_PATH);
 	end
 
-	if sRecord ~= windowlist.window.getDatabaseNode().getPath() then
+	if sRecord ~= windowlist.window.getDatabasePath() then
 		close();
 	end
 end

@@ -59,7 +59,7 @@ function loadActionData(sPowerName, nodePower)
 	-- Only process if there are no actions already added
 	if DB.getChildCount(nodePower, "actions") == 0 then
 		if DataKW.domainpowers[sNameLower] then
-			local nodeActions = nodePower.createChild("actions");
+			local nodeActions = DB.createChild(nodePower, "actions");
 
 			-- the added flag only exists here because a power COULD have effects, but if aura effects
 			-- isn't loaded, then it won't add. So we want to make sure we don't print the 'added' message
@@ -71,10 +71,10 @@ function loadActionData(sPowerName, nodePower)
 				end
 			end
 			if bAdded then
-				CharManager.outputUserMessage("message_ps_addaction", sPowerName)
+				ChatManager.SystemMessageResource("message_ps_addaction", sPowerName)
 			end
 		else
-			CharManager.outputUserMessage("message_ps_addaction_empty", sPowerName)
+			ChatManager.SystemMessageResource("message_ps_addaction_empty", sPowerName)
 		end
 	end
 end
@@ -99,7 +99,7 @@ function addAction(nodeActions, vAction, sPowerName)
 	elseif vAction.type == "effect" then
 		-- if this effect has an aura and the aura effects extension isn't loaded, don't add it.
 		if vAction.sName:lower():match("aura:") and not KingdomsAndWarfare.isAuraEffectsLoaded() then
-			CharManager.outputUserMessage("message_ps_addaction_aura", sPowerName)
+			ChatManager.SystemMessageResource("message_ps_addaction_aura", sPowerName)
 			return false;
 		end
 

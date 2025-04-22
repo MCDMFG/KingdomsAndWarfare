@@ -79,8 +79,8 @@ function getRoll(rUnit, rAction)
 	-- workflow units on a PCs' cohorts tab (from friend zone) have the sCTNode value stripped away.
 	-- Posibly because the system thinks they're pcs, and treats them differently.
 	-- So I have to put the CTNode value in the string so it can be persisted reliably
-	if rUnit.sCTNode then
-		rRoll.sDesc = rRoll.sDesc .. " [CTNODE:" .. rUnit.sCTNode .. "]";
+	if ActorManager.hasCT(rUnit) then
+		rRoll.sDesc = rRoll.sDesc .. " [CTNODE:" .. ActorManager.getCTNodeName(rUnit) .. "]";
 	end
 
 	rRoll.nTarget = rAction.nTargetDC;
@@ -89,7 +89,7 @@ function getRoll(rUnit, rAction)
 end
 
 function onTargeting(rSource, aTargeting, rRolls)
-	if rSource and (rSource.sCTNode or "") == "" then
+	if not ActorManager.hasCT(rSource) then
 		for k,rRoll in pairs(rRolls) do
 			local ctnode = rRoll.sDesc:match("%[CTNODE:([%w%p]+)%]");
 			if ctnode then
@@ -102,7 +102,7 @@ function onTargeting(rSource, aTargeting, rRolls)
 
 	if aTargeting and #aTargeting > 0 then
 		for _,target in pairs(aTargeting) do
-			if target and target[1] and target[1].sType == "unit" then
+			if target and ActorManager.isRecordType(target[1], "unit") then
 				table.insert(aNewTargets, target);
 			end
 		end
@@ -149,7 +149,7 @@ function handleHarrowing(rSource, aTargets, rRolls)
 	if aHarrowUnit then
 		-- Check if source is immune to harrow
 		if not EffectManager5E.hasEffectCondition(rSource, "Fearless") then
-			local sourceType = ActorManagerKw.getUnitType(rSource.sCreatureNode);
+			local sourceType = ActorManagerKw.getUnitType(ActorManager.getCreatureNodeName(rSource));
 			if sourceType or "" ~= "" then
 				local sTypeLower = sourceType:lower();
 				if sTypeLower ~= "" then

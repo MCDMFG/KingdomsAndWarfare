@@ -18,7 +18,6 @@ function onInit()
 	DB.addHandler(DB.getPath(nodeUnit, "activated"), "onUpdate", onActivatedUpdated);
 	DB.addHandler(DB.getPath(nodeUnit, "wounds"), "onUpdate", onWoundsUpdated);
 end
-
 function onClose()
 	CombatManagerKw.unregisterUnitSelectionHandler(unitSelected);
 	local nodeUnit = DB.getChild(getDatabaseNode(), "..");
@@ -26,61 +25,15 @@ function onClose()
 	DB.removeHandler(DB.getPath(nodeUnit, "wounds"), "onUpdate", onWoundsUpdated);
 end
 
-function onDrop(x, y, draginfo)
-	local sPrototype, dropref = draginfo.getTokenData();
-	if (sPrototype or "") == "" then
-		return nil;
-	end
-	
-	setPrototype(sPrototype);
-	CombatManager.replaceCombatantToken(window.getDatabaseNode(), dropref);
-	return true;
-end
-
-function onDragStart(button, x, y, draginfo)
-	if Session.IsHost then
-		local node = window.getDatabaseNode();
-
-		draginfo.setType("battletrackerunit");
-		draginfo.setTokenData(getPrototype());
-		draginfo.setDatabaseNode(node);
-
-		local base = draginfo.createBaseData();
-		base.setType("token");
-		base.setTokenData(getPrototype());
-
-		local nSpace = DB.getValue(node, "space");
-		TokenManager.setDragTokenUnits(nSpace);
-	end
-
-	return true;
-end
-function onDragEnd(draginfo)
-	if Session.IsHost then
-		TokenManager.endDragTokenWithUnits();
-
-		local prototype, dropref = draginfo.getTokenData();
-		if dropref then
-			CombatManager.replaceCombatantToken(window.getDatabaseNode(), dropref);
-		end
-	end
-	return true;
-end
-
 function onClickDown(button, x, y)
-	return true;
+	if button == 1 then
+		return true;
+	end
 end
 function onClickRelease(button, x, y)
 	if button == 1 then
 		if Input.isControlPressed() then
-			local nodeActive = CombatManager.getActiveCT();
-			if nodeActive then
-				local nodeTarget = window.getDatabaseNode();
-				if nodeTarget then
-					TargetingManager.toggleCTTarget(nodeActive, nodeTarget);
-				end
-			end
-
+			TargetingManager.notifyToggleTarget(CombatManager.getActiveCT(), window.getDatabaseNode());
 			CombatManagerKw.selectUnit(window.getDatabaseNode(), 2);
 		elseif Input.isShiftPressed() then
 			CombatManagerKw.selectUnit(window.getDatabaseNode(), 2);
@@ -91,18 +44,37 @@ function onClickRelease(button, x, y)
 
 	return true;
 end
-
 function onDoubleClick(x, y)
-	local nodeUnit = window.getDatabaseNode();
-	CombatManager.openMap(nodeUnit);
+	CombatManager.handleCTTokenDoubleClick(window.getDatabaseNode());
 	-- unit activation if it is the commander's turn, or should control overloading be avoided here?
-
 	CombatManagerKw.notifyActivateUnit(nodeUnit)
 end
-
 function onWheel(notches)
-	TokenManager.onWheelCT(window.getDatabaseNode(), notches);
+	return CombatManager.handleCTTokenWheel(window.getDatabaseNode(), notches);
+end
+function onDragStart(button, x, y, draginfo)
+	if not Session.IsHost then
+		return false;
+	end
+
+	local nSpace = DB.getValue(node, "space");
+	TokenManager.setDragTokenUnits(nSpace);
+
+	local node = window.getDatabaseNode();
+	draginfo.setType("battletrackerunit");
+	draginfo.setTokenData(getPrototype());
+	draginfo.setDatabaseNode(node);
+
+	local base = draginfo.createBaseData();
+	base.setType("token");
+	base.setTokenData(getPrototype());
 	return true;
+end
+function onDragEnd(draginfo)
+	return CombatManager.handleCTTokenDragEnd(window.getDatabaseNode(), draginfo);
+end
+function onDrop(x, y, draginfo)
+	return CombatManager.handleCTTokenDrop(window.getDatabaseNode(), draginfo);
 end
 
 function unitSelected(nodeUnit, nSlot)
@@ -138,7 +110,6 @@ function onActivatedUpdated(nodeActivated)
 		activatedWidget.setPosition("topleft", 0*15/2, 15/2)
 	end
 end
-
 function onWoundsUpdated(nodeWounds)
 	local nodeUnit = DB.getChild(nodeWounds, "..");
 	local bIsBroken = ActorHealthManager.getWoundPercent(ActorManager.resolveActor(nodeUnit)) >= 1;

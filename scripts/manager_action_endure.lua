@@ -22,7 +22,7 @@ function getRoll(rActor, rAction)
 	if rAction.modifier then
 		rRoll.nMod = rAction.modifier;
 	else
-		rRoll.nMod = ActorManagerKw.getAbilityBonus(rUnit, rAction.stat) or 0;
+		rRoll.nMod = ActorManagerKw.getAbilityBonus(rActor, rAction.stat) or 0;
 	end
 
 	-- Build the description label
@@ -109,7 +109,7 @@ function onEndureRoll(rSource, rTarget, rRoll)
 	end
 
 	if rAction.sResult == "pass" then
-		local sSourceNodeType, nodeSource = ActorManager.getTypeAndNode(rSource);
+		local nodeSource = ActorManager.getCreatureNode(rSource);
 		local nTotalHP = DB.getValue(nodeSource, "hptotal", 0);
 		local nWounds = nTotalHP - 1;
 		
@@ -147,7 +147,8 @@ function handleEndure(msgOOB)
 	local rSource = ActorManager.resolveActor(msgOOB.sSourceNode);
 	local rTarget = ActorManager.resolveActor(msgOOB.sTargetNode);
 	local nDC = tonumber(msgOOB.nDC) or 0;
-	
+	local bSecret = (tonumber(msgOOB.nSecret) == 1);	
+
 	-- Print message to chat window
 	local nTotal = tonumber(msgOOB.nTotal) or 0;
 	local msgShort = {font = "msgfont"};

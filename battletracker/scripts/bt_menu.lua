@@ -30,10 +30,9 @@ end
 function onClickDown(button, x, y)
 	return true;
 end
-
 function onClickRelease(button, x, y)
 	if button == 1 then
-		Interface.openRadialMenu();
+		Interface.openContextMenu();
 		return true;
 	end
 end
@@ -53,10 +52,10 @@ function onMenuSelection(selection, subselection, subsubselection)
 		end
 		if selection == 8 then
 			if subselection == 8 then
-				ChatManager.Message(Interface.getString("ct_message_rest"), true);
+				ChatManager.Message(Interface.getString("message_restallshort"), true);
 				CombatManager2.rest(false);
 			elseif subselection == 6 then
-				ChatManager.Message(Interface.getString("ct_message_restlong"), true);
+				ChatManager.Message(Interface.getString("message_restalllong"), true);
 				CombatManager2.rest(true);
 			end
 		end
@@ -83,15 +82,14 @@ end
 
 function clearNPCs(bDeleteOnlyFoe)
 	for _, vChild in pairs(CombatManager.getCombatantNodes()) do
-		local sFaction = vChild.getChild("friendfoe").getValue();
-
+		local sFaction = DB.getValue(vChild, "friendfoe", "");
 		if bDeleteOnlyFoe then
 			if sFaction == "foe" then
-				vChild.delete();
+				DB.deleteNode(vChild);
 			end
 		else
 			if sFaction ~= "friend" then
-				vChild.delete();
+				DB.deleteNode(vChild);
 			end
 		end
 	end
@@ -100,15 +98,14 @@ end
 function clearUnits(bDeleteOnlyFoe)
 	for _, vChild in pairs(CombatManager.getCombatantNodes("unit")) do
 		if ActorManagerKw.isUnit(vChild) then
-			local sFaction = vChild.getChild("friendfoe").getValue();
-
+			local sFaction = DB.getValue(vChild, "friendfoe", "");
 			if bDeleteOnlyFoe then
 				if sFaction == "foe" then
-					vChild.delete();
+					DB.deleteNode(vChild);
 				end
 			else
 				if sFaction ~= "friend" then
-					vChild.delete();
+					DB.deleteNode(vChild);
 				end
 			end
 		end

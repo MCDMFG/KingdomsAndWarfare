@@ -52,8 +52,8 @@ function getRoll(rUnit, rTarget, rAction)
 	end
 
 	-- Track if this effect came from this unit, or a different unit
-	if rTarget and rTarget.sCreatureNode then
-		rRoll.sDesc = rRoll.sDesc .. " [ORIGIN:" .. rTarget.sCreatureNode .. "]";
+	if rTarget then
+		rRoll.sDesc = rRoll.sDesc .. " [ORIGIN:" .. ActorManager.getCreatureNodeName(rTarget) .. "]";
 	elseif rAction.sOrigin then
 		rRoll.sDesc = rRoll.sDesc .. " [ORIGIN:" .. rAction.sOrigin .. "]";
 	end
@@ -83,7 +83,7 @@ function modHarrowing(rSource, rTarget, rRoll)
 		-- Get attack effect modifiers
 		local bEffects = false;
 		local nEffectCount;
-		aAddDice, nAddMod, nEffectCount = EffectManager5E.getEffectsBonus(rSource, sModStat, false, {}, rTarget);
+		aAddDice, nAddMod, nEffectCount = EffectManager5E.getEffectsBonus(rSource, "morale", false, {}, rTarget);
 		if (nEffectCount > 0) then
 			bEffects = true;
 		end
@@ -297,19 +297,14 @@ function applyAttackState(rSource, aTargets, rRolls)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_APPLYATTACKSTATE;
 	
-	msgOOB.sSourceNode = ActorManager.getCTNodeName(rSource);
+	msgOOB.sSourceNode = ActorManager.getCreatureNodeName(rSource);
 
 	for k,v in ipairs(rRolls) do
-		local rollkey = "roll" .. k;
-		msgOOB[rollkey .. "_mod"] = rRolls[k].nMod;
-		msgOOB[rollkey .. "_desc"] = rRolls[k].sDesc;
+		msgOOB["roll" .. k .. "_mod"] = rRolls[k].nMod;
+		msgOOB["roll" .. k .. "_desc"] = rRolls[k].sDesc;
 	end
 	for k,v in ipairs(aTargets) do
-		local targetkey = "target" .. k;
-		msgOOB[targetkey .. "_sType"] = v[1].sType;
-		msgOOB[targetkey .. "_sCreatureNode"] = v[1].sCreatureNode;
-		msgOOB[targetkey .. "_sCTNode"] = v[1].sCTNode;
-		msgOOB[targetkey .. "_sName"] = v[1].sName;
+		msgOOB["target" .. k .. "_sNode"] = ActorManager.getCreatureNodeName(v[1]);
 	end
 
 	Comm.deliverOOBMessage(msgOOB, "");
@@ -336,16 +331,9 @@ function handleApplyAttackState(msgOOB)
 	end
 
 	local j = 1;
-	while msgOOB["target" .. j .. "_sName"] do
-		local aOuterTarget = {};
-		local aTarget = {};
-		aTarget.sType = msgOOB["target" .. j .. "_sType"];
-		aTarget.sCreatureNode = msgOOB["target" .. j .. "_sCreatureNode"];
-		aTarget.sCTNode = msgOOB["target" .. j .. "_sCTNode"];
-		aTarget.sName = msgOOB["target" .. j .. "_sName"];
-
-		table.insert(aOuterTarget, aTarget)
-		table.insert(aState.aTargets, aOuterTarget);
+	while msgOOB["target" .. j .. "_sNode"] do
+		local rTarget = ActorManager.resolveActor(msgOOB["target" .. j .. "_sNode"]);
+		table.insert(aState.aTargets, { rTarget });
 		j = j + 1;
 	end
 

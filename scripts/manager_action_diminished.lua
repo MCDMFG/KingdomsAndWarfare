@@ -38,8 +38,8 @@ function getRoll(rUnit, rAttacker, rAction)
 		rRoll.sDesc = rRoll.sDesc .. " [CRIT " .. rAction.nCritRange .. "]";
 	end
 
-	if rAttacker and rAttacker.sCreatureNode then
-		rRoll.sDesc = rRoll.sDesc .. "[ATTACKER:" .. rAttacker.sCreatureNode .. "]"
+	if rAttacker then
+		rRoll.sDesc = rRoll.sDesc .. "[ATTACKER:" .. ActorManager.getCreatureNodeName(rAttacker) .. "]"
 	end
 
 	-- Add advantage/disadvantage tags
@@ -89,7 +89,7 @@ function modDiminished(rSource, rTarget, rRoll)
 		-- Get attack effect modifiers
 		local bEffects = false;
 		local nEffectCount;
-		aAddDice, nAddMod, nEffectCount = EffectManager5E.getEffectsBonus(rSource, sModStat, false, {}, rTarget);
+		aAddDice, nAddMod, nEffectCount = EffectManager5E.getEffectsBonus(rSource, "morale", false, {}, rTarget);
 		if (nEffectCount > 0) then
 			bEffects = true;
 		end
@@ -112,8 +112,10 @@ function modDiminished(rSource, rTarget, rRoll)
 		-- Handle automatic success
 		if EffectManager5E.hasEffect(rSource, "AUTOPASS", rTarget) then
 			table.insert(aAddDesc, "[AUTOPASS]");
+			bEffects = true;
 		elseif #EffectManager5E.getEffectsByType(rSource, "AUTOPASS", aTestFilter, rTarget) > 0 then
 			table.insert(aAddDesc, "[AUTOPASS]");
+			bEffects = true;
 		end
 
 		-- If effects, then add them

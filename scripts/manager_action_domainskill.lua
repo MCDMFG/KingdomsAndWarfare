@@ -10,13 +10,10 @@ end
 
 function performRoll(draginfo, rActor, rAction)
 	local rRoll = getRoll(rActor, rAction);
-	
 	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function getRoll(rActor, rAction)
-	
-	-- Build basic roll
 	local rRoll = {};
 	rRoll.sType = "domaincheck";
 	rRoll.aDice = { "d20" };
@@ -44,6 +41,7 @@ function modDomainSkillRoll(rSource, rTarget, rRoll)
 
 	if rSource then
 		-- Get roll effect modifiers
+		local aSkillFilter = {};
 		local sTest = StringManager.trim(string.match(rRoll.sDesc, "%[DOMAIN SKILL%] ([^[]+)"));
 		if sTest then
 			local aTestAddDice, nTestAddMod, nTestEffectCount = EffectManager5E.getEffectsBonus(rSource, {"TEST"}, false, {sTest:lower()});
@@ -54,6 +52,7 @@ function modDomainSkillRoll(rSource, rTarget, rRoll)
 				end
 				nAddMod = nAddMod + nTestAddMod;
 			end
+			table.insert(aSkillFilter, sTest:lower());
 		end
 
 		-- Get condition modifiers

@@ -15,17 +15,15 @@
 			<dynamic />
 			<minimum width="650" height="400" />
 		</sizelimits>
-		<nodelete />
 		<sheetdata>
 			<windowtitlebar_utilitybox name="title">
 				<resource>library_recordtype_label_warfare_tokens</resource>
 			</windowtitlebar_utilitybox>
 			<windowmenubar_utilitybox name="menubar" />
-			<resize_utilitybox />
 
 			<anchor_content_utilitybox_top />
-
 			<anchor_content_utilitybox_bottom />
+
 			<area_list_content_controls />
 			<anchor_list_content_controls_right />
 			<button_iedit_list_content_controls />
@@ -43,6 +41,8 @@
 			<sub_content_framed_groupbox_right name="fortifications">
 				<class>warfare_fortifications</class>
 			</sub_content_framed_groupbox_right>
+
+			<resize_utilitybox />
 		</sheetdata>
 	</windowclass>
 
@@ -192,7 +192,7 @@
 					for _,tokenWindow in pairs(fortification.tokens.getWindows()) do
 						if tokenWindow.token then
 							if tokenWindow.token.getPrototype() == sToken then
-								CharManager.outputUserMessage("message_fortification_token_alreadyused", sToken, name.getValue(), fortification.name.getValue());
+								ChatManager.SystemMessageResource("message_fortification_token_alreadyused", sToken, name.getValue(), fortification.name.getValue());
 								return true;
 							end
 						end
@@ -202,29 +202,17 @@
 			end
 		</script>
 		<sheetdata>
-			<genericcontrol name="rightanchor">
-				<anchored height="0" width="0">
-					<top />
-					<right />
-				</anchored>
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored>
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<editmode>list_iedit</editmode>
-			</button_idelete>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
 
-			<stringfield name="name">
-				<anchored position="insidetopleft" offset="5,2">
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
+			<button_listitem_idelete_left name="idelete">
+				<editmode>list_iedit</editmode>
+			</button_listitem_idelete_left>
+
+			<string_listitem_center_bold name="name">
 				<frame name="rowshade" offset="5,2,5,2" />
-				<font>sheetlabel</font>
-				<multilinespacing>20</multilinespacing>
 				<empty textres="label_empty_fortification" />
-			</stringfield>
+			</string_listitem_center_bold>
 
 			<label name="label_morale">
 				<anchored width="40" height="22">
@@ -262,7 +250,6 @@
 				<datasource>.tokens</datasource>
 				<class>fortification_token</class>
 				<columns width="42" fillwidth="true" />
-				<skipempty />
 				<noscroll />
 			</windowlist>
 		</sheetdata>
@@ -273,12 +260,11 @@
 		<script>
 			function onInit()
 				registerMenuItem(Interface.getString("fortification_token_menu_delete"), "delete", 6);
-				local node = getDatabaseNode();
-				node.setPublic(true);
+				DB.setPublic(getDatabaseNode());
 			end
 			function onMenuSelection(selection)
 				if selection == 6 then
-					getDatabaseNode().delete();
+					UtilityManager.safeDeleteWindow(self);
 				end
 			end
 		</script>

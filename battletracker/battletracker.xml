@@ -6,187 +6,139 @@
 -->
 
 <root>
+	<!-- todo account from unselection -->
 	<windowclass name="battletracker">
 		<frame>ctbox</frame>
-		<placement>
-			<size width="650" height="500" />
-		</placement>
 		<sizelimits>
-			<minimum width="650" height="750" />
+			<minimum width="700" height="750" />
 			<dynamic />
 		</sizelimits>
 		<softclose />
-		<nodelete />
 		<script file="battletracker/scripts/battletracker.lua" />
 		<sheetdata>
-			<windowtitlebar name="title">
+			<windowtitlebar_ctbox name="title">
 				<resource>battletracker_window_title</resource>
-			</windowtitlebar>
-			<anchor_title_ctbox name="contentanchor" />
+			</windowtitlebar_ctbox>
+			<windowmenubar_ctbox name="menubar" />
 
-			<genericcontrol name="topanchor">
-				<anchored width="0" height="0">
-					<left anchor="center" />
-					<top offset="60" />
-				</anchored>
-			</genericcontrol>
-			<genericcontrol name="bottomanchor">
-				<anchored width="0" height="0">
-					<left anchor="center" />
-					<bottom offset="-60" />
-				</anchored>
-			</genericcontrol>
-			<genericcontrol name="leftanchor">
-				<anchored width="0" height="0">
-					<left anchor="left" offset="20" />
-					<top anchor="center" />
-				</anchored>
-			</genericcontrol>
-			<genericcontrol name="rightanchor">
-				<anchored width="0" height="0">
-					<top anchor="center" />
-					<right anchor="right" offset="-27" />
-				</anchored>
-			</genericcontrol>
+			<anchor_content_ctbox_top name="contentanchor" />
+			<anchor_content_ctbox_bottom name="bottomanchor" />
 
-			<!-- List goes first so that the stupid ct frame padding is beneath the unit summary cards -->
-			<subwindow name="uncommanded_units">
+			<sub_content_framed_groupbox_narrow_bottom name="sub_controls">
+				<class>sub_bt_controls</class>
+			</sub_content_framed_groupbox_narrow_bottom>
+
+			<sub_content_framed_groupbox_bottom name="uncommanded_units">
 				<anchored>
-					<left parent="topanchor" anchor="right" offset="7" />
-					<right parent="rightanchor" anchor="left" offset="-5" />
-					<bottom parent="bottomanchor" anchor="top" />
+					<sizelimits>
+						<maximum height="150" />
+					</sizelimits>
 				</anchored>
-				<frame name="groupbox" offset="5,5,5,5" />
 				<class>battletracker_uncommandedunits</class>
-				<activate />
-				<fastinit />
-			</subwindow>
-			<windowlist name="list">
+			</sub_content_framed_groupbox_bottom>
+			<scrollbar_content_base>
+				<anchored to="uncommanded_units" />
+				<target>uncommanded_units</target>
+			</scrollbar_content_base>
+
+			<sub_content_framed_groupbox_left name="primary_selected_unit">
 				<anchored>
-					<left parent="topanchor" anchor="right" offset="-20" /> <!-- Negative value to acocunt for the fact that the ct frame has 25ish pixels of alpha -->
-					<top parent="topanchor" anchor="bottom" offset="-2" />
-					<right parent="rightanchor" anchor="left" />
-					<bottom parent="uncommanded_units" anchor="top" offset="-7" />
+					<bottom parent="" anchor="center" />
 				</anchored>
+				<class>battletracker_emptysummary</class>
+				<slot>1</slot>
+				<instructionres>primary_summary_instructions</instructionres>
+			</sub_content_framed_groupbox_left>
+			<scrollbar_content_base>
+				<anchored to="primary_selected_unit" />
+				<target>primary_selected_unit</target>
+			</scrollbar_content_base>
+
+			<sub_content_framed_groupbox_left name="secondary_selected_unit">
+				<anchored>
+					<top parent="" anchor="center" />
+				</anchored>
+				<class>battletracker_emptysummary</class>
+				<slot>2</slot>
+				<instructionres>secondary_summary_instructions</instructionres>
+			</sub_content_framed_groupbox_left>
+			<scrollbar_content_base>
+				<anchored to="secondary_selected_unit" />
+				<target>secondary_selected_unit</target>
+			</scrollbar_content_base>
+
+			<list_content_framed_groupbox_right name="list">
+				<class>battletracker_commander</class>
+				<empty font="list-empty" textres="ct_emptylist" />
+				<allowdelete />
 				<script>
 					function onSortCompare(w1, w2)
 						return CombatManager.onSortCompare(w1.getDatabaseNode(), w2.getDatabaseNode());
 					end
-
 					function onFilter(w)
 						local node = w.getDatabaseNode();
-						local bVisible = DB.getValue(node, "tokenvis", 0) == 1;
-						local bIsPc = DB.getValue(node, "friendfoe", "") == "friend";
-						return bVisible or bIsPc or Session.IsHost;
+						return Session.IsHost or (DB.getValue(node, "tokenvis", 0) == 1) or (DB.getValue(node, "friendfoe", "") == "friend");
 					end
 				</script>
-				<class>battletracker_commander</class>
-				<empty font="list-empty-ct" textres="ct_emptylist" />
-				<skipempty />
-				<allowdelete />
-			</windowlist>
-			<scrollbar_list />
+			</list_content_framed_groupbox_right>
+			<scrollbar_content_list />
+			
+			<resize_ctbox />
+		</sheetdata>
+	</windowclass>
+	<windowclass name="sub_bt_controls">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<anchor_ct_controls_left />
+			<anchor_ct_controls_right />
 
-			<subwindow name="primary_selected_unit">
-				<anchored>
-					<left parent="leftanchor" />
-					<top parent="topanchor" anchor="bottom" />
-					<right parent="topanchor" offset="-7" />
-					<bottom  parent="leftanchor" offset="-7" />
-				</anchored>
-				<frame name="groupbox" offset="5,5,5,5" />
-				<class>battletracker_emptysummary</class> <!-- todo account from unselection -->
-				<slot>1</slot>
-				<instructionres>primary_summary_instructions</instructionres>
-				<activate />
-				<fastinit />
-			</subwindow>
-			<scrollbar name="scrollbar_active">
-				<anchored to="primary_selected_unit" />
-				<target>primary_selected_unit</target>
-			</scrollbar>
-
-			<subwindow name="secondary_selected_unit">
-				<anchored>
-					<left parent="leftanchor" />
-					<top parent="leftanchor" offset="7" />
-					<right parent="bottomanchor" offset="-7" />
-					<bottom parent="bottomanchor" anchor="top" />
-				</anchored>
-				<frame name="groupbox" offset="5,5,5,5" />
-				<class>battletracker_emptysummary</class>
-				<slot>2</slot>
-				<instructionres>secondary_summary_instructions</instructionres>
-				<activate />
-				<fastinit />
-			</subwindow>
-			<scrollbar name="scrollbar_selected">
-				<anchored to="secondary_selected_unit" />
-				<target>secondary_selected_unit</target>
-			</scrollbar>
-
-			<label_ct_host_rounds name="label_rounds" />
-			<number_ct_host_rounds />
-			<button_ct_nextround>
+			<button_ct_controls_setactive name="button_setactive">
 				<gmvisibleonly />
-			</button_ct_nextround>
+			</button_ct_controls_setactive>
+			<button_ct_controls_nextturn name="button_nextactor" />
+			<button_ct_controls_menu name="button_menu">
+				<gmvisibleonly />
+				<script file="battletracker/scripts/bt_menu.lua" />
+			</button_ct_controls_menu>
 
-			<!-- Morale Bonuses -->
-			<battletracker_morale name="morale_neutral" source="morale_neutral">
-				<anchored>
-					<left parent="bottomanchor" offset="56" />
-				</anchored>
-				<tooltip textres="bt_tooltip_morale_neutral" />
-				<faction>neutral</faction>
-			</battletracker_morale>
-			<battletracker_morale name="morale_foe" source="morale_foe">
-				<anchored>
-					<right parent="morale_neutral" anchor="left" offset="-10" />
-				</anchored>
-				<tooltip textres="bt_tooltip_morale_foe" />
-				<faction>foe</faction>
-			</battletracker_morale>
-			<battletracker_morale name="morale_friend" source="morale_friend">
-				<anchored>
-					<right parent="morale_foe" anchor="left" offset="-10" />
-				</anchored>
+			<button_ct_controls_nextround name="button_nextround">
+				<gmvisibleonly />
+			</button_ct_controls_nextround>
+			<number_ct_controls_rounds name="round" />
+			<label_ct_controls_rounds name="label_round" />
+
+			<area_ct_controls_center name="area_center" />
+			<number_bt_controls_morale name="morale_friend">
+				<anchored to="label_round" position="lefthigh" offset="140,0" />
 				<tooltip textres="bt_tooltip_morale_friend" />
 				<faction>friend</faction>
-			</battletracker_morale>
+			</number_bt_controls_morale>
+			<number_bt_controls_morale name="morale_neutral">
+				<anchored to="morale_friend" position="righthigh" offset="25" />
+				<tooltip textres="bt_tooltip_morale_neutral" />
+				<faction>neutral</faction>
+			</number_bt_controls_morale>
+			<number_bt_controls_morale name="morale_foe">
+				<anchored to="morale_neutral" position="righthigh" offset="25" />
+				<tooltip textres="bt_tooltip_morale_foe" />
+				<faction>foe</faction>
+			</number_bt_controls_morale>
 			<label>
-				<anchored>
-					<right parent="morale_friend" anchor="left" offset="-10" />
-					<bottom offset="-22" />
-				</anchored>
+				<anchored to="morale_friend" position="lefthigh" offset="25,0" />
 				<static textres="bt_label_morale" />
 			</label>
-
-			<button_ct_setactive>
-				<gmvisibleonly />
-			</button_ct_setactive>
-			<button_battletracker_nextactor />
-			<button_bt_menu>
-				<gmvisibleonly />
-			</button_bt_menu>
-
-			<resize_ctbox />
-			<close_ctbox />
 		</sheetdata>
 	</windowclass>
 	
 	<windowclass name="battletracker_commander">
 		<script file="battletracker/scripts/commander.lua" />
-		<margins control="25,0,0,5" />
+		<margins control="25,0,0,2" />
 		<sizelimits>
 			<minimum height="20" />
 		</sizelimits>
 		<sheetdata>
-			<genericcontrol name="leftanchor">
-				<anchored position="insidetopleft" width="0" height="0" />
-			</genericcontrol>
-			<genericcontrol name="rightanchor">
-				<anchored position="insidetopright" width="0" height="0" />
-			</genericcontrol>
+			<anchor_listitem_left_sm name="leftanchor" />
+			<anchor_listitem_right_sm name="rightanchor" />
 
 			<genericcontrol name="color_swatch">
 				<anchored to="leftanchor" height="20" width="20">
@@ -235,71 +187,56 @@
 				<invisible />
 			</string_ct_entry_name>
 
-			<battletracker_unitlist/>
+			<battletracker_unitlist />
 		</sheetdata>
 	</windowclass>
 	
 	<windowclass name="battletracker_uncommandedunits">
 		<script file="battletracker/scripts/uncommanded_units.lua" />
-		<sizelimits>
-			<!-- <minimum height="50" /> -->
-		</sizelimits>
 		<sheetdata>
-			<label name="name">
-				<anchored position="insidetopleft" offset="5" />
-				<static textres="missing_commander" />
-			</label>
+			<anchor_content_top />
 
-			<battletracker_unitlist>
+			<header_content_framed_headersimple name="header">
+				<static textres="missing_commander"/>
+			</header_content_framed_headersimple>
+
+			<battletracker_content_unitlist name="list">
 				<script>
 					function onListChanged()
 						window.parentcontrol.setVisible(getWindowCount() > 0);
 					end
 				</script>
-				<anchored>
-					<left offset="-2" />
-				</anchored>
-			</battletracker_unitlist>
+			</battletracker_content_unitlist>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="battletracker_unit">
+		<margins>0,0,0,2</margins>
 		<script file="battletracker/scripts/unit.lua" />
-		<margins>3,0,3,1</margins>
 		<sheetdata>
+			<anchor_listitem_left_sm name="leftanchor" />
+			<anchor_listitem_right_sm name="rightanchor" />
+
 			<token_ctentry_base name="token">
-				<anchored merge="replace" height="30" width="42">
-					<left anchor="center" offset="-21" />
-					<top offset="2" />
-				</anchored>
 				<script file="battletracker/scripts/unit_token.lua" />
 			</token_ctentry_base>
-			<stringfield name="name">
+			<string_listitem_center name="name">
+				<font>sheetlabel</font>
+				<readonly />
 				<script>
 					function onValueChanged()
 						window.updateName();
 					end
 				</script>
-				<anchored>
-					<left offset="5" />
-					<top parent="token" anchor="bottom" offset="5" />
-					<right offset="-5" />
-					<sizelimits>
-						<maximum height="40" />
-					</sizelimits>
-				</anchored>
-				<multilinespacing>20</multilinespacing>
-				<center />
-				<readonly />
-				<font>sheetlabelmini</font>
-			</stringfield>
+			</string_listitem_center>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="battletracker_emptysummary">
 		<margins>5,5,5,5</margins>
 		<sheetdata>
 			<label name="text">
+				<anchored merge="replace" position="over" />
+				<multilinespacing>20</multilinespacing>
+				<center />
 				<script>
 					function onInit()
 						local res = window.parentcontrol.instructionres;
@@ -308,9 +245,6 @@
 						end
 					end
 				</script>
-				<anchored merge="replace" position="over" />
-				<center />
-				<multilinespacing>20</multilinespacing>
 			</label>
 		</sheetdata>
 	</windowclass>

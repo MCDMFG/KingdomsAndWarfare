@@ -161,22 +161,18 @@ end
 -- Trimmed down version of the applyDamge function. Got rid of most of the extraneous stuff:
 -- like concentration, half damage, avoidance, death saves, recovery, etc.
 function applyDamageToUnit(rSource, rTarget, rRoll)
-	-- Get health fields
-	local nTotalHP, nTempHP, nWounds;
-	local sDamage = rRoll.sDesc;
-	local nTotal = rRoll.nTotal;
-
-	local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
+	local nodeTarget = ActorManager.getCTNode(rTarget);
 	if not nodeTarget then
 		return;
 	end
-	if sTargetNodeType == "ct" then
-		nTotalHP = DB.getValue(nodeTarget, "hptotal", 0);
-		nTempHP = DB.getValue(nodeTarget, "hptemp", 0);
-		nWounds = DB.getValue(nodeTarget, "wounds", 0);
-	else
-		return;
-	end
+
+	-- Get health fields
+	local sDamage = rRoll.sDesc;
+	local nTotal = rRoll.nTotal;
+
+	local nTotalHP = DB.getValue(nodeTarget, "hptotal", 0);
+	local nTempHP = DB.getValue(nodeTarget, "hptemp", 0);
+	local nWounds = DB.getValue(nodeTarget, "wounds", 0);
 
 	-- Remember current health status
 	local sOriginalStatus = ActorHealthManager.getHealthStatus(rTarget);
@@ -334,10 +330,6 @@ function applyDamageToUnit(rSource, rTarget, rRoll)
 	rRoll.nTotal = tonumber(rDamageOutput.sVal) or 0;
 	rRoll.sResults = table.concat(rDamageOutput.tNotifications, " ");
 	ActionDamage.messageDamage(rSource, rTarget, rRoll);
-
-	if nWounds >= nTotalHP then
-		--handleEndure(rSource, rTarget, rDamageOutput)
-	end
 end
 
 function updateStatusConditions(rSource, rTarget, rDamageOutput, nTotalHP, nWounds, bHideOutput)
@@ -416,48 +408,4 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput)
 
 	-- Results
 	return nDamageAdjust, bVulnerable, bResist;
-end
-
--- There's something really bizarre going on here
--- the get effects functions are returning no effects, as far as I can tell
--- they're doing that because isActive is returning 0, even though the DB has it set to 1
-function handleEndure(rSource, rTarget, rDamageOutput)
-	local effects = EffectManager5E.getEffectsByType(rTarget, "endure", {}, rSource);
-
-	local aMatch = nil;
-	for _,v in pairs(effects) do
-		local rAction = {};
-
-		rAction.dc = v.modifier or 0;
-		for _,vRemainder in pairs(v.remainder) do
-			local s = vRemainder:lower();
-			if s == "reaction" then
-				rAction.bReaction = true;
-			elseif StringManager.contains(KingdomsAndWarfare.aWarfareAbilities) then
-				rAction.stat = s;
-			elseif StringManager.contains(DataCommon.abilities, s) then
-				rAction.stat = s;
-			end
-		end
-
-		-- Take the action with the lowest dc
-		if rAction.dc < aMatch.dc then
-			aMatch = rAction;
-		end
-	end
-
-	if aMatch then
-		local bReactionUsed = ActorManagerKw.hasUsedReaction(rTarget)
-		-- if unit has already used a reaction, and one is needed for this roll, bail
-		if aMatch.bReaction and bReactionUsed then
-			return;
-		end
-
-		-- Mark reaction as used
-		if aMatch.bReaction then
-			ActionTest.notifyUseReaction(rTarget);
-		end
-
-		ActionEndure.performRoll(nil, rTarget, aMatch);
-	end
 end

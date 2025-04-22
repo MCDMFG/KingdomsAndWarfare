@@ -8,11 +8,7 @@ function onInit()
 end
 
 function isUnit(v)
-	local rActor = ActorManager.resolveActor(v);
-	if rActor then
-		return rActor.sType == "unit";
-	end
-	return false;
+	return (ActorManager.getRecordType(v) == "unit");
 end
 
 function getCommanderCT(v)
@@ -23,7 +19,7 @@ function getCommanderCT(v)
 		return;
 	end
 
-	local sType, node = ActorManager.getTypeAndNode(ActorManager.resolveActor(rActor));
+	local node = ActorManager.getCreatureNode(rActor);
 	if not node then
 		return;
 	end
@@ -60,7 +56,7 @@ function getUnitType(v)
 		return;
 	end
 
-	local sType, node = ActorManager.getTypeAndNode(ActorManager.resolveActor(v));
+	local node = ActorManager.getCreatureNode(v);
 	if not node then
 		return;
 	end
@@ -72,7 +68,7 @@ function getUnitTier(v)
 	if not isUnit(v) then
 		return 0;
 	end
-	local sType, node = ActorManager.getTypeAndNode(ActorManager.resolveActor(v));
+	local node = ActorManager.getCreatureNode(v);
 	if not node then
 		return 0;
 	end
@@ -83,7 +79,7 @@ function getUnitSize(v)
 	if not isUnit(v) then
 		return 0;
 	end
-	local sType, node = ActorManager.getTypeAndNode(ActorManager.resolveActor(v));
+	local node = ActorManager.getCreatureNode(v);
 	if not node then
 		return 0;
 	end
@@ -94,7 +90,7 @@ function getUnitCurrentHP(v)
 	if not isUnit(v) then
 		return 0;
 	end
-	local sType, node = ActorManager.getTypeAndNode(ActorManager.resolveActor(v));
+	local node = ActorManager.getCreatureNode(v);
 	if not node then
 		return 0;
 	end
@@ -109,11 +105,8 @@ function getDamage(rUnit)
 	end
 
 	local nEffectBonus, nDmgEffects = EffectManager5E.getEffectsBonus(rUnit, "DMG", true);
-	local dbpath = rUnit.sCreatureNode .. ".damage";
-	local nDmg = DB.getValue(dbpath, nil, 1);
-
+	local nDmg = DB.getValue(ActorManager.getCreatureNode(rUnit), "damage", 0);
 	nDmg = nDmg + nEffectBonus;
-
 	return nDmg, nDmgEffects
 end
 
@@ -124,10 +117,7 @@ function getAbilityBonus(rUnit, sAbility)
 	if type(rUnit) == "databasenode" then
 		rUnit = ActorManager.resolveActor(rUnit);
 	end
-
-	local dbpath = rUnit.sCreatureNode .. ".abilities." .. sAbility;
-	local nAbilityScore = DB.getValue(dbpath, nil, 0);
-	return nAbilityScore;
+	return DB.getValue(ActorManager.getCreatureNode(rUnit), "abilities." .. sAbility, 0);
 end
 
 function getDefenseValue(rAttacker, rDefender, rRoll, sDef)
@@ -143,13 +133,13 @@ function getDefenseValue(rAttacker, rDefender, rRoll, sDef)
 		return nil, 0, 0, false, false;
 	end
 
-	local nodeDefender = DB.findNode(rDefender.sCreatureNode);
+	local nodeDefender = ActorManager.getCreatureNode(rDefender);
 	if not nodeDefender then
 		return nil, 0, 0, false, false;
 	end
 
 	-- Only process if this is targeting another unit.
-	if rDefender.sType ~= "unit" then
+	if ActorManager.getRecordType(rDefender) ~= "unit" then
 		return nil, 0, 0, false, false;
 	end
 
@@ -166,7 +156,7 @@ function getDefenseValue(rAttacker, rDefender, rRoll, sDef)
 
 		sEffectType = DataCommon.ability_ltos[sDef];
 		if sEffectType then
-			local aACEffects, nACEffectCount = EffectManager5E.getEffectsBonusByType(rDefender, {sEffectType}, true, aAttackFilter, rAttacker);
+			local aACEffects, nACEffectCount = EffectManager5E.getEffectsBonusByType(rDefender, {sEffectType}, true, nil, rAttacker);
 			for _,v in pairs(aACEffects) do
 				nBonusDef = nBonusDef + v.mod;
 			end 
@@ -194,18 +184,15 @@ function hasHarrowingTrait(rUnit)
 	if not rUnit then 
 		return false; 
 	end
-
 	local unitNode = ActorManager.getCreatureNode(rUnit)
 	if not unitNode then 
 		return false;
 	end
-	local traits = unitNode.getChild("traits");
-	if traits then
-		for k,v in pairs(traits.getChildren(traits.getChildren())) do
-			local traitName = DB.getValue(v, "name", "");
-			if traitName:lower() == "harrowing" then
-				return true;
-			end
+
+	for k,v in pairs(DB.getChildren(unitNode, "traits")) do
+		local traitName = DB.getValue(v, "name", "");
+		if traitName:lower() == "harrowing" then
+			return true;
 		end
 	end
 	return false;
@@ -226,8 +213,7 @@ end
 --
 
 function isUnitType(rUnit, sTypeCheck)
-	local sType = ActorManagerKw.getUnitType(rUnit);
-	return sType:lower() == sTypeCheck:lower();
+	return ActorManagerKw.getUnitType(rUnit):lower() == sTypeCheck:lower();
 end
 
 function isUnitAncestry(rUnit, sAncestryCheck)
@@ -235,7 +221,7 @@ function isUnitAncestry(rUnit, sAncestryCheck)
 	if not isUnit(rUnit) then
 		return false;
 	end
-	local sType, node = ActorManager.getTypeAndNode(ActorManager.resolveActor(rUnit));
+	local node = ActorManager.getCreatureNode(ActorManager.resolveActor(rUnit));
 	if not node then
 		return false;
 	end

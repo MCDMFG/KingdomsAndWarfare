@@ -18,14 +18,10 @@
 	<string name="library_recordtype_empty_nonid_unit">&#171; Unidentified Unit &#187;</string>
 	<string name="library_recordtype_label_domain">Domains</string>
 	<string name="library_recordtype_empty_domain">&#171; New Domain &#187;</string>
-	<string name="ref_type_domain">Domain</string>
-	<string name="ref_type_title">Title</string>
 	<string name="library_recordtype_label_advantage">Advantages</string>
 	<string name="library_recordtype_empty_advantage">&#171; New Martial Advantage &#187;</string>
-	<string name="ref_type_martialadvantage">Martial Advantage</string>
 	<string name="library_recordtype_label_trait">Unit Traits</string>
 	<string name="library_recordtype_empty_trait">&#171; New Unit Trait &#187;</string>
-	<string name="ref_type_unittrait">Unit Trait</string>
 
 	<!-- Experience levels -->
 	<string name="exp_levies">Levies</string>
@@ -55,7 +51,7 @@
 	<string name="stat_command">Command</string>
 
 	<!-- Character Sheet -->
-	<string name="char_abilitise_label_martialadvantages">MARTIAL ADVANTAGES</string>
+	<string name="char_abilities_label_martialadvantages">MARTIAL ADVANTAGES</string>
 	<string name="char_abilities_message_maadd">Martial Advantage '%s' added to '%s'.</string>
 	<string name="char_abilities_message_titleadd">Title '%s' added to '%s'.</string>
 	<string name="char_error_missingrecord">Unable to find record to match link dropped. Check to make sure the correct modules are open.</string>
@@ -119,7 +115,6 @@
 	<string name="domain_header_titles">Titles</string>
 
 	<!-- NPC -->
-	<string name="npc_tab_powers">Powers</string>
 	<string name="npc_label_domainsize">Domain Size</string>
 	<string name="npc_header_martialadvantages">Martial Advantages</string>
 	<string name="npc_empty_martialadvantages">&#171; Martial Advantage Name &#187;</string>
@@ -265,9 +260,5 @@
 	<string name="gained_souls_message">%s has gained %i souls.</string>
 
   <!-- Resting -->
-	<string name="extended_rest_label">Extended</string>
-	<string name="menu_restextended">Extended Rest</string>
-	<string name="message_restextended">Taking extended rest.</string>
-	<string name="message_ct_restextended">Party taking extended rest.</string>
 	<string name="message_ps_intrigueended">The intrigue has ended.</string>
 </root>

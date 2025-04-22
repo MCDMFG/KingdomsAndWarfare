@@ -9,22 +9,18 @@ function onInit()
 	
 	updateDisplay();
 	
-	local node = getDatabaseNode();
 	WindowManager.setInitialOrder(self);
 
-	local sNode = getDatabaseNode().getPath();
-	DB.addHandler(sNode, "onChildUpdate", onDataChanged);
 	onDataChanged();
+	DB.addHandler(getDatabasePath(), "onChildUpdate", onDataChanged);
 end
-
 function onClose()
-	local sNode = getDatabaseNode().getPath();
-	DB.removeHandler(sNode, "onChildUpdate", onDataChanged);
+	DB.removeHandler(getDatabasePath(), "onChildUpdate", onDataChanged);
 end
 
 function onMenuSelection(selection, subselection)
 	if selection == 4 and subselection == 3 then
-		getDatabaseNode().delete();
+		UtilityManager.safeDeleteWindow(self);
 	end
 end
 

@@ -28,6 +28,13 @@
 	</template>
 	<template name="number_domainskill">
 		<number_modifier>
+			<anchored to="skillstitle" width="40" height="22">
+				<top anchor="bottom" relation="relative" offset="6" />
+				<left anchor="left" offset="2" />
+			</anchored>
+			<frame name="fieldlight" offset="7,5,7,5" />
+			<default>0</default>
+			<rollable />
 			<script>
 				function onInit()
 					if devtrack and devtrack[1] then
@@ -92,14 +99,6 @@
 					return action();
 				end
 			</script>
-			<anchored to="skillstitle" width="40" height="22">
-				<top anchor="bottom" relation="relative" offset="6" />
-				<left anchor="left" offset="2" />
-			</anchored>
-			<default>0</default>
-			<rollable />
-			<modifiersize>mini</modifiersize>
-			<frame name="fieldlight" offset="7,5,7,5" />
 		</number_modifier>
 	</template>
 	<template name="label_domainskill">
@@ -113,6 +112,12 @@
 	</template>
 	<template name="number_domaindefense">
 		<number_modifier>
+			<anchored to="defensestitle" width="40" height="22">
+				<top anchor="bottom" relation="relative" offset="6" />
+				<right anchor="right" offset="-55" />
+			</anchored>
+			<frame name="fieldlight" offset="7,5,7,5" />
+			<default>10</default>
 			<script>
 				function onInit()
 					if devtrack and devtrack[1] then
@@ -175,13 +180,6 @@
 					setValue(nValue);
 				end
 			</script>
-			<anchored to="defensestitle" width="40" height="22">
-				<top anchor="bottom" relation="relative" offset="6" />
-				<right anchor="right" offset="-55" />
-			</anchored>
-			<default>10</default>
-			<frame name="fieldlight" offset="7,5,7,5" />
-			<modifiersize>mini</modifiersize>
 		</number_modifier>
 	</template>
 	<template name="number_domaindefenselevel">
@@ -324,7 +322,6 @@
 				<right offset="-10" />
 			</anchored>
 			<class>power_action</class>
-			<allowdelete />
 			<sortby><control>order</control></sortby>
 		</windowlist>
 	</template>
@@ -337,7 +334,6 @@
 				<right offset="-10" />
 			</anchored>
 			<class>effectsmall</class>
-			<allowdelete />
 		</windowlist>
 	</template>
 	<template name="action_button">

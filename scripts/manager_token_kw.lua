@@ -199,7 +199,7 @@ end
 function updateColor(nodeColor)
 	if not nodeColor then return; end
 
-	local nodeCT = nodeColor.getParent();
+	local nodeCT = DB.getParent(nodeColor);
 	local tokenCT = CombatManager.getTokenFromCT(nodeCT);
 	if tokenCT and ActorManagerKw.isUnit(nodeCT) then
 		updateColorHelper(tokenCT, nodeCT);	 

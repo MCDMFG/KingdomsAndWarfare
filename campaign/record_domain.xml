@@ -6,94 +6,27 @@
 -->
 
 <root>
-	<windowclass name="reference_domain">
-		<frame>recordsheet</frame>
-		<placement>
-			<size width="460" height="550" />
-		</placement>
-		<sizelimits>
-			<minimum width="460" height="400" />
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<nodelete />
-		<gmexport>domain</gmexport>
-		<tooltip field="name" />
-		<script file="campaign/scripts/domain.lua" />
-		<sheetdata>
-			<sub_record_header name="header">
-				<class>domain_header</class>
-			</sub_record_header>
-
-			<frame_record_content_tabbed name="contentframe" />
-
-			<subwindow_record name="main">
-				<class>domain_main</class>
-			</subwindow_record>
-			<subwindow_record name="other">
-				<class>domain_other</class>
-				<invisible />
-			</subwindow_record>
-			<ft_record name="description">
-				<anchored to="contentframe" position="over" />
-				<invisible />
-			</ft_record>
-
-			<scrollbar_record>
-				<target>main</target>
-			</scrollbar_record>
-			<scrollbar_record>
-				<target>description</target>
-			</scrollbar_record>
-
-			<tabs_recordsheet name="tabs">
-				<tab>
-					<icon>tab_main</icon>
-					<subwindow>main</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_other</icon>
-					<subwindow>other</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_notes</icon>
-					<subwindow>description</subwindow>
-				</tab>
-			</tabs_recordsheet>
-			
-			<resize_recordsheet />
-			<close_recordsheet />
-		</sheetdata>
+	<windowclass name="reference_domain" copy="record_window_tabbed">
+		<tab>
+			<name>main</name>
+			<resource>tab_main</resource>
+			<class>domain_main</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>other</name>
+			<resource>tab_other</resource>
+			<class>domain_other</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>notes</name>
+			<resource>tab_notes</resource>
+			<class>record_content_description</class>
+			<embed />
+		</tab>
 	</windowclass>
-
-	<windowclass name="domain_header">
-		<margins control="0,0,0,2" />
-		<script>
-			function onInit()
-				update();
-			end
-			function update()
-				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
-				name.setReadOnly(bReadOnly);
-			end
-		</script>
-		<sheetdata>
-			<link_record_header>
-				<class>reference_domain</class>
-			</link_record_header>
-
-			<anchor_record_header_right />
-			<icon_record_locked />
-			<button_record_locked />
-
-			<string_record_name name="name">
-				<empty textres="library_recordtype_empty_domain" />
-			</string_record_name>
-			<label_reftype name="reftype">
-				<static textres="ref_type_domain" />
-			</label_reftype>	
-		</sheetdata>
-	</windowclass>
+	<windowclass name="reference_domain_header" copy="record_header" />
 
 	<windowclass name="domain_main">
 		<margins control="0,0,0,2" />
@@ -150,12 +83,9 @@
 				<script file="campaign/scripts/domain_powerpool.lua" />
 				<datasource>.powerpool</datasource>
 				<class>powerpool_entry</class>
-				<allowcreate />
-				<allowdelete />
 				<acceptdrop>
 					<type>number</type>
 				</acceptdrop>
-				<skipempty />
 				<columns>
 					<width>35</width>
 					<fillwidth />
@@ -278,13 +208,13 @@
 				<anchored to="powers_iedit" position="lefthigh" offset="5,0" />
 				<target>powers</target>
 			</button_iadd>
-			<list_npcactions name="powers">
+			<list_actions_kw name="powers">
 				<anchored>
 					<top parent="header_powers" anchor="bottom" relation="relative" offset="2" />
 				</anchored>
 				<datasource>.powers</datasource>
 				<class>domain_power</class>
-			</list_npcactions>
+			</list_actions_kw>
 
 			<!-- Features -->
 			<header_column name="header_features">
@@ -301,41 +231,30 @@
 				<anchored to="features_iedit" position="lefthigh" offset="5,0" />
 				<target>features</target>
 			</button_iadd>
-			<list_npcactions name="features">
+			<list_actions_kw name="features">
 				<anchored>
 					<top parent="header_features" anchor="bottom" relation="relative" offset="2" />
 				</anchored>
 				<datasource>.features</datasource>
 				<class>domain_power</class>
-			</list_npcactions>
+			</list_actions_kw>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="domain_power">
 		<margins control="0,0,0,2" />
 		<sheetdata>
-			<genericcontrol name="rightanchor">
-				<anchored height="0" width="0">
-					<top />
-					<right />
-				</anchored>
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored>
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
-			</button_idelete>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
 
-			<stringfield name="name">
-				<anchored position="insidetopleft" offset="5,2">
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
+			<button_listitem_idelete_left name="idelete" />
+			<linkc_listitem_left name="shortcut">
+				<class>location</class>
+			</linkc_listitem_left>
+
+			<string_listitem_center_bold name="name">
 				<frame name="rowshade" offset="5,2,5,2" />
-				<font>sheetlabel</font>
-				<multilinespacing>20</multilinespacing>
 				<empty textres="npc_empty_powername" />
-			</stringfield>
+			</string_listitem_center_bold>
 			
 			<formattedtextfield name="desc">
 				<anchored to="name" position="belowleft" offset="0,5">
@@ -345,7 +264,6 @@
 			</formattedtextfield>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="powerpool_entry">
 		<margins control="5,5,5,5" />
 		<script>
@@ -430,10 +348,6 @@
 	<windowclass name="domain_other">
 		<margins control="0,0,0,2" />
 		<script>
-			function onInit()
-				update();
-			end
-
 			function update()
 				local nodeRecord = getDatabaseNode();
 				local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);
@@ -483,10 +397,10 @@
 				<anchored to="officers_iadd" position="lefthigh" offset="5,0" />
 				<target>officers</target>
 			</button_iedit>
-			<list_npcactions name="officers">
+			<list_actions_kw name="officers">
 				<datasource>.officers</datasource>
 				<class>domain_officer</class>
-			</list_npcactions>
+			</list_actions_kw>
 			<stringcontrol name="label_usedreaction">
 				<anchored to="header_officers" position="insideright" offset="23,0" width="20" />
 				<static>R</static>
@@ -746,144 +660,38 @@
 			</buttongroup_counter>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="domain_officer">
 		<margins control="0,0,0,2" />
 		<sheetdata>
-			<genericcontrol name="rightanchor">
-				<anchored position="insidetopright" offset="0,2" height="0" width="0" />
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-2" />
-				</anchored>
-			</button_idelete>
-			<button_checkbox name="proficiencyused">
-				<anchored to="rightanchor" width="20" height="20">
-					<top />
-					<right anchor="left" relation="relative" offset="-7" />
-				</anchored>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_listitem_idelete_left name="idelete" />
+
+			<button_listitem_checkbox_right name="proficiencyused">
 				<tooltip textres="domain_tooltip_usedproficiency" />
-			</button_checkbox>
-			<button_checkbox name="reactionused">
-				<anchored to="rightanchor" width="20" height="20">
-					<top />
-					<right anchor="left" relation="relative" offset="-7" />
-				</anchored>
+			</button_listitem_checkbox_right>
+			<button_listitem_checkbox_right name="reactionused">
 				<tooltip textres="domain_tooltip_usedreaction" />
-			</button_checkbox>
-			<string_textlistitem name="name">
-				<anchored to="rightanchor">
-					<top />
-					<left parent="" offset="5" />
-					<right anchor="left" relation="relative" offset="-7" />
-				</anchored>
-			</string_textlistitem>
+			</button_listitem_checkbox_right>
+
+			<string_listitem_center_underline name="name" />
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="title_item">
 		<margins control="0,0,0,2" />
 		<sheetdata>
-			<genericcontrol name="rightanchor">
-				<anchored position="insidetopright" offset="0,2" height="0" width="0" />
-			</genericcontrol>
-			<linkcontrol name="shortcut">
-				<anchored to="rightanchor" width="20" height="20">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_listitem_idelete_left name="idelete" />
+			<linkc_listitem_left name="shortcut">
 				<class>ref_title</class>
-				<readonly />
-			</linkcontrol>
-			<button_idelete name="idelete">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" offset="-5" />
-				</anchored>
-			</button_idelete>
-			
-			<string_textlistitem name="titlename">
-				<anchored to="rightanchor">
-					<top />
-					<left parent="" offset="5" />
-					<right anchor="left" relation="relative" offset="-10" />
-				</anchored>
-				<multilinespacing>20</multilinespacing>
-			</string_textlistitem>
+			</linkc_listitem_left>
+
+			<string_listitem_center_underline name="titlename" />
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="ref_title">
-		<frame>recordsheet</frame>
-		<placement>
-			<size width="350" height="350" />
-		</placement>
-		<sizelimits>
-			<minimum width="300" height="300" />
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<tooltip field="name" />
-		<nodelete />
-		<script>
-			function onLockChanged()
-				if header.subwindow then
-					header.subwindow.update();
-				end
-				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
-				text.setReadOnly(bReadOnly);
-			end
-		</script>
-		<sheetdata>
-			<hs name="type" />
-
-			<sub_record_header name="header">
-				<class>title_header</class>
-			</sub_record_header>
-
-			<frame_record_content name="contentframe" />
-			
-			<ft_record name="text">
-				<anchored to="contentframe" position="over" />
-				<empty textres="ft_empty" hideonreadonly="true" />
-			</ft_record>
-			<scrollbar_record>
-				<target>text</target>
-			</scrollbar_record>
-			
-			<resize_recordsheet />
-			<close_recordsheet />
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="title_header">
-		<margins control="0,0,0,2" />
-		<script>
-			function onInit()
-				update();
-			end
-			function update()
-				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
-				titlename.setReadOnly(bReadOnly);
-			end
-		</script>
-		<sheetdata>
-			<link_record_header>
-				<class>ref_title</class>
-			</link_record_header>
-
-			<anchor_record_header_right name="rightanchor" />
-			<icon_record_locked />
-			<button_record_locked />
-
-			<string_record_name name="titlename" />
-			
-			<label_reftype name="reftype">
-				<anchored to="titlename" />
-				<static textres="ref_type_title" />
-			</label_reftype>
-		</sheetdata>
-	</windowclass>
+	<windowclass name="ref_title" copy="record_window_text" />
 </root>
