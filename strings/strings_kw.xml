@@ -119,6 +119,7 @@
 	<string name="domain_header_titles">Titles</string>
 
 	<!-- NPC -->
+	<string name="npc_tab_powers">Powers</string>
 	<string name="npc_label_domainsize">Domain Size</string>
 	<string name="npc_header_martialadvantages">Martial Advantages</string>
 	<string name="npc_empty_martialadvantages">&#171; Martial Advantage Name &#187;</string>

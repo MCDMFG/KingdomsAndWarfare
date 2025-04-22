@@ -15,23 +15,21 @@ function update()
 	domainsize.setReadOnly(bReadOnly);
 	
 	if bReadOnly then
-		if martialadvantages_iedit then
-			martialadvantages_iedit.setValue(0);
-			martialadvantages_iedit.setVisible(false);
-			martialadvantages_iadd.setVisible(false);
-		end
+		martialadvantages_iedit.setValue(0);
+		martialadvantages_iedit.setVisible(false);
+		martialadvantages_iadd.setVisible(false);
 		
 		local bShow = (martialadvantages.getWindowCount() ~= 0);
 		header_martialadvantages.setVisible(bShow);
 		martialadvantages.setVisible(bShow);
 	else
-		if martialadvantages_iedit then
-			martialadvantages_iedit.setVisible(true);
-			martialadvantages_iadd.setVisible(true);
-		end
+		martialadvantages_iedit.setVisible(true);
+		martialadvantages_iadd.setVisible(true);
+
 		header_martialadvantages.setVisible(true);
 		martialadvantages.setVisible(true);
 	end
+
 	for _,w in ipairs(martialadvantages.getWindows()) do
 		w.name.setReadOnly(bReadOnly);
 		w.desc.setReadOnly(bReadOnly);

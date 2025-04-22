@@ -7,46 +7,38 @@
 
 <root>
 	<windowclass name="npc" merge="join">
-		<script>
+		<!-- <script>
 			local fStateChanged;
 			function onInit()
-				fStateChanged = super.StateChanged;
-				super.StateChanged = StateChanged
+				fStateChanged = super.onStateChanged;
+				super.onStateChanged = onStateChanged
 
 				super.onInit()
 			end
 
-			function StateChanged()
+			function onStateChanged()
 				fStateChanged();
-				if warfare.subwindow then
-					warfare.subwindow.update();
+				if sub_powers.subwindow then
+					sub_powers.subwindow.update();
 				end
 			end
-		</script>
+		</script> -->
+
+		<tab merge="add">
+			<name>sub_powers</name>
+			<resource>npc_tab_powers</resource>
+			<class>npc_warfare</class>
+			<embed />
+		</tab>
+
 		<sheetdata>
-			<subwindow_record name="warfare" insertbefore="text">
+			<!-- <subwindow_record name="warfare" insertbefore="text">
 				<class>npc_warfare</class>
 				<invisible />
 			</subwindow_record>
 			<scrollbar_record>
 				<target>warfare</target>
-			</scrollbar_record>
-
-			<tabs_recordsheet name="tabs" merge="delete" />
-			<tabs_recordsheet name="tabs">
-				<tab>
-					<icon>tab_main</icon>
-					<subwindow>main_creature</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_powers</icon>
-					<subwindow>warfare</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_other</icon>
-					<subwindow>text</subwindow>
-				</tab>
-			</tabs_recordsheet>
+			</scrollbar_record> -->
 		</sheetdata>
 	</windowclass>
 
@@ -77,6 +69,7 @@
 				<target>martialadvantages</target>
 			</button_iadd>
 			<list_npcactions name="martialadvantages">
+				<anchored to="columnanchor" />
 				<datasource>.martialadvantages</datasource>
 				<class>npc_martialadvantage</class>
 			</list_npcactions>

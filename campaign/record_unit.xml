@@ -390,7 +390,7 @@
 			<number_unitstat name="attack" source="abilities.attack">
 				<anchored merge="replace" width="40" height="30">
 					<top parent="columnanchor" anchor="bottom" relation="relative" offset="12" />
-					<left anchor="center" offset="-192" />
+					<left anchor="center" offset="-182" />
 				</anchored>
 				<target>attack</target>
 				<defense>defense</defense>
@@ -404,7 +404,7 @@
 			<number_unitstat name="defense" source="abilities.defense">
 				<anchored merge="replace" to="attack" width="40" height="30">
 					<top />
-					<left anchor="right" relation="relative" offset="30" />
+					<left anchor="right" relation="relative" offset="25" />
 				</anchored>
 				<target>defense</target>
 				<default>10</default>
@@ -417,7 +417,7 @@
 			<number_unitstat name="power" source="abilities.power">
 				<anchored merge="replace" to="attack" width="40" height="30">
 					<top />
-					<left anchor="right" relation="relative" offset="30" />
+					<left anchor="right" relation="relative" offset="25" />
 				</anchored>
 				<target>power</target>
 				<defense>toughness</defense>
@@ -431,7 +431,7 @@
 			<number_unitstat name="toughness" source="abilities.toughness">
 				<anchored merge="replace" to="attack" width="40" height="30">
 					<top />
-					<left anchor="right" relation="relative" offset="30" />
+					<left anchor="right" relation="relative" offset="25" />
 				</anchored>
 				<target>toughness</target>
 				<default>10</default>
@@ -444,7 +444,7 @@
 			<number_unitstat name="morale" source="abilities.morale">
 				<anchored merge="replace" to="attack" width="40" height="30">
 					<top />
-					<left anchor="right" relation="relative" offset="30" />
+					<left anchor="right" relation="relative" offset="25" />
 				</anchored>
 				<target>morale</target>
 				<rollable />
@@ -457,7 +457,7 @@
 			<number_unitstat name="command" source="abilities.command">
 				<anchored merge="replace" to="attack" width="40" height="30">
 					<top />
-					<left anchor="right" relation="relative" offset="30" />
+					<left anchor="right" relation="relative" offset="25" />
 				</anchored>
 				<target>command</target>
 				<rollable />
@@ -469,6 +469,7 @@
 
 			<!-- Traits -->
 			<header_column name="header_traits">
+				<anchored to="columnanchor" />
 				<static textres="npc_header_traits"/>
 			</header_column>
 			<button_iedit name="traits_iedit">
@@ -480,6 +481,7 @@
 				<target>traits</target>
 			</button_iadd>
 			<list_npcactions name="traits">
+				<anchored to="columnanchor" />
 				<datasource>.traits</datasource>
 				<class>unit_trait</class>
 			</list_npcactions>

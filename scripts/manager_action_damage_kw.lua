@@ -433,6 +433,8 @@ function handleEndure(rSource, rTarget, rDamageOutput)
 			local s = vRemainder:lower();
 			if s == "reaction" then
 				rAction.bReaction = true;
+			elseif StringManager.contains(KingdomsAndWarfare.aWarfareAbilities) then
+				rAction.stat = s;
 			elseif StringManager.contains(DataCommon.abilities, s) then
 				rAction.stat = s;
 			end
